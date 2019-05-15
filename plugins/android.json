@@ -9,6 +9,9 @@
   "installed_plugins": {
     "cordova-plugin-device": {
       "PACKAGE_NAME": "com.phonegap.helloworld"
+    },
+    "cordova-plugin-ble-central": {
+      "PACKAGE_NAME": "com.phonegap.helloworld"
     }
   },
   "dependent_plugins": {}
