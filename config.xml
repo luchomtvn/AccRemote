@@ -11,4 +11,8 @@
     <access origin="*" />
     <engine name="android" spec="^7.1.4" />
     <engine name="ios" spec="^4.5.5" />
+    <engine name="browser" spec="~5.0.4" />
+    <plugin name="cordova-plugin-ble-central" spec="1.2.2">
+        <variable name="BLUETOOTH_USAGE_DESCRIPTION" value=" " />
+    </plugin>
 </widget>
