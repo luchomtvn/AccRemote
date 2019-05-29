@@ -1,88 +1,112 @@
-var SERVICE_UUID = "0000181c-0000-1000-8000-00805f9b34fb";
-var CHARACTERISTIC_UUID_READ = "00002a6f-0000-1000-8000-00805f9b34fb";
-var CHARACTERISTIC_UUID_TOGGLE = "c852651d-bcb7-4ca7-bbd7-2c13e99608e8";
-
-// var log = document.getElementById("log");
-// if (window.cordova) {
-//     log.innerHTML = "with cordova";
-//     document.addEventListener("deviceready", function onDeviceReady() {
-//         log.innerHTML = "deviceready";
-//     }, false);
-// } else {
-//     log.innerHTML = "with browser";
-// }
-
-// document.addEventListener('deviceready', function () {
-//     console.log('Received Event: deviceready');
-// }, false);
-
-document.getElementById('beginScan').addEventListener('click', function (e) {
-    var aux = "";
-    ble.startScan([], function (device) {
-        console.log(JSON.stringify(device));
-        aux += '<button href="#" name="' + device.name + '" id= "' + device.name + '"/>'
-        aux += '<label for="' + device.name + '">' + device.name + "</label>";
-        // aux += "<li href='#'>" + JSON.stringify(device) + "</li>";
-        document.getElementById('scanned devices').innerHTML = aux;
-
-        if (device.name == "AccControl") {
-            ble.connect(device.id, function (device) {
-                ble.stopScan;
-                console.log("Scan Stopped");
-                console.log("Connected to " + device.name + ":" + device.id);
-                location.href = 'index.html#actionpage';
-                setButtons(device);
-            }, function (device) {
-                console.log("Disconnected from " + device.name);
-                location.href = 'index.html';
-            });
-        }
+window.onload = function () 
+{   
+    // Get user information
+    // Scan Wifi or bluetooth and connect
+    // Display device screen (spa or sauna)
+    
+    var device = "";
+    $('#gotoSpaPage').on('click', function () 
+    {
+        device = "spa";
+        setScreen(device);
+    });
+    $('#gotoSaunaPage').on('click', function () 
+    {
+        device = "sauna";
+        setScreen(device);
     });
 
-    setTimeout(ble.stopScan,
-        5000,
-        function () { console.log("Scan complete"); },
-        function () { console.log("stopScan failed"); }
-    );
 
-});
-
-
-
-function setButtons(device) {
-    $("#ledOn").click(function () {
-        ble.write(device.id,
-            SERVICE_UUID,
-            CHARACTERISTIC_UUID_TOGGLE,
-            stringToBytes("on"),
-            function () { console.log("turned led on"); },
-            function () { console.log("didn't turn led on"); }
-        );
-    });
-    $("#ledOff").click(function () {
-        ble.write(device.id,
-            SERVICE_UUID,
-            CHARACTERISTIC_UUID_TOGGLE,
-            stringToBytes("off"),
-            function () { console.log("turned led off"); },
-            function () { console.log("didn't turn led off"); }
-        );
-    });
-    $("#sendText").click(function () {
-	    var textToSend = document.getElementById("textToSend").value;
-	    ble.write(device.id,
-	        SERVICE_UUID,
-	        CHARACTERISTIC_UUID_READ,
-	        stringToBytes(textToSend),
-	        function (e) { console.log("recieved text"); },
-	        function (e) { console.log("didn't recieve text: " + e); }
-	    );
-    });
 }
-function stringToBytes(string) {
-    var array = new Uint8Array(string.length);
-    for (var i = 0, l = string.length; i < l; i++) {
-        array[i] = string.charCodeAt(i);
+
+
+
+function setScreen(device){
+
+    // href.location = "index.html#controlpage";
+    $.mobile.changePage("#controlpage");
+
+    document.getElementById('canvas').innerHTML = frames[device];
+
+    $('#submitTemp').click(function () {
+        var temp = $('#slider-1').val();
+        alert("you submitted " + temp);
+    });
+    
+    $('#submitTsession').click(function () {
+        var tsession = $('#slider-2').val();
+        alert("you submitted " + tsession);
+    });
+    
+    $('#submitTzone').click(function () {
+        var tzone = $('#tz').val();
+        alert("you submitted " + tzone);
+    });
+    
+    $('#submitTemp').click(function () {
+        var temp = $('#slider-1').val();
+        alert("you submitted " + temp);
+    });
+    
+    $('#submitTsession').click(function () {
+        var tsession = $('#slider-2').val();
+        alert("you submitted " + tsession);
+    });
+
+    device == "spa" ? $('#enableSessionTime').hide() : $('#enableSessionTime').show()
+    
+    $('#submitTzone').click(function () {
+        var tzone = $('#tz').val();
+        alert("you submitted " + tzone);
+    });
+    
+    $('.form-control').timezones();
+    // initpanel();
+    
+    var mybuttons = { 2: 'aux', 3: 'jets', 4: 'system', 7: 'aux2', 6: 'light' };
+    
+    var rects = new Array(5);
+    var rid = 0;
+    
+    this.resetbuttons = function () {
+        for (var rid = 0; rid < 5; rid++) {
+            if (rects[rid] == undefined) continue; // unused button
+            if (rects[rid].attr("style", rects[rid].data("off")) == undefined) continue; // unused button
+            rects[rid].attr("style", rects[rid].data("off"))
+            var mytimer = rects[rid].data("timer");
+            if (mytimer !== '') {
+                clearTimeout(mytimer);
+                rects[rid].data("timer", '');
+            }
+        }
     }
-    return array.buffer;
+    
+    
+    for (var b in mybuttons) {
+        rects[rid] = $('#button-' + mybuttons[b] + '-frame');
+        var auxonstyle = rects[rid].attr("style");
+        if (auxonstyle == undefined) continue; // unused button
+        var auxoffstyle = auxonstyle.replace(/stroke-opacity[^;]*;?/, "");
+        var auxintstyle;
+        if (auxoffstyle.length > 0) { auxoffstyle += ';' };
+        auxintstyle = auxoffstyle + 'stroke-opacity:0;fill-opacity:0.2;fill:#ffffff';
+        auxoffstyle += 'stroke-opacity:0;fill-opacity:0;fill:#00ffff';
+        rects[rid].attr("style", auxoffstyle);
+        rects[rid].data("b", b);
+        rects[rid].data("off", auxoffstyle);
+        rects[rid].data("int", auxintstyle);
+        rects[rid].data("timer", '');
+        rects[rid].on("click", function () {
+            //        display(randhex());
+            //        alert("codigo#: "+$(this).data("b"));
+            var bdata = $(this).data("b");
+            var tout = bdata == 6 ? 1000 : 1000;
+            // if (websocket !== '') websocket.send(bdata)
+            // else $("#pressedkey").text(bdata);
+            $(this).attr("style", $(this).data("int"));
+            var mytimer = setTimeout(function () { this.resetbuttons() }, tout);
+            $(this).data("timer", mytimer);
+        });
+        rid++;
+    }
 }
