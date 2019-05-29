@@ -16,11 +16,11 @@
 		3047A5131AB8059700498E2A /* build-release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 3047A5101AB8059700498E2A /* build-release.xcconfig */; };
 		3047A5141AB8059700498E2A /* build.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 3047A5111AB8059700498E2A /* build.xcconfig */; };
 		6AFF5BF91D6E424B00AB3073 /* CDVLaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6AFF5BF81D6E424B00AB3073 /* CDVLaunchScreen.storyboard */; };
-		E7525B9EF7D64B75BA634FB7 /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FD491FD3EA4158AEC1EE36 /* CDVDevice.m */; };
-		27A2A6F271DF4E5190DE3135 /* BLECentralPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F80B4E0E2D24C8C883D332D /* BLECentralPlugin.m */; };
-		615F37C44A144C9B90287A31 /* CBPeripheral+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 173239B6B1B94478919BA363 /* CBPeripheral+Extensions.m */; };
-		D975CDEEDC8E47FA977911EE /* BLECommandContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 5725B34AC683409D94238B8E /* BLECommandContext.m */; };
-		383F8C2911DB435196C5B976 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DAD0CF1974F4B789AB473F6 /* CoreBluetooth.framework */; };
+		A30757C6AF9341D8889DBFC5 /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 26AF33F012B64FEDA78CBB86 /* CDVDevice.m */; };
+		985581ADA610446780447A0E /* BLECentralPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 721824C8160F47BB9CD3E083 /* BLECentralPlugin.m */; };
+		CA3F81F2D4D5437A84647405 /* CBPeripheral+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F320C94D28F4442B1A788CC /* CBPeripheral+Extensions.m */; };
+		DC266D1FE0934EC59C82F65A /* BLECommandContext.m in Sources */ = {isa = PBXBuildFile; fileRef = F04CB044A044418CAF65AAC3 /* BLECommandContext.m */; };
+		919E8B7BC9B34B228304B1FE /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01830E5A85654CA19EDF96A3 /* CoreBluetooth.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,7 +46,7 @@
 		1D3623250D0F684500981E51 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* AccRemote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AccRemote.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		301BF52D109A57CC0062928A /* CordovaLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = CordovaLib/CordovaLib.xcodeproj; sourceTree = "<group>"; };
+		301BF52D109A57CC0062928A /* CordovaLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CordovaLib.xcodeproj; path = CordovaLib/CordovaLib.xcodeproj; sourceTree = "<group>"; };
 		301BF56E109A69640062928A /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; path = www; sourceTree = SOURCE_ROOT; };
 		302D95EE14D2391D003F00A1 /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		302D95EF14D2391D003F00A1 /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
@@ -61,15 +61,15 @@
 		EB87FDF41871DAF40020F90C /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = ../../config.xml; sourceTree = "<group>"; };
 		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = "AccRemote/config.xml"; sourceTree = "<group>"; };
 		ED33DF2A687741AEAF9F8254 /* Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Bridging-Header.h"; path = "Bridging-Header.h"; sourceTree = "<group>"; };
-		B5FD491FD3EA4158AEC1EE36 /* CDVDevice.m */ = {isa = PBXFileReference; name = "CDVDevice.m"; path = "cordova-plugin-device/CDVDevice.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
-		01B82F5321E545A08DF4CDD2 /* CDVDevice.h */ = {isa = PBXFileReference; name = "CDVDevice.h"; path = "cordova-plugin-device/CDVDevice.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		3F80B4E0E2D24C8C883D332D /* BLECentralPlugin.m */ = {isa = PBXFileReference; name = "BLECentralPlugin.m"; path = "cordova-plugin-ble-central/BLECentralPlugin/BLECentralPlugin.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
-		173239B6B1B94478919BA363 /* CBPeripheral+Extensions.m */ = {isa = PBXFileReference; name = "CBPeripheral+Extensions.m"; path = "cordova-plugin-ble-central/BLECentralPlugin/CBPeripheral+Extensions.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
-		5725B34AC683409D94238B8E /* BLECommandContext.m */ = {isa = PBXFileReference; name = "BLECommandContext.m"; path = "cordova-plugin-ble-central/BLECentralPlugin/BLECommandContext.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
-		918CCFFB40FD4EE497F6C4E1 /* BLECentralPlugin.h */ = {isa = PBXFileReference; name = "BLECentralPlugin.h"; path = "cordova-plugin-ble-central/BLECentralPlugin/BLECentralPlugin.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		FB2B5FCD1DD449849F5D7669 /* CBPeripheral+Extensions.h */ = {isa = PBXFileReference; name = "CBPeripheral+Extensions.h"; path = "cordova-plugin-ble-central/BLECentralPlugin/CBPeripheral+Extensions.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		697DFC45350D460BAC309D1F /* BLECommandContext.h */ = {isa = PBXFileReference; name = "BLECommandContext.h"; path = "cordova-plugin-ble-central/BLECentralPlugin/BLECommandContext.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		7DAD0CF1974F4B789AB473F6 /* CoreBluetooth.framework */ = {isa = PBXFileReference; name = "CoreBluetooth.framework"; path = "System/Library/Frameworks/CoreBluetooth.framework"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = wrapper.framework; explicitFileType = undefined; includeInIndex = 0; };
+		26AF33F012B64FEDA78CBB86 /* CDVDevice.m */ = {isa = PBXFileReference; name = "CDVDevice.m"; path = "cordova-plugin-device/CDVDevice.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		2EA8A1476EB74849B7842BDF /* CDVDevice.h */ = {isa = PBXFileReference; name = "CDVDevice.h"; path = "cordova-plugin-device/CDVDevice.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		721824C8160F47BB9CD3E083 /* BLECentralPlugin.m */ = {isa = PBXFileReference; name = "BLECentralPlugin.m"; path = "cordova-plugin-ble-central/BLECentralPlugin/BLECentralPlugin.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		6F320C94D28F4442B1A788CC /* CBPeripheral+Extensions.m */ = {isa = PBXFileReference; name = "CBPeripheral+Extensions.m"; path = "cordova-plugin-ble-central/BLECentralPlugin/CBPeripheral+Extensions.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		F04CB044A044418CAF65AAC3 /* BLECommandContext.m */ = {isa = PBXFileReference; name = "BLECommandContext.m"; path = "cordova-plugin-ble-central/BLECentralPlugin/BLECommandContext.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		E7DA742AD3104900901BEF75 /* BLECentralPlugin.h */ = {isa = PBXFileReference; name = "BLECentralPlugin.h"; path = "cordova-plugin-ble-central/BLECentralPlugin/BLECentralPlugin.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		C507B36F79AA49229C8928D8 /* CBPeripheral+Extensions.h */ = {isa = PBXFileReference; name = "CBPeripheral+Extensions.h"; path = "cordova-plugin-ble-central/BLECentralPlugin/CBPeripheral+Extensions.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		9C397562563B46A0B36689B3 /* BLECommandContext.h */ = {isa = PBXFileReference; name = "BLECommandContext.h"; path = "cordova-plugin-ble-central/BLECentralPlugin/BLECommandContext.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		01830E5A85654CA19EDF96A3 /* CoreBluetooth.framework */ = {isa = PBXFileReference; name = "CoreBluetooth.framework"; path = "System/Library/Frameworks/CoreBluetooth.framework"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = wrapper.framework; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,7 +78,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				301BF552109A68D80062928A /* libCordova.a in Frameworks */,
-				383F8C2911DB435196C5B976 /* CoreBluetooth.framework in Frameworks */,
+				919E8B7BC9B34B228304B1FE /* CoreBluetooth.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -149,7 +149,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7DAD0CF1974F4B789AB473F6 /* CoreBluetooth.framework */,
+				01830E5A85654CA19EDF96A3 /* CoreBluetooth.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -175,14 +175,14 @@
 		307C750510C5A3420062BCA9 /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
-				B5FD491FD3EA4158AEC1EE36 /* CDVDevice.m */,
-				01B82F5321E545A08DF4CDD2 /* CDVDevice.h */,
-				3F80B4E0E2D24C8C883D332D /* BLECentralPlugin.m */,
-				173239B6B1B94478919BA363 /* CBPeripheral+Extensions.m */,
-				5725B34AC683409D94238B8E /* BLECommandContext.m */,
-				918CCFFB40FD4EE497F6C4E1 /* BLECentralPlugin.h */,
-				FB2B5FCD1DD449849F5D7669 /* CBPeripheral+Extensions.h */,
-				697DFC45350D460BAC309D1F /* BLECommandContext.h */,
+				26AF33F012B64FEDA78CBB86 /* CDVDevice.m */,
+				2EA8A1476EB74849B7842BDF /* CDVDevice.h */,
+				721824C8160F47BB9CD3E083 /* BLECentralPlugin.m */,
+				6F320C94D28F4442B1A788CC /* CBPeripheral+Extensions.m */,
+				F04CB044A044418CAF65AAC3 /* BLECommandContext.m */,
+				E7DA742AD3104900901BEF75 /* BLECentralPlugin.h */,
+				C507B36F79AA49229C8928D8 /* CBPeripheral+Extensions.h */,
+				9C397562563B46A0B36689B3 /* BLECommandContext.h */,
 			);
 			name = Plugins;
 			path = "AccRemote/Plugins";
@@ -295,10 +295,10 @@
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* AppDelegate.m in Sources */,
 				302D95F114D2391D003F00A1 /* MainViewController.m in Sources */,
-				E7525B9EF7D64B75BA634FB7 /* CDVDevice.m in Sources */,
-				27A2A6F271DF4E5190DE3135 /* BLECentralPlugin.m in Sources */,
-				615F37C44A144C9B90287A31 /* CBPeripheral+Extensions.m in Sources */,
-				D975CDEEDC8E47FA977911EE /* BLECommandContext.m in Sources */,
+				A30757C6AF9341D8889DBFC5 /* CDVDevice.m in Sources */,
+				985581ADA610446780447A0E /* BLECentralPlugin.m in Sources */,
+				CA3F81F2D4D5437A84647405 /* CBPeripheral+Extensions.m in Sources */,
+				DC266D1FE0934EC59C82F65A /* BLECommandContext.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
