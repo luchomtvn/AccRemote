@@ -7,10 +7,10 @@
     "files": {}
   },
   "installed_plugins": {
-    "cordova-plugin-ble-central": {
+    "cordova-plugin-device": {
       "PACKAGE_NAME": "com.phonegap.helloworld"
     },
-    "cordova-plugin-device": {
+    "cordova-plugin-ble-central": {
       "PACKAGE_NAME": "com.phonegap.helloworld"
     }
   },

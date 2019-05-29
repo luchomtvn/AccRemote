@@ -18,7 +18,7 @@
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         console.log("deviceReady fired");
-        alert("deviceReady fired");
+        // alert("deviceReady fired");
     },
     // Update DOM on a Received Event
    

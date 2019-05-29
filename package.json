@@ -4,11 +4,12 @@
   "displayName": "AccRemote",
   "cordova": {
     "platforms": [
-      "android",
+      "browser",
       "ios",
-      "browser"
+      "android"
     ],
     "plugins": {
+      "cordova-plugin-device": {},
       "cordova-plugin-ble-central": {
         "BLUETOOTH_USAGE_DESCRIPTION": " "
       }
