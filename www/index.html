@@ -27,7 +27,11 @@
             </fieldset>
             
             </div>
-            <button onclick="location.href='index.html#controlpage'">Go to Control page</button>
+            <div data-role="controlgroup">
+                <a data-role="button" id="gotoSpaPage" >Spa page</a>
+                <a data-role="button" id="gotoSaunaPage">Sauna page</a>
+            </div>
+                
     </div> <!-- connection page -->
     <div data-role="page" id="actionpage">
         <div data-role="main" class="ui content">
@@ -46,7 +50,7 @@
         <div data-role="header" id="header"></div>
     
         <div data-role="header" id="name">
-            <h1>Acc Sauna</h1>
+            <!-- <h1>Acc Sauna</h1> -->
         </div>
     
         <div data-role="collapsibleset">
@@ -86,7 +90,7 @@
                     <div class="ui-field-contain">
     
                         <label id="slider-label" for="slider-1"></label>
-                        <input type="range" name="void" id="slider-1" min="50" max="160" step="1" value="50">
+                        <input type="range" name="void" id="slider-1" step="1" value="50">
                         <input type="hidden" name="temp" id="slider-F" value="50">
                         <!-- TODO: Value should be taken from accspadb-->
                     </div>
@@ -144,7 +148,7 @@
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
-    <script type="text/javascript" src="js/buttonhandler.js"></script>
+    <!-- <script type="text/javascript" src="js/buttonhandler.js"></script> -->
     <script type="text/javascript" src="js/load_frames.js"></script>
     <script type="text/javascript" charset="utf-8">
         app.initialize();

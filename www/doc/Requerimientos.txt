@@ -1,0 +1,8 @@
+1 Establecer temperatura del spa o sauna en farenheit o celsis, a traves de wifi. 
+2 Establecer zona horaria del spa o sauna, a traves de wifi
+3 Establacer tiempo de sesion en minutos, solo para el sauna, a traves de wifi
+4 Operar la botonera del resto de las funciones del spa o sauna que no son cubiertas por los items anteriores, a traves de wifi. En caso spa es: Light Jets, Aux, Aux2, Set. En caso sauna es: Light, Set
+5 Establecer hora, y temperatura y operar los bones de manera directa pero remota, a traves de bluetooth
+
+
+Todos los puntos requieren una conexion previa, ya sea wifi o bluetooth. La operacion de la aplicacion cambia segun la conexion. Para respetar esto, la operacion de la aplicacion se habilita segun una conexion exitosa. Se selecciona (o se recuerda) una opcion de operacion y cuando se logra conectar se pasa a la siguiente pantalla donde se opera. 
