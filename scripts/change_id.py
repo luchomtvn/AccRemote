@@ -1,5 +1,8 @@
 # This sript will only run correctly if called inside www dir
 
+
+# 31/05/19 This script is no longer being used as ids do not need to be changed. 
+
 import os
 import sys
 import argparse
