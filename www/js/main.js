@@ -15,22 +15,24 @@ window.onload = function ()
         device = "sauna";
         setScreen(device);
     });
-
-
 }
-
-
 
 function setScreen(device){
 
-    // href.location = "index.html#controlpage";
+    
+    var templims;
     $('#name').html("<h1>Acc " + device.capitalize() + "</h1>");
-
     $.mobile.changePage("#controlpage");
-
     document.getElementById('canvas').innerHTML = frames[device];
 
-    var templims = device == "spa" ? { f: { min: 45, max: 104 }, c: { min: 7.6, max: 40 } } : { f: { min: 50, max: 160 }, c: { min: 10.3, max: 70.8 } };
+    if (device == "spa"){
+        templims = { f: { min: 45, max: 104 }, c: { min: 7.6, max: 40 } };
+        $('#enableSessionTime').hide();
+    }
+    else if (device == "sauna"){
+        templims = { f: { min: 50, max: 160 }, c: { min: 10.3, max: 70.8 } };
+        $('#enableSessionTime').show();
+    }
 
     $('#submitTemp').click(function () {
         var temp = $('#slider-1').val();
@@ -47,23 +49,12 @@ function setScreen(device){
         alert("you submitted " + tzone);
     });
 
-    device == "spa" ? $('#enableSessionTime').hide() : $('#enableSessionTime').show()
-    
-    $('#submitTzone').click(function () {
-        var tzone = $('#tz').val();
-        alert("you submitted " + tzone);
-    });
     
     $('.form-control').timezones();
-    // initpanel();
 
     $(".ui-slider-label-b").addClass('ui-btn-active');
     $(".ui-slider-track").css('background', '#22aadd');
     var oldvalue = $("#slider-1").attr("value");
-
-    // $('#slider-1').attr("max", templims.f.max);
-    // $('#slider-1').attr("min", templims.f.min);
-
 
 
     $('#slider-1').change(function () {
@@ -156,12 +147,8 @@ function setScreen(device){
         rects[rid].data("int", auxintstyle);
         rects[rid].data("timer", '');
         rects[rid].on("click", function () {
-            //        display(randhex());
-            //        alert("codigo#: "+$(this).data("b"));
             var bdata = $(this).data("b");
             var tout = bdata == 6 ? 1000 : 1000;
-            // if (websocket !== '') websocket.send(bdata)
-            // else $("#pressedkey").text(bdata);
             $(this).attr("style", $(this).data("int"));
             var mytimer = setTimeout(function () { this.resetbuttons() }, tout);
             $(this).data("timer", mytimer);

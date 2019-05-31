@@ -22,7 +22,7 @@ loadframespath = '../www/js/load_frames.js'
 svgfile = os.path.join(cwd, svgrelpath)
 loadframesfile = os.path.join(cwd, loadframespath)
 
-fs = open (svgfile, "r")
+fs = open(svgfile, "r")
 # svgraw = json.dumps(fs.read())
 svgraw = fs.read()
 fs.close()
