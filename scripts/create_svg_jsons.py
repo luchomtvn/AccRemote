@@ -1,6 +1,3 @@
-# TODO: Write the dictionary AND the window.frames assignation all at once and not in two steps. 
-
-
 # This sript will only run correctly if called inside www dir
 
 import os
@@ -39,18 +36,9 @@ fj.close()
 #save into file
 if not args.dry_run:
     fj = open(loadframesfile, "w")
-    json.dump(frames_dict, fj)
+    fj.write("window.frames = " + json.dumps(frames_dict))
     fj.close()
 
-#append window.frames assign
-fj = open(loadframesfile, 'r')
-rawfile = fj.read()
-fj.close()
-
-if not args.dry_run:
-    fj = open(loadframesfile, "w")
-    fj.write("window.frames = " + rawfile)
-    fj.close()
 
 print ("load_frames.js updated")
 
