@@ -25,6 +25,9 @@
             <a data-role="button" id="gotoSpaPage" >Spa page</a>
             <a data-role="button" id="gotoSaunaPage">Sauna page</a>
         </div>
+        <div data-role="controlgroup">
+            <a data-role="button" id="gotoChat">MQTT Messaging</a>
+        </div>
     </div> <!-- connection page -->
     <div data-role="page" id="actionpage">
         <div data-role="main" class="ui content">
@@ -92,14 +95,21 @@
             <h1>MLTech</h1>
         </div>
     </div> <!-- Sauna Page -->
+    <div data-role="page" id="mqttpage">
+        <div data-role="ui-content">
+            <label for="publishText">Write message: </label>
+            <input type="text" id="publishText" />
+            <button id="publishButton">Send</button>
+        </div>
+    </div>
 
 
 
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
-    <!-- <script type="text/javascript" src="js/buttonhandler.js"></script> -->
     <script type="text/javascript" src="js/load_frames.js"></script>
+    <!-- <script type="text/javascript" src="js/mqtt.js"></script> -->
     <script type="text/javascript" charset="utf-8">
         app.initialize();
     </script>

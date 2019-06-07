@@ -1,3 +1,5 @@
+var ws;
+
 window.onload = function () 
 {   
     // Get user information
@@ -15,6 +17,16 @@ window.onload = function ()
         device = "sauna";
         setScreen(device);
     });
+
+    $('#gotoMQTT').on('click', function () {
+        $.mobile.changePage("#mqttpage");
+    });
+
+    ws = new WebSocket("ws://192.168.0.162:3000/channel");
+    ws.onmessage = function (e) {
+        console.log(e.data);
+    };
+    // function sendChat(input) { ws.send(input.value); input.value = '' }
 }
 
 function setScreen(device){
@@ -37,11 +49,13 @@ function setScreen(device){
     $('#submitTemp').click(function () {
         var temp = $('#slider-1').val();
         alert("you submitted " + temp);
+        ws.send(temp);
     });
     
     $('#submitTsession').click(function () {
         var tsession = $('#slider-2').val();
         alert("you submitted " + tsession);
+        ws.send(tsession);
     });
     
     $('#submitTzone').click(function () {
