@@ -1,45 +1,46 @@
-var ws;
+window.onload = function () {   
 
-window.onload = function () 
-{   
-    // Get user information
-    // Scan Wifi or bluetooth and connect
-    // Display device screen (spa or sauna)
+    $("#bluetooth-scan").on('click', function(){
+        $('#scan-wait').show();
+        $('#scan-results').hide();
+    });
+
+    $("#stop-scan-button").on('click', function () {
+        $('#scan-wait').hide();
+        $('#scan-results').show();
+        $("#scan-result-list").append('<li class="ui-li-static ui-body-inherit ui-first-child ui-last-child"> <a>some device</a> </li>');
+    });
     
-    var device = "";
-    $('#gotoSpaPage').on('click', function () 
-    {
-        device = "spa";
-        setScreen(device);
+    $("#new-device-button").on('click', function(){
+        $.mobile.changePage("#registration-page", { transition: "slideup", changeHash: false });
     });
-    $('#gotoSaunaPage').on('click', function () 
-    {
-        device = "sauna";
-        setScreen(device);
-    });
-
-    $('#gotoMQTT').on('click', function () {
-        $.mobile.changePage("#mqttpage");
+    
+    $("#submit-register-button").on('click', function(){
+        $.mobile.changePage("#start-page", { transition: "slidedown", changeHash: false });
+        $("#available-systems").prepend('<a data-position-to="window" \
+                    class= "device ui-btn ui-btn-inline ui-icon-carat-r ui-btn-icon-bottom" \
+                    data - transition="pop" > New Device</a >');
     });
 
-    ws = new WebSocket("ws://192.168.0.162:3000/channel");
-    ws.onmessage = function (e) {
-        console.log(e.data);
-    };
-    // function sendChat(input) { ws.send(input.value); input.value = '' }
+    $(document).on('click', ".device", function () {
+        $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
+        setScreen("spa");
+    });
+
 }
 
-function setScreen(device){
+
+
+function setScreen(device) {
     var templims;
-    // $('#name').html("<h1>Acc " + device.capitalize() + "</h1>");
-    $.mobile.changePage("#controlpage");
+    $('#name').html("<h1>Acc " + device.capitalize() + "</h1>");
     document.getElementById('canvas').innerHTML = frames[device];
 
-    if (device == "spa"){
+    if (device == "spa") {
         templims = { f: { min: 45, max: 104 }, c: { min: 7.6, max: 40 } };
         $('#enableSessionTime').hide();
     }
-    else if (device == "sauna"){
+    else if (device == "sauna") {
         templims = { f: { min: 50, max: 160 }, c: { min: 10.3, max: 70.8 } };
         $('#enableSessionTime').show();
     }
@@ -49,19 +50,19 @@ function setScreen(device){
         alert("you submitted " + temp);
         ws.send(temp);
     });
-    
+
     $('#submitTsession').click(function () {
         var tsession = $('#slider-2').val();
         alert("you submitted " + tsession);
         ws.send(tsession);
     });
-    
+
     $('#submitTzone').click(function () {
         var tzone = $('#tz').val();
         alert("you submitted " + tzone);
     });
 
-    
+
     $('.form-control').timezones();
 
     $(".ui-slider-label-b").addClass('ui-btn-active');
@@ -123,13 +124,13 @@ function setScreen(device){
     $("#slider-1").on('slidestop', function (e) {
         $("#slider-1").change();
     });
-    
+
 
     var mybuttons = { 2: 'aux', 3: 'jets', 4: 'system', 7: 'aux2', 6: 'light' };
-    
+
     var rects = new Array(5);
     var rid = 0;
-    
+
     this.resetbuttons = function () {
         for (var rid = 0; rid < 5; rid++) {
             if (rects[rid] == undefined) continue; // unused button
@@ -142,8 +143,8 @@ function setScreen(device){
             }
         }
     }
-    
-    
+
+
     for (var b in mybuttons) {
         rects[rid] = $('#button-' + mybuttons[b] + '-frame');
         var auxonstyle = rects[rid].attr("style");
@@ -180,3 +181,22 @@ function f2c(far) {
 String.prototype.capitalize = function () {
     return this.charAt(0).toUpperCase() + this.slice(1);
 }
+
+// $(document).on("click", ".show-page-loading-msg", function () {
+//     var $this = $(this),
+//         theme = $this.jqmData("theme") || $.mobile.loader.prototype.options.theme,
+//         msgText = $this.jqmData("msgtext") || $.mobile.loader.prototype.options.text,
+//         textVisible = $this.jqmData("textvisible") || $.mobile.loader.prototype.options.textVisible,
+//         textonly = !!$this.jqmData("textonly");
+//     html = $this.jqmData("html") || "";
+//     $.mobile.loading("show", {
+//         text: msgText,
+//         textVisible: textVisible,
+//         theme: theme,
+//         textonly: textonly,
+//         html: html
+//     });
+// })
+//     .on("click", ".hide-page-loading-msg", function () {
+//         $.mobile.loading("hide");
+//     });

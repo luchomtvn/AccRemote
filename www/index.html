@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <script src="Easy-Timezone-Picker-with-jQuery-Moment-js-Timezones/dist/timezones.full.js"></script>
@@ -14,34 +15,77 @@
             content="default-src * 'unsafe-inline' 'unsafe-eval' 'self' gap: data:;" />
 </head>
 <body>
-    <div class="container" data-role="page" id="connection page">
-        <button id="beginScan">Scan</button>
-        <div id="scan results">
-            <fieldset id="scanned devices" data-role="controlgroup">
-                <legend>Scanned Devices</legend>
-            </fieldset>
-        </div>
-        <div data-role="controlgroup">
-            <a data-role="button" id="gotoSpaPage" >Spa page</a>
-            <a data-role="button" id="gotoSaunaPage">Sauna page</a>
-        </div>
-        <div data-role="controlgroup">
-            <a data-role="button" id="gotoChat">MQTT Messaging</a>
-        </div>
-    </div> <!-- connection page -->
-    <div data-role="page" id="actionpage">
-        <div data-role="main" class="ui content">
-            <h4>Led Status</h4>
-            <button id="ledOn">ON</button><button id="ledOff">OFF</button>
-            <label for="sendText">Write message: </label>
-            <input type="text" id="textToSend" />
-            <button id="sendText" >Send</button>
-        </div>
-    </div> <!-- Action Page -->
+    <div data-role="page" id="start-page" data-theme="a">
+        <div data-role="header" data-position="fixed">
+            <h1> AccRemote </h1>
+        </div><!-- header -->
 
-    <div class="container" data-role="page" id="controlpage" data-theme="b">
-        <div data-role="header" id="header"></div>
-        <div data-role="header" id="name"></div>
+        <div role="main" class="ui-content">
+            <h4> Connect to Acc Device: </h4>
+            <div id="available-systems">
+                <a href="#connection-popup" id="bluetooth-scan" data-rel="popup" data-position-to="window"
+                    class="ui-btn ui-btn-inline ui-icon-plus ui-btn-icon-bottom"
+                    data-transition="pop">Add New Device</a>
+            </div>
+            <div data-role="popup" id="connection-popup" class="ui-corner-all">
+                <div id="scan-window" class="ui-content">
+                    <h4>Add New Spa/Sauna</h4>
+                    <div id="scan-wait">
+                        <h4>Scanning devices...</h4>
+                        <!-- <div class="loader"></div> -->
+                        <a id="stop-scan-button"
+                            class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a">Stop Scan</a>
+                    </div>
+                    <div id="scan-results">
+                        <ul data-role="listview" id="scan-result-list">
+                        </ul>
+                        <a id="new-device-button" 
+                        class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a"
+                        >Connect</a>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- main -->
+
+        <div data-role="footer" class="ui-bar-a ui-footer" data-position="fixed">
+            <h4> MLTech 2019 </h4>
+        </div><!-- footer -->
+
+    <div class="modal">
+        <!-- Place at bottom of page -->
+    </div>
+    </div><!-- start page -->
+    <div data-role="page" id="registration-page" data-theme="a">
+        <div class="ui-content">
+            <h4>Local Network Information</h4>
+            <label for="ssid">SSID (Network Name):</label>
+            <input type="text" name="ssid" id="ssid" value="" placeholder="">
+            <label for="ssid-pw">Password:</label>
+            <input type="password" name="ssid-pw" id="ssid-pw" value="" placeholder="">
+            <h4>User Information</h4>
+            <label for="email-address">E-Mail Address:</label>
+            <input type="text" name="email-address" id="email-address" value="" placeholder="">
+            <label for="email-address-confirm">Confirm E-Mail Address:</label>
+            <input type="text" name="email-address-confirm" id="email-address-confirm" value="" placeholder="">
+            <button type="submit" id="submit-register-button"
+            class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Register</button>
+        </div>
+    </div> <!-- Registration Page-->
+    <div data-role="page" id="control-page" data-theme="b"> 
+        <div data-role="popup" id="options-popup" data-theme="b">
+            <ul data-role="listview" data-inset="true" style="min-width:210px;" data-theme="a">
+                <li data-role="list-divider">Choose an action</li>
+                <li><a href="#start-page" class="ui-btn ui-shadow ui-corner-all ui-icon-delete ui-btn-icon-home ui-btn-inline">
+                    Back to Home Page </a></li>
+                <li><a href="#start-page" class="ui-btn ui-shadow ui-corner-all ui-icon-delete ui-btn-icon-home ui-btn-inline">
+                    Delete this unit </a></li>
+            </ul>
+        </div>
+        
+        <div data-role="header" data-position="fixed">
+            <h1> AccRemote </h1>
+            <a href="#options-popup" data-rel="popup" data-icon="gear" class="ui-btn-right" data-transition="slideup">Options</a>
+        </div><!-- header -->
         <div data-role="collapsibleset">
             <div data-role="collapsible" data-collapsed="false">
                 <h1 id="maindisplay"> Display</h1>
@@ -82,7 +126,7 @@
                 <h1>Set Time Zone</h1>
                 <div class="ui-field-contain">
                     <label for="tz">Select Time Zone</label>
-                    <select name="tz" id="tz" class="form-control"></select>    
+                    <select name="tz" id="tz" class="form-control"></select>
                 </div>
                 <div data-role="controlgroup" data-type="horizontal">
                     <input type="submit" data-inline="true" value="Submit" id="submitTzone">
@@ -94,22 +138,15 @@
         <div id="footer" data-role="footer">
             <h1>MLTech</h1>
         </div>
-    </div> <!-- Sauna Page -->
-    <div data-role="page" id="mqttpage">
-        <div data-role="ui-content">
-            <label for="publishText">Write message: </label>
-            <input type="text" id="publishText" />
-            <button id="publishButton">Send</button>
-        </div>
-    </div>
-
-
+    </div> <!-- Control Page -->
+    
+    
 
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
-    <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="js/navigation.js"></script>
     <script type="text/javascript" src="js/load_frames.js"></script>
-    <!-- <script type="text/javascript" src="js/mqtt.js"></script> -->
+    <!-- <script type="text/javascript" src="js/main.js"></script> -->
     <script type="text/javascript" charset="utf-8">
         app.initialize();
     </script>
