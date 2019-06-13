@@ -1,0 +1,10 @@
+% layout 'defaulttests';
+% title 'utests';
+
+% open SGVFILE, "public/svg/frame.svg";
+% my @allfile = <SGVFILE>;
+%== join '', @allfile;
+
+
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>

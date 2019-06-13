@@ -1,0 +1,8 @@
+Instalando biblioteca nativa de ios SocketRocket desde 0 para no usar CocoaPods (700 MB que encima no se instalan bien)
+
+El objetivo final es instalar la libreria cordova-plugin-advanced-websocket que tiene como dependencia a SocketRocket, que es la libreria que habria que referenciar dentro de los requisitos del plugin.
+
+Lo que tendria que hacer es instalar SocketRocket, y luego referenciarlo dentro del plugin de cordova, que voy a instalar manualmente porque si quiero usar el instalador me salta la dependencia de SocketRocket como requisito.
+
+
+Voy a intentar bajarme el plugin e instalarlo manualmente y apuntar la dependencia a donde tenga la libreria puesta. Todavia no se si tengo que commpilar algo de SocketRocket

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/themes/spav1.min.css" />
+<link rel="stylesheet" href="/css/themes/jquery.mobile.icons.min.css" />
+<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css">
+<link href="/favicon.ico" rel="icon" type="image/x-icon" />
+<link href="/images/apple-touch-icon-precomposed.png" rel="apple-touch-icon-precomposed" />
+<link href="/images/apple-touch-icon-72x72-precomposed.png" sizes="72x72" rel="apple-touch-icon-precomposed" />
+<link href="/images/apple-touch-icon-114x114-precomposed.png" sizes="114x114" rel="apple-touch-icon-precomposed" />
+<link href="/images/apple-touch-icon-144x144-precomposed.png" sizes="144x144" rel="apple-touch-icon-precomposed" />
+<link href="<%= url_for('/images/spa-57.png')->to_abs %>" sizes="57x57" rel="apple-touch-icon" />
+<link href="<%= url_for('/images/spa-72.png')->to_abs %>" sizes="72x72" rel="apple-touch-icon" />
+<link href="<%= url_for('/images/spa-144.png')->to_abs %>" sizes="144x144" rel="apple-touch-icon" />
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="https://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js"></script>
+%= asset 'acc_spa_app.css'
+<title><%= title %></title></head>
+<body>
+<%= content %>
+%= asset 'acc_spa_app.js'
+</body>
+</html>

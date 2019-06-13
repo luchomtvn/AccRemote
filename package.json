@@ -1,0 +1,28 @@
+{
+  "name": "com.phonegap.helloworld",
+  "version": "1.0.0",
+  "displayName": "AccRemote",
+  "cordova": {
+    "platforms": [
+      "browser",
+      "ios",
+      "android"
+    ],
+    "plugins": {
+      "cordova-plugin-device": {},
+      "cordova-plugin-ble-central": {
+        "BLUETOOTH_USAGE_DESCRIPTION": " "
+      },
+      "cordova-plugin-fastrde-mqtt": {}
+    }
+  },
+  "dependencies": {
+    "cordova-android": "^7.1.4",
+    "cordova-browser": "^5.0.4",
+    "cordova-ios": "^4.5.5",
+    "cordova-plugin-ble-central": "1.2.2",
+    "cordova-plugin-compat": "1.2.0",
+    "cordova-plugin-device": "2.0.2",
+    "cordova-plugin-fastrde-mqtt": "1.3.0"
+  }
+}

@@ -1,0 +1,6 @@
+platforms/*
+plugins/*
+node_modules/*
+.vscode/
+hooks/
+.DS_Store
