@@ -23,38 +23,33 @@
         <div role="main" class="ui-content">
             <h4> Connect to Acc Device: </h4>
             <div id="available-systems">
-                <a href="#connection-popup" id="bluetooth-scan" data-rel="popup" data-position-to="window"
+                <a href="#connection-page" id="button-add-new-device" data-position-to="window"
                     class="ui-btn ui-btn-inline ui-icon-plus ui-btn-icon-bottom"
-                    data-transition="pop">Add New Device</a>
-            </div>
-            <div data-role="popup" id="connection-popup" class="ui-corner-all">
-                <div id="scan-window" class="ui-content">
-                    <h4>Add New Spa/Sauna</h4>
-                    <div id="scan-wait">
-                        <h4>Scanning devices...</h4>
-                        <!-- <div class="loader"></div> -->
-                        <a id="stop-scan-button"
-                            class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a">Stop Scan</a>
-                    </div>
-                    <div id="scan-results">
-                        <ul data-role="listview" id="scan-result-list">
-                        </ul>
-                        <a id="new-device-button" 
-                        class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a"
-                        >Connect</a>
-                    </div>
-                </div>
+                    data-transition="slideup">Add New Device</a>
             </div>
         </div> <!-- main -->
-
         <div data-role="footer" class="ui-bar-a ui-footer" data-position="fixed">
             <h4> MLTech 2019 </h4>
         </div><!-- footer -->
-
-    <div class="modal">
-        <!-- Place at bottom of page -->
-    </div>
     </div><!-- start page -->
+    <div data-role="page" id="connection-page" data-theme="a">
+        <div data-role="header" data-position="fixed">
+            <h1> AccRemote </h1>
+        </div><!-- header -->
+        <div class="ui-content" id="scan-window">
+            <h4>Add New Spa/Sauna</h4>
+            <h4>Scanning devices...</h4>
+            <div class="loader"></div>
+            <a id="stop-scan-button" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a">Stop Scan</a>
+            <ul data-role="listview" data-inset="true" id="scan-result-list">
+            </ul>
+            <a href="#registration-page" id="button-connect-to-device" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a"
+            data-transition="slideup">Connect</a>
+        </div>
+        <div data-role="footer" class="ui-bar-a ui-footer" data-position="fixed">
+            <h4> MLTech 2019 </h4>
+        </div><!-- footer -->
+    </div> <!-- Connection Page-->
     <div data-role="page" id="registration-page" data-theme="a">
         <div class="ui-content">
             <h4>Local Network Information</h4>

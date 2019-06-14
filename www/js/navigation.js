@@ -8,18 +8,22 @@ window.onload = function () {
     $("#stop-scan-button").on('click', function () {
         $('#scan-wait').hide();
         $('#scan-results').show();
-        $("#scan-result-list").append('<li class="ui-li-static ui-body-inherit ui-first-child ui-last-child"> <a>some device</a> </li>');
+        $("#scan-result-list").append('<li> <a class="ui-btn ui-btn-icon-right ui-icon-carat-r">some device</a> </li>');
     });
     
-    $("#new-device-button").on('click', function(){
-        $.mobile.changePage("#registration-page", { transition: "slideup", changeHash: false });
-    });
+    // $("#button-add-new-device").on('click', function(){
+    //     $.mobile.changePage("#registration-page", { transition: "slideup", changeHash: false });
+    // });
+
+    // $('#new-device-button').on('click', function () {
+    //     $.mobile.changePage("#connection-page", { transition: "slideup", changeHash: false });
+    // });
     
     $("#submit-register-button").on('click', function(){
         $.mobile.changePage("#start-page", { transition: "slidedown", changeHash: false });
         $("#available-systems").prepend('<a data-position-to="window" \
                     class= "device ui-btn ui-btn-inline ui-icon-carat-r ui-btn-icon-bottom" \
-                    data - transition="pop" > New Device</a >');
+                    data-transition="pop" > New Device</a >');
     });
 
     $(document).on('click', ".device", function () {
