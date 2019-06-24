@@ -1,28 +1,41 @@
+var SERVICE_UUID = "0000181c-0000-1000-8000-00805f9b34fb";
+var CHARACTERISTIC_UUID_READ = "00002a6f-0000-1000-8000-00805f9b34fb";
+var accDevicesIds = {};
+
 window.onload = function () {   
-
-    $("#bluetooth-scan").on('click', function(){
-        $('#scan-wait').show();
-        $('#scan-results').hide();
-    });
-
-    $("#stop-scan-button").on('click', function () {
-        $('#scan-wait').hide();
-        $('#scan-results').show();
-        $("#scan-result-list").append('<li> <a class="ui-btn ui-btn-icon-right ui-icon-carat-r">some device</a> </li>');
+    var scanning = false;
+    var it = 1;
+    var deviceName = "";
+    $('#scan-loader-animation').hide();
+    $("#button-start-stop-scan").on('click', function(){
+        if(scanning){
+            $('#scan-loader-animation').hide();
+            scanning = false;
+            // $("#scan-result-list").append('<li> <a class="ui-btn ui-btn-icon-right ui-icon-carat-r">device ' + it + '</a> </li>');
+            // it++;
+            stopScan();
+            $('#button-connect-to-device').addClass("ui-state-disabled");
+        }
+        else{
+            $('#scan-loader-animation').show();
+            scanning = true;
+            startScan();
+        }
     });
     
-    // $("#button-add-new-device").on('click', function(){
-    //     $.mobile.changePage("#registration-page", { transition: "slideup", changeHash: false });
-    // });
-
-    // $('#new-device-button').on('click', function () {
-    //     $.mobile.changePage("#connection-page", { transition: "slideup", changeHash: false });
-    // });
+    $('#scan-result-list').on('click','li', function () {
+        $('#button-connect-to-device').removeClass("ui-state-disabled");  
+        deviceName = $(this).find("a").text();
+    });
+    
+    $('#button-connect-to-device').on('click', function(){
+        btConnect(accDevicesIds[deviceName]);
+    });
     
     $("#submit-register-button").on('click', function(){
         $.mobile.changePage("#start-page", { transition: "slidedown", changeHash: false });
         $("#available-systems").prepend('<a data-position-to="window" \
-                    class= "device ui-btn ui-btn-inline ui-icon-carat-r ui-btn-icon-bottom" \
+                    class= "device ui-mini ui-btn ui-btn-inline" \
                     data-transition="pop" > New Device</a >');
     });
 
@@ -30,9 +43,7 @@ window.onload = function () {
         $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
         setScreen("spa");
     });
-
 }
-
 
 
 function setScreen(device) {
@@ -174,6 +185,8 @@ function setScreen(device) {
     }
 }
 
+
+
 function f2c(far) {
     var stepval = far - 45;
     stepval = stepval.toFixed(0);
@@ -186,21 +199,47 @@ String.prototype.capitalize = function () {
     return this.charAt(0).toUpperCase() + this.slice(1);
 }
 
-// $(document).on("click", ".show-page-loading-msg", function () {
-//     var $this = $(this),
-//         theme = $this.jqmData("theme") || $.mobile.loader.prototype.options.theme,
-//         msgText = $this.jqmData("msgtext") || $.mobile.loader.prototype.options.text,
-//         textVisible = $this.jqmData("textvisible") || $.mobile.loader.prototype.options.textVisible,
-//         textonly = !!$this.jqmData("textonly");
-//     html = $this.jqmData("html") || "";
-//     $.mobile.loading("show", {
-//         text: msgText,
-//         textVisible: textVisible,
-//         theme: theme,
-//         textonly: textonly,
-//         html: html
-//     });
-// })
-//     .on("click", ".hide-page-loading-msg", function () {
-//         $.mobile.loading("hide");
-//     });
+
+function startScan() {
+    ble.startScan([], function (device) {
+        // console.log(JSON.stringify(device));
+        // aux += "<li href='#'>" + JSON.stringify(device) + "</li>";
+        // document.getElementById('scanned devices').innerHTML = aux;
+
+        if (device.name == "AccControl") {
+            accDevicesIds[device.name] = device.id;
+            $("#scan-result-list").append('<li> <a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">' + device.name + '</a> </li>');
+        }
+    });
+
+}
+function btConnect(deviceId) {
+    ble.connect(deviceId, function (device) {
+        console.log("Connected to " + deviceId);
+        ble.write(deviceId,
+            SERVICE_UUID,
+            CHARACTERISTIC_UUID_READ,
+            stringToBytes("Hello from ACC Control remote application, prepare to be conquered."),
+            function () { console.log("Sent conquering message"); },
+            function () { console.log("Conquering failed"); }
+        );
+        // location.href = 'index.html#actionpage';
+        // setButtons(device);
+        // location.href = 'index.html';
+    }, function () {
+        console.log("Couldn't connect to " + deviceId);
+    });
+}
+
+function stopScan() {
+    ble.stopScan;
+    console.log("Scan Stopped");
+}
+
+function stringToBytes(string) {
+    var array = new Uint8Array(string.length);
+    for (var i = 0, l = string.length; i < l; i++) {
+        array[i] = string.charCodeAt(i);
+    }
+    return array.buffer;
+}

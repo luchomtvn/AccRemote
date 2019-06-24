@@ -21,11 +21,15 @@
         </div><!-- header -->
 
         <div role="main" class="ui-content">
-            <h4> Connect to Acc Device: </h4>
+            <h4> Welcome!</h4> 
+            <p>This is the main dashboard for remote connecting and controlling your Spa and Sauna ACC controls.</p>
+            <p>Choose a paired device below or add a new one.</p>
             <div id="available-systems">
-                <a href="#connection-page" id="button-add-new-device" data-position-to="window"
-                    class="ui-btn ui-btn-inline ui-icon-plus ui-btn-icon-bottom"
-                    data-transition="slideup">Add New Device</a>
+            </div>
+            <hr>
+            <div id="custom-border-radius" class="centered">
+                <a href="#connection-page" id="button-add-new-device" 
+                class="ui-btn ui-btn-inline ui-icon-plus ui-mini ui-btn-icon-bottom"> Add New Device</a>
             </div>
         </div> <!-- main -->
         <div data-role="footer" class="ui-bar-a ui-footer" data-position="fixed">
@@ -37,14 +41,18 @@
             <h1> AccRemote </h1>
         </div><!-- header -->
         <div class="ui-content" id="scan-window">
-            <h4>Add New Spa/Sauna</h4>
+            <h4>Connection</h4>
+            <!--p>This is the beggining of the registration process for a new equipment. Please, turn on bluetooth on your smartphone and turn
+                on the equipment to be able to connect to it. When both Bluetooth are enabled, press the 'Start/Stop Scan' button. 
+            </p -->
+            <p> When your device appears on list, you can stop scanning. Select your device and then connect</p>
             <h4>Scanning devices...</h4>
-            <div class="loader"></div>
-            <a id="stop-scan-button" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a">Stop Scan</a>
+            <div class="loader" style="position: relative; margin-bottom: 5%;" id="scan-loader-animation"></div>
+            <a id="button-start-stop-scan" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a">Start / Stop Scanning</a>
             <ul data-role="listview" data-inset="true" id="scan-result-list">
             </ul>
-            <a href="#registration-page" id="button-connect-to-device" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a"
-            data-transition="slideup">Connect</a>
+            <a href="#registration-page" id="button-connect-to-device" class="ui-state-disabled ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a"
+            data-transition="slideup">Connect to this device</a>
         </div>
         <div data-role="footer" class="ui-bar-a ui-footer" data-position="fixed">
             <h4> MLTech 2019 </h4>
@@ -52,6 +60,10 @@
     </div> <!-- Connection Page-->
     <div data-role="page" id="registration-page" data-theme="a">
         <div class="ui-content">
+            <h4>Registration</h4>
+            <!-- <p>Please, enter the information required below to register your equipment in the web server. The next time you use this app, 
+                it will automatically connect to the server, allowing you to control your equipment. Once you completed all the fields, hit 'Register'
+            </p> -->
             <h4>Local Network Information</h4>
             <label for="ssid">SSID (Network Name):</label>
             <input type="text" name="ssid" id="ssid" value="" placeholder="">
@@ -71,8 +83,6 @@
             <ul data-role="listview" data-inset="true" style="min-width:210px;" data-theme="a">
                 <li data-role="list-divider">Choose an action</li>
                 <li><a href="#start-page" class="ui-btn ui-shadow ui-corner-all ui-icon-delete ui-btn-icon-home ui-btn-inline">
-                    Back to Home Page </a></li>
-                <li><a href="#start-page" class="ui-btn ui-shadow ui-corner-all ui-icon-delete ui-btn-icon-home ui-btn-inline">
                     Delete this unit </a></li>
             </ul>
         </div>
@@ -80,64 +90,72 @@
         <div data-role="header" data-position="fixed">
             <h1> AccRemote </h1>
             <a href="#options-popup" data-rel="popup" data-icon="gear" class="ui-btn-right" data-transition="slideup">Options</a>
+            <a href="#start-page" data-icon="home" class="ui-btn-left" data-transition="slideup">Go Back</a>
         </div><!-- header -->
-        <div data-role="collapsibleset">
-            <div data-role="collapsible" data-collapsed="false">
-                <h1 id="maindisplay"> Display</h1>
-                <div id="canvas"></div>
-            </div> <!-- Collapsible Display -->
-            <div data-role="collapsible">
-                <h1>Set Temperature</h1>
-                <div class="ui-field-contain" style="text-align: left;">
-                    <label for="flip-scale"></label>
-                    <select name="flip-scale" id="flip-scale" data-role="slider" data-mini="true" value="0">
-                        <option value="0">°F</option>
-                        <option value="1">°C</option>
-                    </select>
-                </div>
-                <div class="ui-field-contain">
-                    <label id="slider-label" for="slider-1"></label>
-                    <input type="range" name="void" id="slider-1" step="1" value="50">
-                    <input type="hidden" name="temp" id="slider-F" value="50">
-                </div>
-                <div data-role="controlgroup" data-type="horizontal">
-                    <input type="submit" data-inline="true" value="Submit" id="submitTemp">
-                    <a href="#" id="canceltemp" data-role="button">Cancel</a>
-                </div>
-            </div> <!-- Collapsible Program Sauna Temperature    -->
-            <div data-role="collapsible" id="enableSessionTime">
-                <h1>Set Session Time</h1>
-                <div class="ui-field-contain">
-                    <label id="slider-label" for="slider-2"></label>
-                    <input type="range" name="void" id="slider-2" min="10" max="90" step="1" value="30">
-                    <input type="hidden" name="tsession" id="slider-T" value="30">
-                </div>
-                <div data-role="controlgroup" data-type="horizontal">
-                    <input type="submit" data-inline="true" value="Submit" id="submitTsession">
-                    <a href="#" id="cancelsestime" data-role="button">Cancel</a>
-                </div>
-            </div> <!-- Collapsible Program Sauna Set Time    -->
-            <div data-role="collapsible">
-                <h1>Set Time Zone</h1>
-                <div class="ui-field-contain">
-                    <label for="tz">Select Time Zone</label>
-                    <select name="tz" id="tz" class="form-control"></select>
-                </div>
-                <div data-role="controlgroup" data-type="horizontal">
-                    <input type="submit" data-inline="true" value="Submit" id="submitTzone">
-                    <a href="#" id="canceltz" data-role="button">Cancel</a>
-                </div>
-            </div> <!-- Collapsible Program Sauna Timezone    -->
-        </div> <!-- Collapsibleset    -->
-        <div id="sends"></div>
+        <div id="control-page-body" class="ui-content">
+
+            <h4>Device Control</h4>
+            <!-- <p>Use the buttons and sliders to change Spa properties such as date/time, temperature, light, jets and on/off status. Hit the options button 
+                to go back to dashboard
+            </p> -->
+            <div data-role="collapsibleset">
+                <div data-role="collapsible" data-collapsed="false">
+                    <h1 id="maindisplay"> Display</h1>
+                    <div id="canvas"></div>
+                </div> <!-- Collapsible Display -->
+                <div data-role="collapsible">
+                    <h1>Set Temperature</h1>
+                    <div class="ui-field-contain" style="text-align: left;">
+                            <label for="flip-scale"></label>
+                            <select name="flip-scale" id="flip-scale" data-role="slider" data-mini="true" value="0">
+                                <option value="0">°F</option>
+                                <option value="1">°C</option>
+                            </select>
+                        </div>
+                        <div class="ui-field-contain">
+                            <label id="slider-label" for="slider-1"></label>
+                            <input type="range" name="void" id="slider-1" step="1" value="50">
+                            <input type="hidden" name="temp" id="slider-F" value="50">
+                        </div>
+                        <div data-role="controlgroup" data-type="horizontal">
+                            <input type="submit" data-inline="true" value="Submit" id="submitTemp">
+                            <a href="#" id="canceltemp" data-role="button">Cancel</a>
+                        </div>
+                    </div> <!-- Collapsible Program Sauna Temperature    -->
+                    <div data-role="collapsible" id="enableSessionTime">
+                        <h1>Set Session Time</h1>
+                        <div class="ui-field-contain">
+                            <label id="slider-label" for="slider-2"></label>
+                            <input type="range" name="void" id="slider-2" min="10" max="90" step="1" value="30">
+                            <input type="hidden" name="tsession" id="slider-T" value="30">
+                        </div>
+                        <div data-role="controlgroup" data-type="horizontal">
+                            <input type="submit" data-inline="true" value="Submit" id="submitTsession">
+                            <a href="#" id="cancelsestime" data-role="button">Cancel</a>
+                        </div>
+                    </div> <!-- Collapsible Program Sauna Set Time    -->
+                    <div data-role="collapsible">
+                        <h1>Set Time Zone</h1>
+                        <div class="ui-field-contain">
+                            <label for="tz">Select Time Zone</label>
+                            <select name="tz" id="tz" class="form-control"></select>
+                        </div>
+                        <div data-role="controlgroup" data-type="horizontal">
+                            <input type="submit" data-inline="true" value="Submit" id="submitTzone">
+                            <a href="#" id="canceltz" data-role="button">Cancel</a>
+                        </div>
+                    </div> <!-- Collapsible Program Sauna Timezone    -->
+            </div> <!-- Collapsibleset    -->
+            <div id="sends"></div>
+        </div> <!-- control-page-body -->
         <div id="footer" data-role="footer">
             <h1>MLTech</h1>
         </div>
     </div> <!-- Control Page -->
-    
-    
-
-    <script type="text/javascript" src="cordova.js"></script>
+            
+            
+            
+            <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/navigation.js"></script>
     <script type="text/javascript" src="js/load_frames.js"></script>
