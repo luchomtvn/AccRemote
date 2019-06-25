@@ -2,7 +2,74 @@ var SERVICE_UUID = "0000181c-0000-1000-8000-00805f9b34fb";
 var CHARACTERISTIC_UUID_READ = "00002a6f-0000-1000-8000-00805f9b34fb";
 var accDevicesIds = {};
 
+class BluetoothScanner {
+    constructor() {
+        this.devices = [];
+    }
+    get scannedDevices() {
+        return this.devices;
+    }
+    addDevice(name, id) {
+        this.devices.push({ name: name, id: id });
+    }
+    startScan() {
+        var self = this;
+        ble.startScan([], function (device) {
+            if (device.name == "AccControl") {
+                // accDevicesIds[device.name] = device.id;
+                self.addDevice(device.name, device.id);
+                // $("#scan-result-list").append('<li> <a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">' + device.name + '</a> </li>');
+            }
+        });
+    }
+    stopScan() {
+        ble.stopScan;
+        console.log("Scan Stopped");
+    }
+}
+
+class DeviceBluetooth {
+    constructor(service_UUID, characteristic_UUID) {
+        this.service_UUID = service_UUID;
+        this.characteristic_UUID = characteristic_UUID;
+        this.connected = false;
+        this.connect_message = "Hello from ACC Control remote application, prepare to be conquered."
+    }
+    connect(name, devices) {
+        console.log("Attempting connection to " + name);
+        var id = "";
+        for(var i = 0; i < devices.length; i++){
+            if (devices[i].name == name){
+                id = devices[i].id;
+                console.log("device was found in scanning");
+            }
+        }
+        if(id == "") {console.log("DEVICE NAME WASN'T SCANNED: ");}
+        let self = this;
+        ble.connect(id, function (device) {
+            console.log("Connected to " + name);
+            self.connected = true;
+            ble.write(id,
+                self.service_UUID,
+                self.characteristic_UUID,
+                stringToBytes(self.connect_message),
+                function () { console.log("Sent conquering message"); },
+                function () { console.log("Conquering failed"); }
+            );
+        }, function () {
+            console.log("Couldn't connect to " + name);
+        });
+    }
+}
+
 window.onload = function () {   
+
+    // scanner = new BluetoothScanner(); // create scanner object
+    // scanner.startScan(); // begin scan and keep relevan findings in array
+    // equip = new DeviceBluetooth(SERVICE_UUID, CHARACTERISTIC_UUID_READ); // create device connection
+    // equip.connect("AccControl", equip.devices); // connect to a known device that should have been scanned
+
+
     var scanning = false;
     var it = 1;
     var deviceName = "";
@@ -43,6 +110,8 @@ window.onload = function () {
         $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
         setScreen("spa");
     });
+
+
 }
 
 
