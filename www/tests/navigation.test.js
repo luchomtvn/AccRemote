@@ -1,5 +1,7 @@
 var assert = require('assert');
 var panel = require('../js/panel.js');
+// require('../js/navigation.js');
+// import {BluetoothScanner, DeviceBluetooth} from 'navigation';
 
 describe('Array', function () {
     describe('#indexOf()', function () {
@@ -14,3 +16,10 @@ describe('f2c', function () {
         assert.equal(panel.f2c(40), 10.5); 
     });
 });
+
+describe('startScan', function() {
+    it('should not scan if bluetooth isnt available', function () {
+        scanner = new panel.BluetoothScanner();
+        assert.equal(scanner.startScan(), -1); 
+    });
+})
