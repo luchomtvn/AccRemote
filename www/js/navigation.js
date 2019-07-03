@@ -29,30 +29,6 @@ var accDevicesIds = {};
  * connect to it. 
  */
 
-
-var X = PClass.create({
-    val: 1,
-    init: function (cv) {
-        this.cv = cv;
-    },
-    test: function () {
-        return [this.val, this.cv].join(", ");
-    }
-});
-
-var Y = X.extend({
-    val: 2,
-    init: function (cv, cv2) {
-        this._super(cv); this.cv2 = cv2;
-    },
-    test: function () {
-        return [this._super(), this.cv2].join(", ");
-    }
-});
-
-var x = new X(123);
-var y = new Y(234, 567);
-
 var BluetoothScanner = PClass.create({
     init: function() {
         this.devices = [];
@@ -189,7 +165,7 @@ var DeviceBluetooth = ConnectionInterface.extend({
  * and permits a panel to instanciate it inside it's constructor. 
  */
 var DeviceWebSocket = ConnectionInterface.extend({
-    constructor: function(url){
+    init: function(url){
         this.url = url;
         this.ws = (this.url != undefined) ? new WebSocket(this.url) : new WebSocket("ws://127.0.0.1:5555");
     },
@@ -201,65 +177,208 @@ var DeviceWebSocket = ConnectionInterface.extend({
     }
 });
 
+ControlElement = PClass.create({
+    init: function(name, value, panel){
+        this.name = name;
+        this.value = value;
+        this.panel = panel;
+    }
+});
 
-// class ControlElement {
-//     constructor(name, value){
-//         this.name = name;
-//         this.value = value;
-//     }
-// }
-// class Button extends ControlElement {
-//     constructor(name, value){   // value should never change since it's a button
-//         super(name, value);
-//     }
-//     press(){
-//         send(this.value);
-//     }
-// }
+/**
+ * Buttons are created after a panel has been instantiated. They are created on main code according to 
+ * panel type, and on creation they are associated with a panel, so as for them to have an entity to which to send 
+ * the values when buttons are pressed. Button's method handle the button animation and value transfers when pressed on graphic.
+ * 
+ * Since i'm using prototype to make classes, i cant make methods private. All methods in this class are fired from within. There
+ * are no necessary calls from outside this class to the methods in this class. Everything is set up once the button is created 
+ * and a panel is asociated on it's creation. Given that an SVG file is present in DOM and a panel was created.
+ * 
+ * Note that an SVG file with buttons must be loaded in DOM in order to bind those buttons to the ones created using this class. 
+ * If no svg is already loaded, graphic buttons wont be binded to button objects and pressing them won't have any effect. You can, 
+ * however, bind them after button creation by executing get_svg_frame() method after adding svg file to DOM and assigning result to 
+ * this.frame.
+ * 
+ * TODO: error handling is quite poor. 
+ * 
+ */
+Button = ControlElement.extend({
+    init: function(name, value, panel){
+        this._super(name,value,panel);
+        this.on_style = "";
+        this.off_style = "";
+        this.get_svg_frame();
+        if (this.frame != undefined){
+            this.style_frame();
+            this.click_event();
+            console.log("created button " + this.name);
+        }
+        else
+            console.log("created button without graphic bind, clicking will have no effect");
+    },
+    click_event: function () {
+        let self = this;
+        this.frame.on("click", function () { // inside the function, 'this' is the jquery object that was clicked
+            var bdata = $(this).data("b");
+            var tout = bdata == 6 ? 1000 : 1000;
+            $(this).attr("style", $(this).data("int"));
+            self.panel.button_press(self);
+            var mytimer = setTimeout(function () {
+                let res = self.reset_button();
+                if (res == -1) {console.log("couldn't reset frame");}
+                }, tout);
+            $(this).data("timer", mytimer);
+        });
+    },
+    get_svg_frame: function(){
+        try {
+            this.frame = $('#button-' + this.name + '-frame');
+        } catch (e) {
+            if (e instanceof ReferenceError) {
+                console.log("button " + this.name + " undefined in svg file");
+                this.frame = undefined;
+            }
+        }
+        try {
+            this.on_style = this.frame.attr("style");
+            if (this.on_style == undefined) { throw "NoStyle"; }
+        } catch (e) {
+            if (e == "NoStyle"){
+                console.log("button " + this.name + " has no style defined in svg file");
+                this.frame = undefined;
+            }
+        }
+    },
+    style_frame: function(){
+        this.off_style = this.on_style.replace(/stroke-opacity[^;]*;?/, "");
+        var int_style;
+        if (this.off_style.length > 0) { this.off_style += ';' };
+        int_style = this.off_style + 'stroke-opacity:0;fill-opacity:0.2;fill:#ffffff';
+        this.off_style += 'stroke-opacity:0;fill-opacity:0;fill:#00ffff';
+        this.frame.attr("style", this.off_style);
+        this.frame.data("b", 0);
+        this.frame.data("off", this.off_style);
+        this.frame.data("int", int_style);
+        this.frame.data("timer", '');
+        return 0;
+    },
+    reset_button: function () {
+        if (this.frame == undefined) return -1; // unused button
+        if (this.frame.attr("style", this.frame.data("off")) == undefined) return -1; // unused button
+        this.frame.attr("style", this.frame.data("off"))
+        var mytimer = this.frame.data("timer");
+        if (mytimer !== '') {
+            clearTimeout(mytimer);
+            this.frame.data("timer", '');
+        }
+        return 0;
+    }
 
-// class Slider extends ControlElement {
-//     constructor(name, value){ // value changes according to slider
-//         super(name, value);
-//     }
-//     setValue(value){
-//         this.value = value;
-//     }
-//     submit(){
-//         send(this.value);
-//     }
-// }
-
-// class LedNotification {
-//     constructor(name){
-//         this.name = name;
-//         this.status = false;
-//     }
-//     toggle(){this.status ? false : true;}
-//     turnOn(){this.status = true;}
-//     turnOff(){this.status = false;}
-// }
+});
 
 
-// class Panel {
-//     constructor(interface){
-//         this.light_button = new Button("light_btn", "l0");
-//         this.interface = new MessageInterface(interface);
-//     }
 
-//     pressButton(name){
-//         this.buttons[name].press
-//     }
+Slider = ControlElement.extend({
+    init: function (name, value) {
+        this._super(name, value);
+    },
+    flipScale: function(){
+        
+    },
+    submit: function(){
 
-//     setReadCallback(callbackFnct)
+    }
+})
 
-//     send(message, interface){
-//         interface.send(message);
-//     }
-// }
+ LedNotification = PClass.create({
+    init: function(name){
+        this.name = name;
+        this.status = false;
+    },
+    toggle : function(){this.status = this.status ? false : true;},
+    turnOn : function(){this.status = true;},
+    turnOff : function(){this.status = false;}
+});
 
+/**
+ * panel class constructor adds buttons, sliders and notifications into a panel class. This is done outside of the class 
+ * so there's more flexibility when creating panels. You pass arrays of buttons, sliders and notifications and then using 
+ * method add from panel you add them to the panel. 
+ * 
+ * you dont create the buttons and then pass them to the panel, you give an array with info necessary to create them
+ */
+
+Panel = PClass.create({
+    init: function (connection_interface, type, button_array, slider_array, led_array){
+        this.dry_run = false;
+        this.connection_interface = connection_interface;
+        if (connection_interface == undefined){
+            console.log("Created panel instance without connection interface, dry_run turned on");
+            this.dry_run = true;
+        }
+        $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
+        document.getElementById('canvas').innerHTML = window.frames[type];
+        console.log("inserted " + type + " html into DOM");
+        this.add_buttons(button_array);
+        this.add_sliders(slider_array);
+        this.add_leds(led_array);
+    },
+    add_buttons: function (button_array) {
+        let self = this;
+        button_array.forEach(function (item) {
+            self.button_array.push(new Button(item[0], item[1], self));
+        });
+    },
+    add_sliders: function (slider_array) {
+        let self = this;
+        slider_array.forEach(function (item) {
+            self.slider_array.push(new Slider(item[0], item[1], self));
+        });
+    },
+    add_leds: function (led_array) {
+        let self = this;
+        led_array.forEach(function (item) {
+            self.led_array.push(new LedNotification(item[0], item[1], self));
+        });
+    },
+    button_press: function(button) { // only called by buttons
+        if(!this.dry_run){
+            this.connection_interface.sendMessage(button.value);
+            console.log("sent " + button.value);
+        } 
+        else
+            console.log("DRY_RUN: sent " + button.value)
+    }
+});
 
 
 window.onload = function () {   
+    
+    spaBluetoothConnection = new DeviceBluetooth(SERVICE_UUID, CHARACTERISTIC_UUID_READ);
+
+    spa_button_array = [
+        ["system", "s0"],
+        ["jetshi", "j0"],
+        ["aux", "a0"],
+        ["auxii", "a2"],
+        ["light", "l0"],
+    ];
+    sauna_button_array = [
+        ["system", "s0"],
+        ["light", "l0"],
+    ];
+
+    var type = "spa";
+    var panel;
+    
+    // if (type == "spa"){
+    //     panel = new Panel(
+    //         spaButtons,
+    //         spaSliders,
+    //         spaNotifications,
+    //         spaBluetoothConnection
+    //     );
+    // }
 
     // saunaPanelWifi = new SaunaPanel("wifi");
 
