@@ -113,35 +113,35 @@
                             </select>
                         </div>
                         <div class="ui-field-contain">
-                            <label id="slider-label" for="slider-1"></label>
-                            <input type="range" name="void" id="slider-1" step="1" value="50">
-                            <input type="hidden" name="temp" id="slider-F" value="50">
+                            <label id="slider-label" for="slider-temp"></label>
+                            <input type="range" name="void" id="slider-temp" step="1" value="50">
+                            <input type="hidden" name="temp" id="slider-2-temp" value="50">
                         </div>
                         <div data-role="controlgroup" data-type="horizontal">
-                            <input type="submit" data-inline="true" value="Submit" id="submitTemp">
+                            <input type="submit" data-inline="true" value="Submit" id="submit-temp">
                             <a href="#" id="canceltemp" data-role="button">Cancel</a>
                         </div>
                     </div> <!-- Collapsible Program Sauna Temperature    -->
                     <div data-role="collapsible" id="enableSessionTime">
                         <h1>Set Session Time</h1>
                         <div class="ui-field-contain">
-                            <label id="slider-label" for="slider-2"></label>
-                            <input type="range" name="void" id="slider-2" min="10" max="90" step="1" value="30">
-                            <input type="hidden" name="tsession" id="slider-T" value="30">
+                            <label id="slider-label" for="slider-session"></label>
+                            <input type="range" name="void" id="slider-session" min="10" max="90" step="1" value="30">
+                            <input type="hidden" name="tsession" id="slider-2-session" value="30">
                         </div>
                         <div data-role="controlgroup" data-type="horizontal">
-                            <input type="submit" data-inline="true" value="Submit" id="submitTsession">
+                            <input type="submit" data-inline="true" value="Submit" id="submit-session">
                             <a href="#" id="cancelsestime" data-role="button">Cancel</a>
                         </div>
                     </div> <!-- Collapsible Program Sauna Set Time    -->
                     <div data-role="collapsible">
                         <h1>Set Time Zone</h1>
                         <div class="ui-field-contain">
-                            <label for="tz">Select Time Zone</label>
-                            <select name="tz" id="tz" class="form-control"></select>
+                            <label for="time-zone-selector">Select Time Zone</label>
+                            <select name="time-zone-selector" id="time-zone-selector" class="form-control"></select>
                         </div>
                         <div data-role="controlgroup" data-type="horizontal">
-                            <input type="submit" data-inline="true" value="Submit" id="submitTzone">
+                            <input type="submit" data-inline="true" value="Submit" id="submit-time-zone">
                             <a href="#" id="canceltz" data-role="button">Cancel</a>
                         </div>
                     </div> <!-- Collapsible Program Sauna Timezone    -->

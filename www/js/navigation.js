@@ -1,5 +1,15 @@
 var SERVICE_UUID = "0000181c-0000-1000-8000-00805f9b34fb";
 var CHARACTERISTIC_UUID_READ = "00002a6f-0000-1000-8000-00805f9b34fb";
+var MAX_TEMP_FAR_SAUNA = 160;
+var MIN_TEMP_FAR_SAUNA = 50;
+var MAX_TEMP_CEL_SAUNA = 70.8;
+var MIN_TEMP_CEL_SAUNA = 10.3;
+var MAX_TEMP_FAR_SPA = 104;
+var MIN_TEMP_FAR_SPA = 45;
+var MAX_TEMP_CEL_SPA = 40;
+var MIN_TEMP_CEL_SPA = 7.6;
+var MAX_SESSION = 60;
+var MIN_SESSION = 10;
 var accDevicesIds = {};
 
 ///////////////////////////////////////////////////////////////
@@ -78,6 +88,13 @@ var ConnectionInterface = PClass.create({
         throw new Error("Must be implemented");
     }
 });
+
+var Dry = ConnectionInterface.extend({ // just for testing
+    sendMessage: function (message) {
+        console.log(message);
+    },
+    setReadCallback: function(funct){} 
+})
 
 /**
  * Allows connection to a bluetooth device after scanning, also sets callbacks and write functions. 
@@ -178,10 +195,14 @@ var DeviceWebSocket = ConnectionInterface.extend({
 });
 
 ControlElement = PClass.create({
-    init: function(name, value, panel){
+    init: function(name, value, connection_interface){
         this.name = name;
         this.value = value;
-        this.panel = panel;
+        this.connection_interface = connection_interface;
+        this.jquery_obj = "";
+    },
+    get_selector: function(svg) {
+        throw new Error("Must be implemented");
     }
 });
 
@@ -203,26 +224,36 @@ ControlElement = PClass.create({
  * 
  */
 Button = ControlElement.extend({
-    init: function(name, value, panel){
-        this._super(name,value,panel);
+    init: function(name, value, connection_interface){
+        this._super(name,value, connection_interface);
         this.on_style = "";
-        this.off_style = "";
-        this.get_svg_frame();
-        if (this.frame != undefined){
+        if (this.get_selector()) { 
+            console.log("button " + this.name + " linked to panel");
+            this.on_style = this.jquery_obj.attr("style");
             this.style_frame();
             this.click_event();
-            console.log("created button " + this.name);
         }
         else
             console.log("created button without graphic bind, clicking will have no effect");
     },
+    get_selector: function() {
+        try {
+            this.jquery_obj = $('#button-' + this.name + '-frame');
+        } catch (e) {
+            if (e instanceof ReferenceError)
+                console.log("button 'button-" + this.name + "-frame' not in svg or html file");
+            else
+                console.log("couldn't find jquery object in html file: " + e);
+        }
+        return this.jquery_obj == undefined ? false : true;
+    },
     click_event: function () {
         let self = this;
-        this.frame.on("click", function () { // inside the function, 'this' is the jquery object that was clicked
+        this.jquery_obj.on("click", function () { // inside the function, 'this' is the jquery object that was clicked
             var bdata = $(this).data("b");
             var tout = bdata == 6 ? 1000 : 1000;
             $(this).attr("style", $(this).data("int"));
-            self.panel.button_press(self);
+            self.connection_interface.sendMessage(self.value);
             var mytimer = setTimeout(function () {
                 let res = self.reset_button();
                 if (res == -1) {console.log("couldn't reset frame");}
@@ -230,46 +261,25 @@ Button = ControlElement.extend({
             $(this).data("timer", mytimer);
         });
     },
-    get_svg_frame: function(){
-        try {
-            this.frame = $('#button-' + this.name + '-frame');
-        } catch (e) {
-            if (e instanceof ReferenceError) {
-                console.log("button " + this.name + " undefined in svg file");
-                this.frame = undefined;
-            }
-        }
-        try {
-            this.on_style = this.frame.attr("style");
-            if (this.on_style == undefined) { throw "NoStyle"; }
-        } catch (e) {
-            if (e == "NoStyle"){
-                console.log("button " + this.name + " has no style defined in svg file");
-                this.frame = undefined;
-            }
-        }
-    },
     style_frame: function(){
-        this.off_style = this.on_style.replace(/stroke-opacity[^;]*;?/, "");
-        var int_style;
-        if (this.off_style.length > 0) { this.off_style += ';' };
-        int_style = this.off_style + 'stroke-opacity:0;fill-opacity:0.2;fill:#ffffff';
-        this.off_style += 'stroke-opacity:0;fill-opacity:0;fill:#00ffff';
-        this.frame.attr("style", this.off_style);
-        this.frame.data("b", 0);
-        this.frame.data("off", this.off_style);
-        this.frame.data("int", int_style);
-        this.frame.data("timer", '');
+        let off_style = this.on_style.replace(/stroke-opacity[^;]*;?/, "");
+        if (off_style.length > 0) { off_style += ';' };
+        off_style += 'stroke-opacity:0;fill-opacity:0;fill:#00ffff';
+        this.jquery_obj.attr("style", off_style);
+        this.jquery_obj.data("b", 0);
+        this.jquery_obj.data("off", off_style);
+        this.jquery_obj.data("int", off_style + 'stroke-opacity:0;fill-opacity:0.2;fill:#ffffff');
+        this.jquery_obj.data("timer", '');
         return 0;
     },
     reset_button: function () {
-        if (this.frame == undefined) return -1; // unused button
-        if (this.frame.attr("style", this.frame.data("off")) == undefined) return -1; // unused button
-        this.frame.attr("style", this.frame.data("off"))
-        var mytimer = this.frame.data("timer");
+        if (this.jquery_obj == undefined) return -1; // unused button
+        if (this.jquery_obj.attr("style", this.jquery_obj.data("off")) == undefined) return -1; // unused button
+        this.jquery_obj.attr("style", this.jquery_obj.data("off"))
+        var mytimer = this.jquery_obj.data("timer");
         if (mytimer !== '') {
             clearTimeout(mytimer);
-            this.frame.data("timer", '');
+            this.jquery_obj.data("timer", '');
         }
         return 0;
     }
@@ -277,18 +287,88 @@ Button = ControlElement.extend({
 });
 
 
-
 Slider = ControlElement.extend({
-    init: function (name, value) {
-        this._super(name, value);
+    init: function (name, start_value, max, min, connection_interface) {
+        this._super(name, 0, connection_interface);
+        this.max = max;
+        this.min = min;
+        this.start_value = start_value;
+        this.jquery_obj = $("#slider-" + this.name);
+        this.jquery_obj_2 = $("#slider-2-" + this.name);
+        this.jquery_obj_submit = $("#submit-" + this.name);
+        if (this.jquery_obj != undefined && this.jquery_obj_2 != undefined && this.jquery_obj_submit != undefined) {
+            console.log("slider " + this.name + " linked to panel")
+            this.jquery_obj.attr("min",this.min);
+            this.jquery_obj.attr("max",this.max);
+            let self = this;
+            this.onChange = function (){
+                self.jquery_obj.val(this.value);
+            }
+            this.jquery_obj_submit.click(function () {
+                self.connection_interface.sendMessage(self.jquery_obj.val());
+            });
+        }
+        else { console.log("slider " + this.name + " unlinked"); }
     },
-    flipScale: function(){
-        
+    submit: function() {
+        this.connection_interface.sendMessage(this.jquery_obj.val());
     },
-    submit: function(){
-
+    set_change_function: function() {
+        this.jquery_obj.change(this.onChange).change();
     }
-})
+});
+
+SliderTemp = Slider.extend({
+    init: function (name, start_value, maxF, minF, maxC, minC, connection_interface, flip_scale) {
+        this._super(name, start_value, maxF, minF, connection_interface);
+        this.minF = minF;
+        this.maxF = maxF;
+        this.minC = minC;
+        this.maxC = maxC;
+        this.flip_scale = flip_scale;
+        this.slider_label = $("#slider-label");
+        let self = this;
+        this.flip_scale.on("change", function () {
+            var scale = this.value;
+            var textslider = '';
+            if (scale == 0) {
+                textslider = 'Slider (°F):';
+                self.jquery_obj.attr("min", self.minF).attr("max", self.maxF).attr("step", 1).val(self.jquery_obj_2.val());
+            }
+            else {
+                textslider = 'Slider (°C):';
+                var cval = f2c(self.jquery_obj_2.val());
+                self.jquery_obj.attr("min", self.minC).attr("max", self.maxC).attr("step", .1).val(cval);
+            }
+               self.slider_label.text(textslider);
+        });
+        this.flip_scale.change();
+        this.onChange = function() {
+            var oldvalue = self.jquery_obj.attr("value");
+            if (self.flip_scale.val() == 1) {
+                var number = parseFloat(this.value);
+                if (!(number <= self.maxC && number >= self.minC)) number = f2c(parseFloat(oldvalue));
+                var n10 = ((number - 7.6) * 10).toFixed(0);
+                var delta = n10 % 11;
+                var base = Math.floor(n10 / 11);
+                if (delta > 7) { base++; delta = 0 }
+                else if (delta > 3) { delta = 5 }
+                else { delta = 0 };
+                var sal = base * 11 + delta;
+                sal /= 10;
+                sal += 7.6;
+                $(this).val(sal.toFixed(1));
+                var far = 45 + base * 2;
+                if (delta) far++;
+                self.jquery_obj_2.val(far.toFixed(0));
+            }
+            else {
+                if (!(this.value <= self.maxF && this.value >= self.minF)) this.value = oldvalue;
+                self.jquery_obj_2.val(this.value);
+            }
+        }
+    }
+});
 
  LedNotification = PClass.create({
     init: function(name){
@@ -300,105 +380,36 @@ Slider = ControlElement.extend({
     turnOff : function(){this.status = false;}
 });
 
-/**
- * panel class constructor adds buttons, sliders and notifications into a panel class. This is done outside of the class 
- * so there's more flexibility when creating panels. You pass arrays of buttons, sliders and notifications and then using 
- * method add from panel you add them to the panel. 
- * 
- * you dont create the buttons and then pass them to the panel, you give an array with info necessary to create them
- */
 
-Panel = PClass.create({
-    init: function (connection_interface, type, button_array, slider_array, led_array){
-        this.dry_run = false;
-        this.connection_interface = connection_interface;
-        if (connection_interface == undefined){
-            console.log("Created panel instance without connection interface, dry_run turned on");
-            this.dry_run = true;
-        }
-        $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
-        document.getElementById('canvas').innerHTML = window.frames[type];
-        console.log("inserted " + type + " html into DOM");
-        this.add_buttons(button_array);
-        this.add_sliders(slider_array);
-        this.add_leds(led_array);
-    },
-    add_buttons: function (button_array) {
-        let self = this;
-        button_array.forEach(function (item) {
-            self.button_array.push(new Button(item[0], item[1], self));
-        });
-    },
-    add_sliders: function (slider_array) {
-        let self = this;
-        slider_array.forEach(function (item) {
-            self.slider_array.push(new Slider(item[0], item[1], self));
-        });
-    },
-    add_leds: function (led_array) {
-        let self = this;
-        led_array.forEach(function (item) {
-            self.led_array.push(new LedNotification(item[0], item[1], self));
-        });
-    },
-    button_press: function(button) { // only called by buttons
-        if(!this.dry_run){
-            this.connection_interface.sendMessage(button.value);
-            console.log("sent " + button.value);
-        } 
-        else
-            console.log("DRY_RUN: sent " + button.value)
-    }
-});
 
 
 window.onload = function () {   
     
     spaBluetoothConnection = new DeviceBluetooth(SERVICE_UUID, CHARACTERISTIC_UUID_READ);
 
-    spa_button_array = [
-        ["system", "s0"],
-        ["jetshi", "j0"],
-        ["aux", "a0"],
-        ["auxii", "a2"],
-        ["light", "l0"],
-    ];
-    sauna_button_array = [
-        ["system", "s0"],
-        ["light", "l0"],
-    ];
+    document.getElementById('canvas').innerHTML = window.frames["spa"];
+    $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
+
+    connection = new Dry(); // for testing until tests are done
+
+    var button_system = new Button("system", "s0", connection);
+    var button_light = new Button("light", "l0", connection);
+    var slider_session = new Slider("session", 10, MAX_SESSION, MIN_SESSION, connection);
+    slider_session.set_change_function();
+    var slider_temp = new SliderTemp("temp", 
+                            50, 
+                            MAX_TEMP_FAR_SPA,
+                            MIN_TEMP_FAR_SPA,
+                            MAX_TEMP_CEL_SPA, 
+                            MIN_TEMP_CEL_SPA, 
+                            connection, 
+                            $("#flip-scale"));
+    slider_temp.set_change_function();
+
 
     var type = "spa";
     var panel;
-    
-    // if (type == "spa"){
-    //     panel = new Panel(
-    //         spaButtons,
-    //         spaSliders,
-    //         spaNotifications,
-    //         spaBluetoothConnection
-    //     );
-    // }
-
-    // saunaPanelWifi = new SaunaPanel("wifi");
-
-    // $('button-system-frame').on('click', function(){
-    //     appPanel.pressButton("system");
-    // })
-
-    // $('submit-temp').on('click', function () {
-    //     appPanel.getSliderValue("temp");
-    // })
-
-    // messageRecievedCallback = function (message) {
-    //     status = message.jsonformat();
-    //     appPanel.leds["ledjetshi"].status = status.led_jets_hi;
-    // }
-    // scanner = new BluetoothScanner(); // create scanner object
-    // scanner.startScan(); // begin scan and keep relevan findings in array
-    // equip = new DeviceBluetooth(SERVICE_UUID, CHARACTERISTIC_UUID_READ); // create device connection
-    // equip.connect("AccControl", equip.devices); // connect to a known device that should have been scanned
-
+   
 
     var scanning = false;
     var it = 1;
@@ -459,13 +470,13 @@ function setScreen(device) {
     }
 
     $('#submitTemp').click(function () {
-        var temp = $('#slider-1').val();
+        var temp = $('#slider-temp').val();
         alert("you submitted " + temp);
         ws.send(temp);
     });
 
     $('#submitTsession').click(function () {
-        var tsession = $('#slider-2').val();
+        var tsession = $('#slider-2-session').val();
         alert("you submitted " + tsession);
         ws.send(tsession);
     });
@@ -480,10 +491,10 @@ function setScreen(device) {
 
     $(".ui-slider-label-b").addClass('ui-btn-active');
     $(".ui-slider-track").css('background', '#22aadd');
-    var oldvalue = $("#slider-1").attr("value");
+    var oldvalue = $("#slider-temp").attr("value");
 
 
-    $('#slider-1').change(function () {
+    $('#slider-temp').change(function () {
         if ($("#flip-scale").val() == 1) {
             var number = parseFloat(this.value);
             if (!(number <= templims.c.max && number >= templims.c.min)) number = f2c(parseFloat(oldvalue));
@@ -499,16 +510,16 @@ function setScreen(device) {
             $(this).val(sal.toFixed(1));
             var far = 45 + base * 2;
             if (delta) far++;
-            $("#slider-F").val(far.toFixed(0));
+            $("#slider-F-temp").val(far.toFixed(0));
         }
         else {
             if (!(this.value <= templims.f.max && this.value >= templims.f.min)) this.value = oldvalue;
-            $("#slider-F").val(this.value);
+            $("#slider-F-temp").val(this.value);
         }
     }).change();
 
-    $("#slider-2").change(function () {
-        $("#slider-T").val(this.value);
+    $("#slider-2-session").change(function () {
+        $("#slider-session").val(this.value);
     }).change();
 
     $("#flip-scale").on("change", function () {
@@ -516,26 +527,26 @@ function setScreen(device) {
         var textslider = '';
         if (scale == 0) {
             textslider = 'Slider (°F):';
-            $("#slider-1").attr("min", templims.f.min).attr("max", templims.f.max).attr("step", 1).val($("#slider-F").val());
+            $("#slider-temp").attr("min", templims.f.min).attr("max", templims.f.max).attr("step", 1).val($("#slider-F-temp").val());
         }
         else {
             textslider = 'Slider (°C):';
-            var cval = f2c($("#slider-F").val());
-            $("#slider-1").attr("min", templims.c.min).attr("max", templims.c.max).attr("step", .1).val(cval);
+            var cval = f2c($("#slider-F-temp").val());
+            $("#slider-temp").attr("min", templims.c.min).attr("max", templims.c.max).attr("step", .1).val(cval);
         }
         //    $("#slider-label").text(textslider);
     });
     $("#flip-scale").change();
-    $("#slider-1").on('tap', function () {
+    $("#slider-temp").on('tap', function () {
         this.value = ''
     });
 
-    $("#slider-1").bind('blur', function (e) {
-        $("#slider-1").change();
+    $("#slider-temp").bind('blur', function (e) {
+        $("#slider-temp").change();
     });
 
-    $("#slider-1").on('slidestop', function (e) {
-        $("#slider-1").change();
+    $("#slider-temp").on('slidestop', function (e) {
+        $("#slider-temp").change();
     });
 
 
