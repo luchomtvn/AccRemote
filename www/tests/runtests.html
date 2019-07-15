@@ -1,0 +1,38 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Mocha Tests</title>
+    <link href="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div id="mocha"></div>
+    <div >
+        <div id="button-test1-frame">
+
+        </div>
+        <div id="button-test2-frame">
+        
+        </div>
+    </div>
+
+    <script src="https://cdn.rawgit.com/jquery/jquery/2.1.4/dist/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/Automattic/expect.js/0.3.1/index.js"></script>
+    <script src="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.js"></script>
+    <script src="libs/chai.js"></script>
+    <script src="../../node_modules/sinon/pkg/sinon.js"></script>
+
+    <script>mocha.setup('bdd')</script>
+    <script src="../js/index.js"></script>
+    <script src="../js/panel.js"></script>
+    <script src="../js/connection.js"></script>
+    <script src="panel.test.js"></script>
+    <!-- <script src="navigation.test.js"></script> -->
+    <script>
+        // mocha.checkLeaks();
+        // mocha.globals(['jQuery']);
+        mocha.run();
+    </script>
+</body>
+
+</html>

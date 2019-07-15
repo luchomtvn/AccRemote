@@ -60,8 +60,6 @@ function setScreen(device){
         var tzone = $('#tz').val();
         alert("you submitted " + tzone);
     });
-
-    
     $('.form-control').timezones();
 
     $(".ui-slider-label-b").addClass('ui-btn-active');

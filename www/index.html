@@ -15,6 +15,11 @@
             content="default-src * 'unsafe-inline' 'unsafe-eval' 'self' gap: data:;" />
 </head>
 <body>
+
+
+
+
+
     <div data-role="page" id="start-page" data-theme="a">
         <div data-role="header" data-position="fixed">
             <h1> AccRemote </h1>
@@ -29,13 +34,19 @@
             <hr>
             <div id="custom-border-radius" class="centered">
                 <a href="#connection-page" id="button-add-new-device" 
-                class="ui-btn ui-btn-inline ui-icon-plus ui-mini ui-btn-icon-bottom"> Add New Device</a>
+                class="device-button ui-btn ui-btn-inline ui-icon-plus ui-mini ui-btn-icon-bottom"> Add New Device</a>
             </div>
         </div> <!-- main -->
         <div data-role="footer" class="ui-bar-a ui-footer" data-position="fixed">
             <h4> MLTech 2019 </h4>
         </div><!-- footer -->
     </div><!-- start page -->
+
+
+
+
+
+
     <div data-role="page" id="connection-page" data-theme="a">
         <div data-role="header" data-position="fixed">
             <h1> AccRemote </h1>
@@ -58,6 +69,12 @@
             <h4> MLTech 2019 </h4>
         </div><!-- footer -->
     </div> <!-- Connection Page-->
+
+
+
+
+
+
     <div data-role="page" id="registration-page" data-theme="a">
         <div class="ui-content">
             <h4>Registration</h4>
@@ -78,6 +95,19 @@
             class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Register</button>
         </div>
     </div> <!-- Registration Page-->
+
+
+
+
+
+
+
+
+
+
+
+
+
     <div data-role="page" id="control-page" data-theme="b"> 
         <div data-role="popup" id="options-popup" data-theme="b">
             <ul data-role="listview" data-inset="true" style="min-width:210px;" data-theme="a">
@@ -155,9 +185,10 @@
             
             
             
-            <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/panel.js"></script>
+    <script type="text/javascript" src="js/connection.js"></script>
     <script type="text/javascript" src="js/navigation.js"></script>
     <script type="text/javascript" src="js/load_frames.js"></script>
     <!-- <script type="text/javascript" src="js/main.js"></script> -->

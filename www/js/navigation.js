@@ -1,11 +1,117 @@
-window.onload = function () {   
-    
-    spaBluetoothConnection = new DeviceBluetooth(SERVICE_UUID, CHARACTERISTIC_UUID_READ);
+var index_ids = {
+    available_systems: "available-systems"
+}
 
-    document.getElementById('canvas').innerHTML = window.frames["spa"];
-    $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
+ConnectNewDevice = PClass.create({
+    init: function(bluetooth_scanner, bluetooth_device, registration){
+        this.bluetooth_scanner = bluetooth_scanner;
+        this.bluetooth_device = bluetooth_device;
+        this.registration = registration;
+        // this.object_id = $(`#${object_id}`);
 
+        this.scan_result_list = $("#scan-result-list");
+        this.scan_button = $("#button-start-stop-scan");
+        this.scan_loader_animation = $("#scan-loader-animation");
+        this.scan_loader_animation.hide();
+        this.connect_button = $("#button-connect-to-device");
+        this.device_to_connect = "";
+        this.scanning = false;
+        let self = this;
+
+        this.scan_button.on('click', function (){
+            if (self.scanning === false){
+                self.scan_loader_animation.show();
+                self.scanning = true;
+                self.bluetooth_scanner.startScan(self.scan_result_list);
+            }
+            else{
+                self.scan_loader_animation.hide();
+                self.scanning = false;
+                self.bluetooth_scanner.stopScan();
+            }
+        });
+
+        this.scan_result_list.on('click', 'li', function () {
+            self.connect_button.removeClass("ui-state-disabled");
+            self.device_to_connect = $(this).find("a").text();
+        });
+
+        this.connect_button.on('click', function () {
+            bluetooth_device.connect(self.bluetooth_scanner.devices[self.bluetooth_scanner.devices.indexOf(self.device_to_connect)]);
+            $.mobile.changePage(self.registration.page_id, { transition: "slidedown", changeHash: false });
+            self.registration.device_name = self.device_to_connect;
+        });
+
+
+    }
+})
+
+Registration = PClass.create({
+    init: function(connection_interface, device_name) {
+        this.connection_interface = connection_interface;
+        this.device_name = "...";
+        this.page_id = "#registration-page";
+        this.submit_button = $("#submit-register-button");
+        this.ssid = $("#ssid");
+        this.ssid_pass = $("#ssid-pw");
+        this.email = $("#email-address");
+        this.email_conf = $("#email-address-confirm");
+        let self = this;
+
+        this.submit_button.on('click', function () {
+            if(!this.ssid.val() || !this.ssid_pass.val() || !this.email.val() || !this.email_conf.val())
+                alert("Please fill in all the fields");
+            else if (this.email !== this.email_conf)
+                alert("E-mails do not match");
+            else{
+                alert("Sending data to server");
+                $.mobile.changePage("#start-page", { transition: "slidedown", changeHash: false });
+                alert("Device registered!");
+                $("#available-systems").prepend(`<a data-position-to="window" \
+                class= "device ui-mini ui-btn ui-btn-inline" \
+                data-transition="pop" > ${self.device_name} </a >`);
+            }
+        });
+
+
+    },  
+    register: function(username, password, email){
+        this.connection_interface.sendMessage({
+                "username": username,
+                "password": password,
+                "email": email
+            });
+    }
+});
+
+
+AvailableSystems = PClass.create({
+    init: function(object_id) {
+        this.object_id = $(`#${object_id}`);
+        this.list_o = `${object_id}_list`;
+    },
+    add_device: function(name) {
+        this.object_id.prepend(`<a data-position-to="window" class= "device-button device ui-mini ui-btn ui-btn-inline" \
+                                    data-transition="pop">${name}</a>`);
+    }
+
+});
+
+
+
+window.onload = function () {  
+
+    available_systems = new AvailableSystems(index_ids.available_systems);
     connection = new Dry(); // for testing until tests are done
+    registration = new Registration(connection);
+    
+    spaBluetoothConnection = new DeviceBluetooth(SERVICE_UUID, CHARACTERISTIC_UUID_READ, true);
+    scanner = new BluetoothScanner(true);
+    connect_window = new ConnectNewDevice(scanner, spaBluetoothConnection, registration.page_id);
+    
+    document.getElementById('canvas').innerHTML = window.frames["spa"];
+    // $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
+    
 
     var button_system = new Button("system", "s0", connection);
     var button_light = new Button("light", "l0", connection);
@@ -23,45 +129,45 @@ window.onload = function () {
 
     new TimeZoneSelector("time-zone-selector", "form-timezones", "submit-time-zone", connection);
 
-    var type = "spa";
-    var panel;
+    // var type = "spa";
+    // var panel;
    
 
-    var scanning = false;
-    var it = 1;
-    var deviceName = "";
-    $('#scan-loader-animation').hide();
-    $("#button-start-stop-scan").on('click', function(){
-        if(scanning){
-            $('#scan-loader-animation').hide();
-            scanning = false;
-            // $("#scan-result-list").append('<li> <a class="ui-btn ui-btn-icon-right ui-icon-carat-r">device ' + it + '</a> </li>');
-            // it++;
-            stopScan();
-            $('#button-connect-to-device').addClass("ui-state-disabled");
-        }
-        else{
-            $('#scan-loader-animation').show();
-            scanning = true;
-            startScan();
-        }
-    });
+    // var scanning = false;
+    // var it = 1;
+    // var deviceName = "";
+    // $('#scan-loader-animation').hide();
+    // $("#button-start-stop-scan").on('click', function(){
+    //     if(scanning){
+    //         $('#scan-loader-animation').hide();
+    //         scanning = false;
+    //         // $("#scan-result-list").append('<li> <a class="ui-btn ui-btn-icon-right ui-icon-carat-r">device ' + it + '</a> </li>');
+    //         // it++;
+    //         stopScan();
+    //         $('#button-connect-to-device').addClass("ui-state-disabled");
+    //     }
+    //     else{
+    //         $('#scan-loader-animation').show();
+    //         scanning = true;
+    //         startScan();
+    //     }
+    // });
     
-    $('#scan-result-list').on('click','li', function () {
-        $('#button-connect-to-device').removeClass("ui-state-disabled");  
-        deviceName = $(this).find("a").text();
-    });
+    // $('#scan-result-list').on('click','li', function () {
+    //     $('#button-connect-to-device').removeClass("ui-state-disabled");  
+    //     deviceName = $(this).find("a").text();
+    // });
     
-    $('#button-connect-to-device').on('click', function(){
-        btConnect(accDevicesIds[deviceName]);
-    });
+    // $('#button-connect-to-device').on('click', function(){
+    //     btConnect(accDevicesIds[deviceName]);
+    // });
     
-    $("#submit-register-button").on('click', function(){
-        $.mobile.changePage("#start-page", { transition: "slidedown", changeHash: false });
-        $("#available-systems").prepend('<a data-position-to="window" \
-                    class= "device ui-mini ui-btn ui-btn-inline" \
-                    data-transition="pop" > New Device</a >');
-    });
+    // $("#submit-register-button").on('click', function(){
+    //     $.mobile.changePage("#start-page", { transition: "slidedown", changeHash: false });
+    //     $("#available-systems").prepend('<a data-position-to="window" \
+    //                 class= "device ui-mini ui-btn ui-btn-inline" \
+    //                 data-transition="pop" > New Device</a >');
+    // });
 
     $(document).on('click', ".device", function () {
         $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
@@ -208,16 +314,6 @@ function setScreen(device) {
         });
         rid++;
     }
-}
-
-
-
-function f2c(far) {
-    var stepval = far - 45;
-    stepval = stepval.toFixed(0);
-    var hstepval = Math.floor(stepval / 2);
-    var cval = stepval % 2 ? 8.1 + hstepval * 1.1 : 7.6 + hstepval * 1.1;
-    return cval.toFixed(1);
 }
 
 String.prototype.capitalize = function () {
