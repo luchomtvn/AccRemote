@@ -8,20 +8,18 @@ var CHARACTERISTIC_UUID_READ = "00002a6f-0000-1000-8000-00805f9b34fb";
  */
 
 var BluetoothScanner = PClass.create({
-    init: function (dry_run) {
+    init: function (append_list, dry_run) {
         this.devices = [];
-        this.class_found = "found_devices";
-        this.dry_run = dry_run ? dry_run : false;
+        this.class_found = "found-devices";
+        this.dry_run = dry_run;
+        this.append_list = append_list;
     },
     scannedDevices: function () {
         return this.devices;
     },
-    addDevice: function (name, id) {
-        this.devices.push({ name: name, id: id });
-    },
-    startScan: function (append_list) {
+    startScan: function () {
         var self = this;
-        if(!this.dry_run){
+        if (!this.dry_run) {
             ble.isEnabled(function () {
                 console.log("bluetooth enabled");
             }, function () {
@@ -29,21 +27,32 @@ var BluetoothScanner = PClass.create({
             });
             ble.startScan([], function (device) {
                 if (/Acc/.exec(device.name) !== null) {
-                    self.addDevice(device.name, device.id);
-                    if (append_list){
-                        append_list.append(`<li> <a class="${this.class_found} ui-btn ui-btn-icon-right ui-icon-carat-r">${device.name}</a> </li>`);
+                    self.devices.push({ name: name, id: id });
+                    if (self.append_list) {
+                        self.append_list.append(`<li> <a class="${this.class_found} ui-btn ui-btn-icon-right ui-icon-carat-r">${device.name}</a> </li>`);
                     }
                 }
             });
         }
-        else{
-            append_list.append(`<li> <a class="${this.class_found} ui-btn ui-btn-icon-right ui-icon-carat-r">DryDevice</a> </li>`);
-            self.addDevice("DryDevice", "dry_device");
+        else {
+            if(this.append_list)
+                this.append_list.append(`<li> <a class="${this.class_found} ui-btn ui-btn-icon-right ui-icon-carat-r">DryDevice</a> </li>`);
+            this.devices.push({ name: "AccDryDevice", id: "dry_device_id" });
         }
     },
     stopScan: function () {
         ble.stopScan;
         console.log("Scan Stopped");
+    },
+    get_id: function (name) {
+        for (var i = 0; i < this.devices.length; i++) {
+            if (this.devices[i].name == name) {
+                console.log(`returning id for ${name}`);
+                return this.devices[i].id;
+            }
+        }
+        console.error(`Did not return id. ${name} was not found in scanner result list`)
+        return undefined;
     }
 });
 /**
@@ -79,45 +88,35 @@ var DeviceBluetooth = ConnectionInterface.extend({
         this.connect_message = "Hello from ACC Control remote application"
         this.connected_id = "";
         this.recieved_data = "";
-        this.dry_run = dry_run ? dry_run : false;
+        this.dry_run = dry_run;
     },
-    connect: function (name, devices) {
-        console.log("Attempting connection to " + name);
-        var id = "";
-        if(!this.dry_run){
-            for (var i = 0; i < devices.length; i++) {
-                if (devices[i].name == name) {
-                    id = devices[i].id;
-                    console.log("device was found in scanning");
-                }
-            }
-            if (id == "") { console.log("DEVICE NAME WASN'T SCANNED: "); }
-        }
-        else{
-            id = "dry_device";
-        }
+    connect: function (device_id) {
         let self = this;
-
-        if (!this.dry_run){
-            ble.connect(id, function (device) {
-                console.log("Connected to " + name);
-                self.connected = true;
-                self.connected_id = id;
-                ble.write(id,
-                    self.service_UUID,
-                    self.characteristic_UUID,
-                    stringToBytes(self.connect_message),
-                    function () { console.log("Sent message"); },
-                    function () { console.log("failed"); }
-                );
-            }, function () {
-                console.log("Disconnected from " + name);
-                alert("bluetooth disconnected");
-            });
-        }
+        if(this.connected)
+            console.log("already connected");
         else{
-            self.connected = true;
-            self.connected_id = id;
+            if (!this.dry_run) {
+                ble.connect(device_id, function (device) {
+                    console.log("Connected to " + name);
+                    self.connected = true;
+                    self.connected_id = device_id;
+                    ble.write(device_id,
+                        self.service_UUID,
+                        self.characteristic_UUID,
+                        stringToBytes(self.connect_message),
+                        function () { console.log("Sent message"); },
+                        function () { console.log("failed"); }
+                    );
+                }, function () {    
+                    console.log("Disconnected from " + name);
+                    alert("bluetooth disconnected");
+                });
+            }
+            else {
+                this.connected = true;
+                this.connected_id = device_id;
+                console.log(`connected to device id ${device_id} (dry run)`);
+            }
         }
     },
     sendMessage: function (message) {
@@ -188,6 +187,6 @@ var DeviceWebSocket = ConnectionInterface.extend({
 //     ConnectionInterface
 // }
 
-consoleLogReadCallback = function(data) {
+consoleLogReadCallback = function (data) {
     console.log("we have data: " + JSON.stringify(data));
 }

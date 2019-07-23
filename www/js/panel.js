@@ -2,20 +2,20 @@ var MAX_TEMP_FAR_SAUNA = 160;
 var MIN_TEMP_FAR_SAUNA = 50;
 var MAX_TEMP_CEL_SAUNA = 70.8;
 var MIN_TEMP_CEL_SAUNA = 10.3;
-var MAX_TEMP_FAR_SPA = 104;
-var MIN_TEMP_FAR_SPA = 45;
-var MAX_TEMP_CEL_SPA = 40;
-var MIN_TEMP_CEL_SPA = 7.6;
-var MAX_SESSION = 60;
-var MIN_SESSION = 10;
-var accDevicesIds = {};
+var MAX_TEMP_FAR_SPA   = 104;
+var MIN_TEMP_FAR_SPA   = 45;
+var MAX_TEMP_CEL_SPA   = 40;
+var MIN_TEMP_CEL_SPA   = 7.6;
+var MAX_SESSION        = 60;
+var MIN_SESSION        = 10;
+var accDevicesIds      = {};
 
 ControlElement = PClass.create({
     init: function (name, value, connection_interface) {
-        this.name = name;
-        this.value = value;
+        this.name                 = name;
+        this.value                = value;
         this.connection_interface = connection_interface;
-        this.jquery_obj = "";
+        this.jquery_obj           = "";
     },
     get_selector: function (svg) {
         throw new Error("Must be implemented");
@@ -82,12 +82,13 @@ Button = ControlElement.extend({
 Slider = ControlElement.extend({
     init: function (name, start_value, max, min, connection_interface) {
         this._super(name, 0, connection_interface);
-        this.max = max;
-        this.min = min;
-        this.start_value = start_value;
-        this.jquery_obj = $("#slider-" + this.name);
-        this.jquery_obj_2 = $("#slider-2-" + this.name);
+        this.max               = max;
+        this.min               = min;
+        this.start_value       = start_value;
+        this.jquery_obj        = $("#slider-" + this.name);
+        this.jquery_obj_2      = $("#slider-2-" + this.name);
         this.jquery_obj_submit = $("#submit-" + this.name);
+
         if (this.jquery_obj != undefined && this.jquery_obj_2 != undefined && this.jquery_obj_submit != undefined) {
             console.log("slider " + this.name + " linked to panel")
             this.jquery_obj.attr("min", this.min);
@@ -113,13 +114,13 @@ Slider = ControlElement.extend({
 SliderTemp = Slider.extend({
     init: function (name, start_value, maxF, minF, maxC, minC, connection_interface, flip_scale) {
         this._super(name, start_value, maxF, minF, connection_interface);
-        this.minF = minF;
-        this.maxF = maxF;
-        this.minC = minC;
-        this.maxC = maxC;
-        this.flip_scale = flip_scale;
+        this.minF         = minF;
+        this.maxF         = maxF;
+        this.minC         = minC;
+        this.maxC         = maxC;
+        this.flip_scale   = flip_scale;
         this.slider_label = $("#slider-label");
-        let self = this;
+        let self          = this;
         this.flip_scale.on("change", function () {
             var scale = this.value;
             var textslider = '';
@@ -163,31 +164,32 @@ SliderTemp = Slider.extend({
 });
 
 function f2c(far) {
-    var stepval = far - 45;
-    stepval = stepval.toFixed(0);
+    var stepval  = far - 45;
+        stepval  = stepval.toFixed(0);
     var hstepval = Math.floor(stepval / 2);
-    var cval = stepval % 2 ? 8.1 + hstepval * 1.1 : 7.6 + hstepval * 1.1;
+    var cval     = stepval % 2 ? 8.1 + hstepval * 1.1 : 7.6 + hstepval * 1.1;
     return cval.toFixed(1);
 }
 
 LedNotification = PClass.create({
     init: function (name) {
-        this.name = name;
+        this.name   = name;
         this.status = false;
     },
-    toggle: function () { this.status = this.status ? false : true; },
-    turnOn: function () { this.status = true; },
+    toggle : function () { this.status = this.status ? false : true; },
+    turnOn : function () { this.status = true; },
     turnOff: function () { this.status = false; }
 });
 
 TimeZoneSelector = PClass.create({
     init: function (name, form_class, submit, connection_interface) {
-        this.name = name;
+        this.name                 = name;
         this.connection_interface = connection_interface;
-        this.jquery_obj = $("#" + this.name)
-        this.form_class = $("." + form_class);
-        this.submit = $("#" + submit);
-        let self = this;
+        this.jquery_obj           = $("#" + this.name)
+        this.form_class           = $("." + form_class);
+        this.submit               = $("#" + submit);
+        let self                  = this;
+
         if (this.submit != undefined && this.form_class != undefined && this.jquery_obj != undefined) {
             this.submit.click(function () {
                 self.connection_interface.sendMessage(self.jquery_obj.val());
