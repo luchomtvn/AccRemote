@@ -15,11 +15,6 @@
             content="default-src * 'unsafe-inline' 'unsafe-eval' 'self' gap: data:;" />
 </head>
 <body>
-
-
-
-
-
     <div data-role="page" id="listed_devices" data-theme="a">
         <div data-role="header" data-position="fixed">
             <h1> AccRemote </h1>
@@ -29,7 +24,7 @@
             <h4> Welcome!</h4> 
             <p>This is the main dashboard for remote connecting and controlling your Spa and Sauna ACC controls.</p>
             <p>Choose a paired device below or add a new one.</p>
-            <div id="available-systems">
+            <div id="available-devices">
             </div>
             <hr>
             <div id="custom-border-radius" class="centered">
@@ -62,7 +57,7 @@
             <a id="button-start-stop-scan" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a">Start / Stop Scanning</a>
             <ul data-role="listview" data-inset="true" id="scan-result-list">
             </ul>
-            <a href="#registration-page" id="button-connect-to-device" class="ui-state-disabled ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a"
+            <a id="button-connect-to-device" class="ui-state-disabled ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a"
             data-transition="slideup">Connect to this device</a>
         </div>
         <div data-role="footer" class="ui-bar-a ui-footer" data-position="fixed">

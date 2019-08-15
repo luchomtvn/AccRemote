@@ -1,7 +1,8 @@
 var navigation = {
-    listed_devices: {
-        available_systems    : "available-systems",
-        button_add_new_device: "button-add-new-device"
+    available_devices: {
+        available_devices_list: "available-devices-list",
+        button_add_new_device : "button-add-new-device",
+        button_class          : "device_button"
     },
     connection_page: {
         scan_loader_animation   : "scan-loader-animation",
@@ -19,153 +20,156 @@ var navigation = {
     }
 }
 
-// ListedDevices = PClass.create({
-//     init: function () {
-//         this.available_sistems     = $("#" + navigation.start_page.available_systems);
-//         this.button_add_new_device = $("#" + navigation.start_page.button_add_new_device);
-//         this.button_class          = "device-button";
-//         this.added_devices         = [];
+var registration_data = {
+    device_name: "",
+    wifi_ssid: "",
+    wifi_passwd: "",
+    user_email: ""
+}
 
-//         $("." + this.button_class).on('click', function(){
-//             let button_name = this.innerHTML;
-//         });
-//     },
-//     add_device: function (name) {
-//         this.available_sistems.prepend(`<a data-position-to="window" class= "${this.button_class} device ui-mini ui-btn ui-btn-inline" \
-//                                     data-transition="pop">${name}</a>`);
-//         this.added_devices.push(name);
-//     }
+AvailableDevices = PClass.create({
+    init: function (available_devices) {
+        this.available_devices          = [];
 
-// });
-
-ConnectNewDevice = PClass.create({
-    init: function (bluetooth_scanner, bluetooth_device, registration, dry_run) {
-        this.bluetooth_scanner = bluetooth_scanner;
-        this.bluetooth_device  = bluetooth_device;
-        this.registration      = registration;
-        this.dry_run           = dry_run;
-        // this.object_id = $(`#${object_id}`);
-
-        this.scan_result_list      = $("#" + navigation.connection_page.scan_result_list);
-        this.scan_button           = $("#" + navigation.connection_page.button_start_stop_scan);
-        this.scan_loader_animation = $("#" + navigation.connection_page.scan_loader_animation);
-        this.connect_button        = $("#" + navigation.connection_page.button_connect_to_device);
-
-        this.scan_loader_animation.hide();
-        this.device_to_connect = "";
-        this.scanning = false;
         let self = this;
-
-        this.scan_button.on('click', function () {
-            if (self.scanning === false) {
-                self.scan_loader_animation.show();
-                self.scanning = true;
-                self.bluetooth_scanner.startScan(self.scan_result_list);
-            }
-            else {
-                self.scan_loader_animation.hide();
-                self.scanning = false;
-                self.bluetooth_scanner.stopScan();
-            }
+        $("." + navigation.available_devices_list.button_class).on('click', function(){
+            let button_name = this.innerHTML;
+        });
+        $("#" + navigation.available_devices_list.button_add_new_device).on('click', function() {
+            self.add_new_device()
         });
 
-        this.scan_result_list.on('click', 'li', function () {
-            self.connect_button.removeClass("ui-state-disabled");
-            self.device_to_connect = $(this).find("a").text();
-        });
-
-        this.connect_button.on('click', function () {
-            self.connect();
-        });
     },
-    connect: function() {
-        if (!this.dry_run){
-            this.bluetooth_device.connect(this.bluetooth_scanner.get_id(this.device_to_connect));
-            $.mobile.changePage(this.registration.page_id, { transition: "slidedown", changeHash: false });
-        }
-        this.registration.device_name = this.device_to_connect;
-    }
-})
-
-Registration = PClass.create({
-    init: function (connection_interface, device_name) {
-        this.connection_interface = connection_interface;
-        this.device_name          = "";
-        this.page_id              = "#" + navigation.registration_page.page_id;
-        this.submit_button        = $("#" + navigation.registration_page.submit_register_button);
-        this.ssid                 = ""; //$("#" + navigation.registration_page.ssid);
-        this.ssid_pass            = ""; //$("#" + navigation.registration_page.ssid_pw);
-        this.email                = ""; //$("#" + navigation.registration_page.email_address);
-        this.email_conf           = ""; //$("#" + navigation.registration_page.email_address_confirm);
-        this.reg_data             = {};
-        
-        let self = this;
-
-        this.submit_button.on('click', function () {
-            self.register();
-        });
-    },
-    register: function () {
-        if (!this.ssid || !this.ssid_pass || !this.email || !this.email_conf)
-            // alert("Please fill in all the fields");
-            return -1;
-        else if (this.email !== this.email_conf)
-            // alert("E-mails do not match");
-            return -2;
-        else {
-            // alert("Sending data to server");
-            this.reg_data = {
-                "ssid"      : this.ssid,
-                "ssid_pass" : this.ssid_pass,
-                "email"     : this.email,
-                "email_conf": this.email_conf,
-            }
-            this.connection_interface.sendMessage(JSON.stringify(this.reg_data));
-           // $.mobile.changePage("#start-page", { transition: "slidedown", changeHash: false });
-            // alert("Device registered!");
-            $("#available-systems").prepend(`<a data-position-to="window" \
-                class= "device ui-mini ui-btn ui-btn-inline" \
-                data-transition="pop" > ${self.device_name} </a >`);
-            return 0;
-        }
+    add_device: function (name) {
+        $("#" + navigation.available_devices_list.available_devices).prepend(`<a data-position-to="window" class= "${this.button_class} device ui-mini ui-btn ui-btn-inline" \
+                                    data-transition="pop">${name}</a>`);
+        this.added_devices.push(name);
     }
 });
 
-// var available_systems = new AvailableSystems(index_ids.available_systems);
-var connection = new Dry(); // for testing until tests are done
-var registration = new Registration(connection);
-var spaBluetoothConnection = new DeviceBluetooth(SERVICE_UUID, CHARACTERISTIC_UUID_READ, true);
-var scanner = new BluetoothScanner(true);
-var connect_window = new ConnectNewDevice(scanner, spaBluetoothConnection, registration.page_id);
+
+bt_module = new BluetoothModule(SERVICE_UUID, CHARACTERISTIC_UUID_READ);
+// ws_module = new WebSocketModule(SERVER_URL);
 
 window.onload = function () {
+    
+    // globals.dry_run = false;
+    // all the "frontend" processes driven by events such as clicks and callbacks
 
+    //Click Events
+    
+    //Add new device
+    $('#button-add-new-device').on('click', function () {
+    $.mobile.changePage("#connection-page", { transition: "slidedown", changeHash: false });
+    $("#scan-loader-animation").hide();
+
+    });
+
+    $('#button-start-stop-scan').on('click', function() {
+        if (bt_module.scanner.status) { // scanning
+            bt_module.stopScan();
+            $("#scan-loader-animation").hide();
+        }
+        else{ // not scanning
+            if (bt_module.connection.status){ //connected
+                if(confirm('Bluetooth is already connected, press OK to disconnect')){
+                    bt_module.disconnect();
+                }
+            }
+            else{ // bt not connected  // TODO: SHOULD CHECK IF BLUETOOTH IS ON
+                // if (!bt_module.readyToScan())
+                // alert("Please turn on Bluetooth on mobile device");
+                // else { // bluetooth ON
+                bt_module.startScan(function (device) {
+                    if (/Acc/.exec(device.name) !== null) {
+                        bt_module.add_scanned_device(device.name, device.id);
+                        $("#scan-result-list").append(
+                            `<li> <a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">${device.name}</a> </li>`);
+                    }
+                });
+                $("#scan-loader-animation").show();
+                // }
+            }
+        }
+    });
+    var device_to_connect;
+
+    $("#scan-result-list").on('click', 'li', function () {
+        $("#button-connect-to-device").removeClass("ui-state-disabled");
+        registration_data.device_name = $(this).find("a").text();
+    });
+
+    $('#button-connect-to-device').on('click', function() {
+        device_id = bt_module.get_id(registration_data.device_name);
+        console.log("Connecting...");
+        bt_module.connect(registration_data.device_name, function () {
+            bt_module.connection.status = true;
+            bt_module.connection.id = device_id;
+            console.log("Connected to device id " + device_id);
+            alert("Connected!");
+            $.mobile.changePage("#registration-page", {transition: "slidedown",changeHash: false});
+            ble.write(device_id,
+                bt_module.connection.service_UUID,
+                bt_module.connection.characteristic_UUID,
+                stringToBytes("AccControl connected"),
+                function () {
+                    console.log("Sent message");
+                },
+                function () {
+                    console.log("failed");
+                }
+            );
+        });
+    });
+
+
+    $('#button-submit-register-button').on('click', function() {
+        if (!$("#ssid").val() || !$("#ssid_pw").val() || 
+            !$("#email_address").val() || !$("#email_address_confirm").val())
+            alert("Please fill in all the fields");
+        else if ($("#email_address").val() !== $("#email_address_confirm").val())
+            alert("E-mails do not match");
+        else {
+            // alert("Sending data to server");
+            registration_data.wifi_ssid = $('#ssid').val();
+            registration_data.wifi_passwd = $('#ssid_pw').val();
+            registration_data.user_email = $('#email_address').val();
+
+            ws_module.sendJson(registration_data);
+            // $.mobile.changePage("#start-page", { transition: "slidedown", changeHash: false });
+            // alert("Device registered!");
+            $("#available-devices").prepend(`<a data-position-to="window" \
+                class= "device ui-mini ui-btn ui-btn-inline" \
+                data-transition="pop" > ${self.device_name} </a >`);
+        }
+
+    });
 
 
     document.getElementById('canvas').innerHTML = window.frames["spa"];
     // $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
 
 
-    var button_system  = new Button("system", "s0", connection);
-    var button_light   = new Button("light", "l0", connection);
-    var slider_session = new Slider("session", 10, MAX_SESSION, MIN_SESSION, connection);
+    var button_system  = new Button("system", "s0", bt_module);
+    var button_light   = new Button("light", "l0", bt_module);
+    var slider_session = new Slider("session", 10, MAX_SESSION, MIN_SESSION, bt_module);
     var slider_temp    = new SliderTemp("temp",
                                         50,
                                         MAX_TEMP_FAR_SPA,
                                         MIN_TEMP_FAR_SPA,
                                         MAX_TEMP_CEL_SPA,
                                         MIN_TEMP_CEL_SPA,
-                                        connection,
+                                        bt_module,
                                         $("#flip-scale"));
     slider_session.set_change_function();
     slider_temp.set_change_function();
 
-    new TimeZoneSelector("time-zone-selector", "form-timezones", "submit-time-zone", connection);
+    new TimeZoneSelector("time-zone-selector", "form-timezones", "submit-time-zone", bt_module);
 
-    $(document).on('click', ".device", function () {
-        $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
-        setScreen("spa");
-    });
+    // $(document).on('click', ".device", function () {
+    //     $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
+    //     setScreen("spa");
+    // });
 
 
 }
