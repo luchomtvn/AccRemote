@@ -1,6 +1,7 @@
 var SERVICE_UUID             = "0000181c-0000-1000-8000-00805f9b34fb";
 var CHARACTERISTIC_UUID_READ = "00002a6f-0000-1000-8000-00805f9b34fb";
 
+globals.dry_run = true;
 var test_ci = new Dry();
 
 describe('Tests', function () {
@@ -19,61 +20,81 @@ describe('Tests', function () {
             chai.assert(test_but2.jquery_obj.is($(`#${expected_selector}`)));
         });
     });
-    describe('Connection Dry run tests', function() {
-        scanner = new BluetoothScanner(undefined, true);
-        scanner.startScan();
-        it(`Should have scanned a dry_run device`, function() {
-            chai.assert(scanner.devices[0].name === "AccDryDevice")
-            chai.assert(scanner.devices[0].id === "dry_device_id")
+
+
+    describe('Register a new device', function() {
+        bt_module = new BluetoothModule(SERVICE_UUID, //service
+                                        CHARACTERISTIC_UUID_READ, //characteristic
+                                        );
+                                        
+        it(`Ready to scan`, function() {
+            chai.assert(bt_module.readyToScan());
+        });
+        it(`Should scan and find TEST_DEVICE_1`, function() {
+            bt_module.startScan();
+            let found = false;
+            bt_module.scanner.found_devices.forEach(function(element) {
+                if (JSON.stringify(element) === '{"name":"TEST_DEVICE_1","id":"12345"}') {
+                    found = true;
+                }
+            });
+            chai.assert(found);
         });
         it(`Should find the device in scanner devices array with get_id`, function() {
-            chai.assert(scanner.get_id("AccDryDevice") === "dry_device_id");
+            chai.assert(bt_module.get_id("TEST_DEVICE_1") === "12345");
         });
-    });
-    describe('Device Bluetooth creation', function () {
-        device_bt = new DeviceBluetooth(SERVICE_UUID , CHARACTERISTIC_UUID_READ, true);
-        it(`Should be disconnected upon creation`, function () {
-            chai.assert.isFalse(device_bt.connected);
+        it(`Should connect to TEST_DEVICE_1`, function () {
+            bt_module.connect("TEST_DEVICE_1");    // uses get_id to connect, in real case, parameter is obtained from html
+            chai.assert.isTrue(bt_module.connection.status);
+            chai.assert(bt_module.connection.id === "12345");
         });
-        it(`Should be connected to dry_run`, function () {
-            device_bt.connect(scanner.devices[0].id);
-            chai.assert.isTrue(device_bt.connected);
-            chai.assert(device_bt.connected_id === scanner.devices[0].id);
-        });
-    });
-    describe('User registration', function() {
-        registration                         = new Registration(test_ci, scanner.devices[0].name)
-        connect_new_device                   = new ConnectNewDevice(scanner, device_bt, registration, true);
-        it(`should be ready to register a new device`, function() {
-            connect_new_device.device_to_connect = scanner.devices[0].name;
-            connect_new_device.connect();
-            chai.assert(registration.device_name === scanner.devices[0].name);
-        })
 
-        it(`should not register given that password was not entered`, function() {
-            registration.ssid     = "MLM";
-            registration.email    = "lucianomanto@gmail.com";
-            expect(registration.register()).to.equal(-1);
-            expect(registration.reg_data).to.eql({});
-        });   
-        it(`should not register given that email confirmation is not right`, function () {
-            registration.ssid_pass  = "12365390aa";
-            registration.email_conf = "lucianomantooo@gmail.com";
-            expect(registration.register()).to.equal(-2);
-            expect(registration.reg_data).to.eql({});
-        });   
-        it(`should register data`, function () {
-            registration.email_conf = "lucianomanto@gmail.com";
-            expect(registration.register()).to.equal(0);
-            expect(registration.reg_data).to.eql({
-                    "ssid"      : "MLM",
-                    "ssid_pass" : "12365390aa",
-                    "email"     : "lucianomanto@gmail.com",
-                    "email_conf": "lucianomanto@gmail.com"
-            });
-        });
+        // ws_module = new DeviceWebSocket("ws://127.0.0.1:5555");
+        // it(`Should get registration information from user`, function () {
+        //     // connect via ws to server, send data, recieve confirmation.
+
+
+        // });        
     });
+
+
+    // describe('this is wrong', function() {
+    //     // registration        = new Registration(test_ci, scanner.devices[0].name)
+    //     // connect_new_device  = new ConnectNewDevice(scanner, device_bt, registration, true);
+    //     bt_module = new BluetoothModule(SERVICE_UUID, //service
+    //                                     CHARACTERISTIC_UUID_READ, //characteristic
+    //                                     );
+    //     it(`should scan for new devices and find one`, function() {
+
+    //         connect_new_device.device_to_connect = scanner.devices[0].name;
+    //         connect_new_device.connect();
+    //         chai.assert(registration.device_name === scanner.devices[0].name);
+    //     })
+
+    //     it(`should not register given that password was not entered`, function() {
+    //         registration.ssid     = "MLM";
+    //         registration.email    = "lucianomanto@gmail.com";
+    //         expect(registration.register()).to.equal(-1);
+    //         expect(registration.reg_data).to.eql({});
+    //     });   
+    //     it(`should not register given that email confirmation is not right`, function () {
+    //         registration.ssid_pass  = "12365390aa";
+    //         registration.email_conf = "lucianomantooo@gmail.com";
+    //         expect(registration.register()).to.equal(-2);
+    //         expect(registration.reg_data).to.eql({});
+    //     });   
+    //     it(`should register data`, function () {
+    //         registration.email_conf = "lucianomanto@gmail.com";
+    //         expect(registration.register()).to.equal(0);
+    //         expect(registration.reg_data).to.eql({
+    //                 "ssid"      : "MLM",
+    //                 "ssid_pass" : "12365390aa",
+    //                 "email"     : "lucianomanto@gmail.com",
+    //                 "email_conf": "lucianomanto@gmail.com"
+    //         });
+    //     });
+    // });
     describe('Adding usable device', function() {
-        
+
     });
 });
