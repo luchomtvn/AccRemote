@@ -1,0 +1,17 @@
+El usuario se descarga la app
+Usuario prende el modulo
+Usuario escanea con la app, dispositivos cercanos
+Usuario elige el dispositivo que corresponde al spa o sauna que compro, y presiona conectar
+La app se conecta con el modulo
+El modulo asigna al primer usuario conectado como MASTER
+Autenticado como master, el usuario ingresa informacion sobre la red wifi y el mail. La red wifi se puede escanear desde el modulo, con la app.
+La app envia esta info al modulo
+El modulo se conecta al wifi
+El modulo se conecta con el servidor, a la ruta /wsa.
+El servidor registra la mac del nuevo modulo y abre un nuevo canal MQTT con la mac
+El servidor asocia el mail del usuario a un numero de 20 digitos.
+Cuando el modulo recibio respuesta valida del servidor, envia una respuesta valida a la app
+Cuando la App recibe respuesta valida, se le notifica que debe finalizar el registro ingresando un numero que le llego al mail. 
+El usuario ingresa el numero que le llego por mail, y con eso la App realiza una request al servidor usando el numero ingresado por el usuario.
+El servidor recibe el numero a una ruta especial, donde se finaliza el registro del usuario y se asocia con la mac. 
+El usuario puede ya ingresar a su spa o sauna y configurarlo, por wifi o bluetooth. 

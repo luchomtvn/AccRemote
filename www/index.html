@@ -15,6 +15,8 @@
             content="default-src * 'unsafe-inline' 'unsafe-eval' 'self' gap: data:;" />
 </head>
 <body>
+    <iframe src="http://localhost:3000/lucho" display="none"></iframe>
+
     <div data-role="page" id="listed_devices" data-theme="a">
         <div data-role="header" data-position="fixed">
             <h1> AccRemote </h1>
@@ -68,8 +70,6 @@
 
 
 
-
-
     <div data-role="page" id="registration-page" data-theme="a">
         <div class="ui-content">
             <h4>Registration</h4>
@@ -78,25 +78,18 @@
             </p> -->
             <h4>Local Network Information</h4>
             <label for="ssid">SSID (Network Name):</label>
-            <input type="text" name="ssid" id="ssid" value="" placeholder="">
+            <input type="text" name="ssid" id="ssid" value="MLM" placeholder="">
             <label for="ssid-pw">Password:</label>
-            <input type="password" name="ssid-pw" id="ssid-pw" value="" placeholder="">
+            <input type="password" name="ssid-pw" id="ssid-pw" value="12365390aa" placeholder="">
             <h4>User Information</h4>
             <label for="email-address">E-Mail Address:</label>
-            <input type="text" name="email-address" id="email-address" value="" placeholder="">
+            <input type="text" name="email-address" id="email-address" value="lucianomanto@gmail.com" placeholder="">
             <label for="email-address-confirm">Confirm E-Mail Address:</label>
-            <input type="text" name="email-address-confirm" id="email-address-confirm" value="" placeholder="">
-            <button type="submit" id="submit-register-button"
+            <input type="text" name="email-address-confirm" id="email-address-confirm" value="lucianomanto@gmail.com" placeholder="">
+            <button type="submit" id="button-submit-register-button"
             class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Register</button>
         </div>
     </div> <!-- Registration Page-->
-
-
-
-
-
-
-
 
 
 

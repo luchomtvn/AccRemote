@@ -49,7 +49,7 @@ AvailableDevices = PClass.create({
 
 
 bt_module = new BluetoothModule(SERVICE_UUID, CHARACTERISTIC_UUID_READ);
-// ws_module = new WebSocketModule(SERVER_URL);
+ws_module = new WebSocketModule(SERVER_URL, true);
 
 window.onload = function () {
     
@@ -116,33 +116,44 @@ window.onload = function () {
                     console.log("Sent message");
                 },
                 function () {
-                    console.log("failed");
+                    console.log("Disconnected");
                 }
             );
+            bt_module.listenNotifications();
         });
     });
 
 
     $('#button-submit-register-button').on('click', function() {
-        if (!$("#ssid").val() || !$("#ssid_pw").val() || 
-            !$("#email_address").val() || !$("#email_address_confirm").val())
+        if (!$("#ssid").val() || !$("#ssid-pw").val() || 
+            !$("#email-address").val() || !$("#email-address-confirm").val())
             alert("Please fill in all the fields");
-        else if ($("#email_address").val() !== $("#email_address_confirm").val())
+        else if ($("#email-address").val() !== $("#email-address-confirm").val())
             alert("E-mails do not match");
         else {
             // alert("Sending data to server");
             registration_data.wifi_ssid = $('#ssid').val();
-            registration_data.wifi_passwd = $('#ssid_pw').val();
-            registration_data.user_email = $('#email_address').val();
+            registration_data.wifi_passwd = $('#ssid-pw').val();
+            registration_data.user_email = $('#email-address').val();
 
-            ws_module.sendJson(registration_data);
-            // $.mobile.changePage("#start-page", { transition: "slidedown", changeHash: false });
+            bt_module.sendJson(registration_data);
+            bt_module.setReadCallback(function(data) {
+                console.log(String.fromCharCode.apply(null, new Uint8Array(data)));
+                alert(data);
+            });
+            bt_module.listenNotifications();
+            // $.mobile.changePage("#listed_devices", { transition: "slidedown", changeHash: false });
             // alert("Device registered!");
-            $("#available-devices").prepend(`<a data-position-to="window" \
-                class= "device ui-mini ui-btn ui-btn-inline" \
-                data-transition="pop" > ${self.device_name} </a >`);
+            // $("#available-devices").prepend(`<a data-position-to="window" \
+            //     class= "device ui-mini ui-btn ui-btn-inline" \
+            //     data-transition="pop" > ${registration_data.device_name} </a >`);
         }
 
+    });
+
+    $('.device').on('click', function() {
+        // try to connect to device via wi-fi, then change to panel-view
+        $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
     });
 
 
