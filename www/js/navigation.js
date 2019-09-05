@@ -102,24 +102,18 @@ window.onload = function () {
     $('#button-connect-to-device').on('click', function() {
         device_id = bt_module.get_id(registration_data.device_name);
         console.log("Connecting...");
-        bt_module.connect(registration_data.device_name, function () {
+        bt_module.connect(registration_data.device_name, 
+        function () {
             bt_module.connection.status = true;
             bt_module.connection.id = device_id;
             console.log("Connected to device id " + device_id);
             alert("Connected!");
             $.mobile.changePage("#registration-page", {transition: "slidedown",changeHash: false});
-            ble.write(device_id,
-                bt_module.connection.service_UUID,
-                bt_module.connection.characteristic_UUID,
-                stringToBytes("AccControl connected"),
-                function () {
-                    console.log("Sent message");
-                },
-                function () {
-                    console.log("Disconnected");
-                }
-            );
-            bt_module.listenNotifications();
+        }, 
+        function () {
+            console.log("Disconnected from " + device_id);
+            alert("bluetooth disconnected");
+            $.mobile.changePage("#connection-page", { transition: "slidedown", changeHash: false });
         });
     });
 
@@ -136,12 +130,60 @@ window.onload = function () {
             registration_data.wifi_passwd = $('#ssid-pw').val();
             registration_data.user_email = $('#email-address').val();
 
-            bt_module.sendJson(registration_data);
-            bt_module.setReadCallback(function(data) {
-                console.log(String.fromCharCode.apply(null, new Uint8Array(data)));
-                alert(data);
-            });
-            bt_module.listenNotifications();
+            bt_module.sendJson(registration_data, CHARACTERISTIC_UUID_READ);
+
+            // poll response
+            let clear_error_value = function() {
+                ble.write(bt_module.connection.id, SERVICE_UUID, CHARACTERISTIC_UUID_ERROR, 0, function (){},
+                function(){console.log("couldn't write")});
+            }
+            let continue_interval = true;
+            let read_value = function (data) {
+                let value = String.fromCharCode.apply(null, new Uint8Array(data));
+                    if (value === "1") { // expected behaviour
+                        console.log("Spa Registered Correctly");
+                        alert("Spa Registered Correctly");
+                        clear_error_value();
+                        continue_interval = false;
+                    }
+                    else if (value === "2") { // wifi problem
+                        console.log("Can't connect to WiFi");
+                        alert("Could not connect to WiFi")
+                        clear_error_value();
+                        continue_interval = false;
+                    }
+                    else if (value === "3") { // server problem
+                        console.log("Can't connect to Server");
+                        alert("Can't connect to Server");
+                        clear_error_value();
+                        continue_interval = false;
+                    }
+                    else if (poll_timeout === 0) {
+                        alert("Timeout waiting for spa to connect to wiFi");
+                        console.log("Timeout waiting for spa to connect to wiFi");
+                        clear_error_value();
+                        continue_interval = false;
+                    }
+            };
+            let read_value_error = function() {
+                console.log("Couldn't read value from error characteristic");
+            };
+            let timeout = 100;
+            let poll_response = setInterval(() => {
+                if(continue_interval){
+                    ble.read(bt_module.connection.id, SERVICE_UUID, CHARACTERISTIC_UUID_ERROR, read_value, read_value_error);
+                    timeout --;
+                    if(timeout == 0){
+                        clearInterval(poll_response);
+                        timeout = 100;
+                    } 
+                }
+                else{
+                    clearInterval(poll_response);
+                }
+            }, 500);
+            
+
             // $.mobile.changePage("#listed_devices", { transition: "slidedown", changeHash: false });
             // alert("Device registered!");
             // $("#available-devices").prepend(`<a data-position-to="window" \

@@ -1,6 +1,6 @@
 var SERVICE_UUID = "0000181c-0000-1000-8000-00805f9b34fb";
 var CHARACTERISTIC_UUID_READ = "00002a6f-0000-1000-8000-00805f9b34fb";
-var CHARACTERISTIC_UUID_TEST = "0000a1a1-0000-1000-8000-00805f9b34fb";
+var CHARACTERISTIC_UUID_ERROR = "0000a1a1-0000-1000-8000-00805f9b34fb";
 var SERVER_URL = "ws://127.0.0.1:5555";
 
 var globals = {
@@ -21,7 +21,7 @@ var ConnectionInterface = PClass.create({
     sendMessage: function (message) {
         throw new Error("Must be implemented");
     },
-    setReadCallback: function (funct) {
+    readValue: function (funct) {
         throw new Error("Must be implemented");
     }
 });
@@ -44,14 +44,15 @@ var BluetoothModule = ConnectionInterface.extend({
             id                 : "",
             data               : {},
             service_UUID       : service_uuid,
-            characteristic_UUID: characteristic_uuid
+            characteristic_UUID: characteristic_uuid,
+            value              : ""
         }
     },
     readyToScan: function() {
         let ready;
         if(globals.dry_run) return true;
         else{
-            bluetoothle.isEnabled(function () {
+            ble.isEnabled(function () {
                 ready = true;
             },
             function(){
@@ -63,13 +64,13 @@ var BluetoothModule = ConnectionInterface.extend({
     startScan: function (callback) {
         let self = this;
         if (!globals.dry_run) {
-            bluetoothle.isEnabled(function () {  // isEnabled is for android only
+            ble.isEnabled(function () {  // isEnabled is for android only
                 console.log("bluetooth enabled");
             }, function () {
                 console.log("bluetooth disabled");
             });
             self.scanner.status = true;
-            bluetoothle.startScan([], callback);
+            ble.startScan([], callback);
         }
         else {
             self.add_scanned_device("TEST_DEVICE_1", "12345");
@@ -90,7 +91,7 @@ var BluetoothModule = ConnectionInterface.extend({
     },
     stopScan: function () {
         if(!globals.dry_run)
-            bluetoothle.stopScan;
+            ble.stopScan;
         console.log("Scan Stopped");
         this.scanner.status = false;
     },
@@ -104,17 +105,14 @@ var BluetoothModule = ConnectionInterface.extend({
         console.error(`Did not return id. ${name} was not found in scanner result list`)
         return undefined;
     },
-    connect: function (device_name, connection_callback) {
+    connect: function (device_name, success, failure) {
         if (this.connected)
         console.log("already connected");
         else {
             let device_id = this.get_id(device_name);
             if (!globals.dry_run) {
                 let self = this;
-                bluetoothle.connect(device_id, connection_callback, function () {
-                    console.log("Disconnected from " + device_id);
-                    alert("bluetooth disconnected");
-                });
+                ble.connect(device_id, success, failure);
             } else {
                 this.connection.status = true;
                 this.connection.id = device_id;
@@ -124,7 +122,7 @@ var BluetoothModule = ConnectionInterface.extend({
     },
     disconnect: function() {
         let self = this;
-        bluetoothle.disconnect(this.connection.id, function(){
+        ble.disconnect(this.connection.id, function(){
             self.connection.status = false;
             self.connection.id = "";
             self.connection.service_UUID = "";
@@ -135,12 +133,14 @@ var BluetoothModule = ConnectionInterface.extend({
     },
     sendMessage: function (message) {
         if(this.connection.status){
-            bluetoothle.write(this.connection.id,
+            let self = this;
+            ble.write(this.connection.id,
                 this.connection.service_UUID,
                 this.connection.characteristic_UUID,
                 stringToBytes(message),
                 function () {
                     console.log("Sent: '" + message + "'");
+                    self.connection.value = message;
                 },
                 function () {
                     console.log("Couldn't send message");
@@ -152,12 +152,14 @@ var BluetoothModule = ConnectionInterface.extend({
     },
     sendMessageChar: function (message, characteristic) {
         if(this.connection.status){
-            bluetoothle.write(this.connection.id,
+            let self = this;
+            ble.write(this.connection.id,
                 this.connection.service_UUID,
                 characteristic,
                 stringToBytes(message),
                 function () {
                     console.log("Sent: '" + message + "'");
+                    self.connection.value = message;
                 },
                 function () {
                     console.log("Couldn't send message");
@@ -167,14 +169,16 @@ var BluetoothModule = ConnectionInterface.extend({
         else
             console.error("Device isn't connected");
     },
-    sendJson: function(json_message){
+    sendJson: function(json_message, characteristic){
         if (this.connection.status) {
-            bluetoothle.write(this.connection.id,
+            let self = this;
+            ble.write(this.connection.id,
                 this.connection.service_UUID,
-                this.connection.characteristic_UUID,
+                characteristic,
                 stringToBytes(JSON.stringify(json_message)),
                 function () {
                     console.log("Sent: '" + json_message + "'");
+                    self.connection.value = json_message;
                 },
                 function () {
                     console.log("Couldn't send message");
@@ -184,13 +188,18 @@ var BluetoothModule = ConnectionInterface.extend({
         else
             console.error("Device isn't connected");
     },
-    setReadCallback: function (fnct) {
+    readValue: function (characteristic) {
         if(this.connection.status){
             let self = this;
-            bluetoothle.read(this.connection.id,
+            this.connection.value = 0;
+            ble.read(this.connection.id,
                 this.connection.service_UUID,
-                this.connection.characteristic_UUID,
-                fnct,
+                characteristic,
+                function (data) {
+                    self.connection.value = String.fromCharCode.apply(null, new Uint8Array(data));
+                    console.log("recieved on bt: " + self.connection.value);
+                    // alert(data);
+                },
                 function (failure) {
                     console.log("Not recieving from custom callback in characteristic: " + self.characteristic_UUID);
                 }
@@ -201,7 +210,7 @@ var BluetoothModule = ConnectionInterface.extend({
     },
     listenNotifications: function() {
         let self = this;
-        bluetoothle.startNotification(this.connected_id,
+        ble.startNotification(this.connected_id,
             this.connection.service_UUID,
             this.connection.characteristic_UUID,
             function (data) {

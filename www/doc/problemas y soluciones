@@ -1,0 +1,6 @@
+Problemas con plugins!!
+
+Hay una lista limitada de plugins instalados en la Phonegap Developer App. Dentro de esta lista esta ble, pero no esta bluetoothble. Estoy limitado a usar ble para phonegap developer app. Estoy limitado a usar todos los plugin ya bundleados en la app porque no se bajan de otra manera que no sea buildeando todo y bajando la aplicacion entera.
+
+Problemas con el tamaño de la memoria en el esp32
+Con las librerias de wifi y bluetooth y http se cubre el tamaño maximo segun el esquema de particiones default, entonces tuve que generar un archivo nuevo de esquema de particiones que encontre por internet, y asignarselo a un programa para un modulo nuevo, que en vez de llamarse firebeetle-esp32 se llama firebeetle-esp32-MAX. Dentro de los archivos de arduino estan los esquemas de particiones que usa la ide. Dentro del repositorio del proyecto de arduino estan los esquemas default de particiones y ademas el nuevo que es el que usa mas memoria y permite que el programa entre entero. 
