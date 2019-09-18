@@ -6,7 +6,7 @@ import json
 
 parser = argparse.ArgumentParser(description='Modifies load_frames.js file and loads formatted svgs for app to read. \
                                             Requires files "www/svg/id_frame_sauna" and "www/svg/id_frame_spa"')
-parser.add_argument('type', choices=['sauna', 'spa'])
+parser.add_argument('type', choices=['sauna', 'spa', 'sauna_bluetooth', 'spa_bluetooth'])
 parser.add_argument('--dry-run', action='store_true')
 args = parser.parse_args()
 
@@ -15,7 +15,7 @@ args = parser.parse_args()
 cwd = os.path.abspath(os.path.dirname(__file__))
 
 svgrelpath = '../www/svg/frame_' + args.type + '.svg'
-loadframespath = '../www/js/load_frames.js'
+loadframespath = '../www/js/constants/load_frames.js'
 
 svgfile = os.path.join(cwd, svgrelpath)
 loadframesfile = os.path.join(cwd, loadframespath)
@@ -27,9 +27,9 @@ fs.close()
 
 fj = open(loadframesfile, "r")
 frames_json_raw = fj.read()
+fj.close()
 frames_dict = json.loads(frames_json_raw.split(" = ",1)[1])
 frames_dict[args.type] = svgraw
-fj.close()
 
 #save into file
 if not args.dry_run:
