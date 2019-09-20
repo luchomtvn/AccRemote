@@ -27,17 +27,17 @@ Button = ControlElement.extend({
         this._super(name, value, connection_interface);
         this.on_style = "";
         this.jquery_obj = "";
-        // if (this.get_selector()) {
-        //     console.log("button " + this.name + " linked to panel");
-        //     this.on_style = this.jquery_obj.attr("style");
-        //     this.style_frame();
-        //     this.click_event();
-        // }
-        // else
-        // console.log("created button without graphic bind, clicking will have no effect");
+        if (this.get_selector()) {
+            console.log("button " + this.name + " linked to panel");
+            this.on_style = this.jquery_obj.attr("style");
+            this.style_frame();
+            this.click_event();
+        }
+        else
+        console.log("button " + this.name + " UNLINKED");
     },
     get_selector: function (selector_str) {
-            this.jquery_obj = $('#' + selector_str);
+            this.jquery_obj = $("#button-" + selector_str + "-frame");
     },
     click_event: function () {
         let self = this;

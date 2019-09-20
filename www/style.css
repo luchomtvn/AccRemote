@@ -1,3 +1,17 @@
+.my-button {
+    /* font-size: smaller; */
+    margin-top: 7%;
+}
+
+#main-actions {
+    width: min-content;
+    display: inline-block;
+}
+
+.centered-container {
+    text-align: center;
+}
+
 .registration-popup {
     width: 92.5%;
 	max-width: 500px;
