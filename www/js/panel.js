@@ -1,13 +1,13 @@
-var MAX_TEMP_FAR_SAUNA = 160;
-var MIN_TEMP_FAR_SAUNA = 50;
-var MAX_TEMP_CEL_SAUNA = 70.8;
-var MIN_TEMP_CEL_SAUNA = 10.3;
-var MAX_TEMP_FAR_SPA   = 104;
-var MIN_TEMP_FAR_SPA   = 45;
-var MAX_TEMP_CEL_SPA   = 40;
-var MIN_TEMP_CEL_SPA   = 7.6;
-var MAX_SESSION        = 60;
-var MIN_SESSION        = 10;
+// var MAX_TEMP_FAR_SAUNA = 160;
+// var MIN_TEMP_FAR_SAUNA = 50;
+// var MAX_TEMP_CEL_SAUNA = 70.8;
+// var MIN_TEMP_CEL_SAUNA = 10.3;
+// var MAX_TEMP_FAR_SPA   = 104;
+// var MIN_TEMP_FAR_SPA   = 45;
+// var MAX_TEMP_CEL_SPA   = 40;
+// var MIN_TEMP_CEL_SPA   = 7.6;
+// var MAX_SESSION        = 60;
+// var MIN_SESSION        = 10;
 var accDevicesIds      = {};
 
 ControlElement = PClass.create({

@@ -1,3 +1,16 @@
+// var MAX_TEMP_FAR_SAUNA = 160;
+// var MIN_TEMP_FAR_SAUNA = 50;
+// var MAX_TEMP_CEL_SAUNA = 70.8;
+// var MIN_TEMP_CEL_SAUNA = 10.3;
+// var MAX_TEMP_FAR_SPA = 104;
+// var MIN_TEMP_FAR_SPA = 45;
+// var MAX_TEMP_CEL_SPA = 40;
+// var MIN_TEMP_CEL_SPA = 7.6;
+// var MAX_SESSION = 60;
+// var MIN_SESSION = 10;
+
+
+
 var navigation = {
     available_devices: {
         available_devices_list: "available-devices-list",
@@ -53,6 +66,8 @@ ws_module = new WebSocketModule(SERVER_URL, true);
 
 window.onload = function () {
 
+
+
     var buttons = {
         connect_new_device : function () {
             $.mobile.changePage("#connect-new-device", { transition: "slidedown", changeHash: false });
@@ -61,11 +76,43 @@ window.onload = function () {
             $.mobile.changePage("#set-device-wifi", { transition: "slidedown", changeHash: false });
         },
         local_access: function () {
-            document.getElementById('canvas-bt').innerHTML = window.frames["spa_bluetooth"];
-            local_panel.link_buttons();
+            let type = "spa";
+            document.getElementById('canvas-bt').innerHTML = window.frames[type + "_bluetooth"];
+            panel.link_buttons();
+            
             $.mobile.changePage("#control-page-bt", { transition: "slidedown", changeHash: false });
+        },
+        remote_access: function() {
+            let type = "spa";
+            document.getElementById('canvas').innerHTML = window.frames[type];
+            panel.link_buttons();
+            panel.set_sliders(type);
+            $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
+
+        },
+        send_post: function () {
+            $.ajax({
+                type: 'POST',
+                url:'http://localhost:3001/asettemp',
+                data: {
+                    'temp': 50,
+                    'mac': '3C:71:BF:84:AB:64'
+                },
+                success: function() {
+                    alert('POSTed value of 50 for temp.');
+                },
+                failure: function() {
+                    alert('couldn\'t post');
+                }
+            })
         }
     }
+    //main page buttons
+    $("#connect-new-device").on('click', buttons.connect_new_device);
+    $("#set-device-wifi").on('click', buttons.set_device_wifi);
+    $("#local-use").on('click', buttons.local_access);
+    $("#remote-use").on('click', buttons.remote_access);
+    $("#test-btn").on('click', buttons.send_post);
 
     var bluetooth = {
         scanned_devices : [],
@@ -135,10 +182,7 @@ window.onload = function () {
             }
         }
     }
-    //main page buttons
-    $("#connect-new-device").on('click', buttons.connect_new_device);
-    $("#set-device-wifi").on('click', buttons.set_device_wifi);
-    $("#local-use").on('click', buttons.local_access);
+
 
     //bluetooth
     $("#button-start-stop-scan").on('click', bluetooth.scan_and_add);
@@ -317,10 +361,10 @@ var bt_callbacks = {
 
     // document.getElementById('canvas-bt').innerHTML = window.frames["spa_bluetooth"];
     // $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
-var local_panel = {
+var panel = {
     buttons : { 2: 'aux', 3: 'jets', 4: 'system', 7: 'aux2', 6: 'light', 8: 'time-down', 9: 'temp-up'},
     reset_buttons : function() {
-        for (var b in local_panel.buttons) {        
+        for (var b in panel.buttons) {        
             $("#button-" + buttons[b] + "-frame").attr("style", $("#button-" + buttons[b] + "-frame").data("off"));
             var mytimer = $("#button-" + buttons[b] + "-frame").data("timer");
             if (mytimer !== '') {
@@ -331,20 +375,20 @@ var local_panel = {
     },
     link_buttons : function() {
 
-        for (var b in local_panel.buttons){
-            let on_style = $("#button-" + local_panel.buttons[b] + "-frame").attr("style");
+        for (var b in panel.buttons){
+            let on_style = $("#button-" + panel.buttons[b] + "-frame").attr("style");
             if (on_style == undefined) continue; // unused button
             let off_style = on_style.replace(/stroke-opacity[^;]*;?/, "");
             if (off_style.length > 0) { off_style += ';' };
             off_style += 'stroke-opacity:0;fill-opacity:0;fill:#00ffff';
-            $("#button-" + local_panel.buttons[b] + "-frame").attr("style", off_style);
-            // $("#button-" + local_panel.buttons[b] + "-frame").data("b", 0);
-            $("#button-" + local_panel.buttons[b] + "-frame").data("off", off_style);
-            $("#button-" + local_panel.buttons[b] + "-frame").data("int", off_style + 'stroke-opacity:0;fill-opacity:0.2;fill:#ffffff');
-            $("#button-" + local_panel.buttons[b] + "-frame").data("timer", '');
-            let message = local_panel.buttons[b];
+            $("#button-" + panel.buttons[b] + "-frame").attr("style", off_style);
+            // $("#button-" + panel.buttons[b] + "-frame").data("b", 0);
+            $("#button-" + panel.buttons[b] + "-frame").data("off", off_style);
+            $("#button-" + panel.buttons[b] + "-frame").data("int", off_style + 'stroke-opacity:0;fill-opacity:0.2;fill:#ffffff');
+            $("#button-" + panel.buttons[b] + "-frame").data("timer", '');
+            let message = panel.buttons[b];
 
-            $("#button-" + local_panel.buttons[b] + "-frame").on("click", function () { // inside the function, 'this' is the html object that was clicked
+            $("#button-" + panel.buttons[b] + "-frame").on("click", function () { // inside the function, 'this' is the html object that was clicked
                 // var bdata = $(this).data("b");
                 // var tout = bdata == 6 ? 1000 : 1000;
                 var tout = 1000;
@@ -360,12 +404,96 @@ var local_panel = {
 
         }
 
+    },
+    device_limits : {
+        "spa": {
+            "temp_max_f": 104,
+            "temp_min_f": 45,
+            "temp_max_c": 40,
+            "temp_min_c": 7.6,
+        },
+        "sauna": {
+            "temp_max_f": 160,
+            "temp_min_f": 50,
+            "temp_max_c": 70.8,
+            "temp_min_c": 10.3,
+            "session_max": 60,
+            "session_min": 10
+        }
+    },
+    set_sliders : function (type) {
+        let device_limits = this.device_limits;
+        let f2c = this.f2c;
+        $("#flip-scale").on("change", function () {
+            var scale = this.value;
+            var textslider = '';
+            if (scale == 0) {
+                // textslider = 'Slider (°F):';
+                $("#slider-temp").attr("min", device_limits["temp_min_f"])
+                                 .attr("max", device_limits["temp_max_f"])
+                                 .attr("step", 1).val($("#slider-2-temp").val());
+            }
+            else {
+                // textslider = 'Slider (°C):';
+                var cval = f2c($("#slider-2-temp").val());
+                $("#slider-temp").attr("min", device_limits["temp_min_c"])
+                                 .attr("max", device_limits["temp_max_c"])
+                                 .attr("step", .1).val(cval);
+            }
+            $("#slider-label").text(textslider);
+        });
+        $("#flip-scale").change();
+
+        let oldvalue = $("#slider-temp").attr("value");
+        $("#slider-temp").change(function () {
+            if ($("#flip-scale").val() == 1) {
+                var number = parseFloat(this.value);
+                if (!(number <= device_limits["temp_max_c"] && number >= device_limits["temp_min_c"])) number = f2c(parseFloat(oldvalue));
+                var n10 = ((number - 7.6) * 10).toFixed(0);
+                var delta = n10 % 11;
+                var base = Math.floor(n10 / 11);
+                if (delta > 7) { base++; delta = 0 }
+                else if (delta > 3) { delta = 5 }
+                else { delta = 0 };
+                var sal = base * 11 + delta;
+                sal /= 10;
+                sal += 7.6;
+                $(this).val(sal.toFixed(1));
+                var far = 45 + base * 2;
+                if (delta) far++;
+                $("#slider-2-temp").val(far.toFixed(0));
+            }
+            else {
+                if (!(this.value <= device_limits["temp_max_f"] && this.value >= device_limits["temp_min_f"])) this.value = oldvalue;
+                $("#slider-2-temp").val(this.value);
+            }
+        }).change();
+
+        $("#submit-temp").on('click', function(){
+            alert("submitted temp " + $("#slider-temp").val());
+        });
+
+        // var slider_session = new Slider("session", 10, MAX_SESSION, MIN_SESSION, bt_module);
+
+        if(type == "sauna"){
+            $("#slider-session").attr("min", device_limits["session_min"]); 
+            $("#slider-session").attr("max", device_limits["session_max"]);
+            $("#slider-session").change(function () {
+                $("#slider-session").val(this.value);
+            }).change();
+            $("#submit-session").on('click', function () {
+                alert("submitted session");
+            });
+        }
+    },
+    f2c : function (far)  {
+            var stepval = far - 45;
+            stepval = stepval.toFixed(0);
+            var hstepval = Math.floor(stepval / 2);
+            var cval = stepval % 2 ? 8.1 + hstepval * 1.1 : 7.6 + hstepval * 1.1;
+            return cval.toFixed(1);
     }
 }
-
-
-
-
 
     // // var button_system  = new Button("system", "s0", bt_module);
     // var button_light   = new Button("light", "l0", bt_module);

@@ -29,6 +29,7 @@
                 <button class="my-button ui-btn ui-shadow ui-corner-all" id="add-user" >Add User</button>
                 <button class="my-button ui-btn ui-shadow ui-corner-all" id="set-device-wifi" >Set Device Wi-Fi</button>
                 <button class="my-button ui-btn ui-shadow ui-corner-all" id="connect-new-device" >Connect to Device</button>
+                <button class="my-button ui-btn ui-shadow ui-corner-all" id="test-btn" >TEST</button>
             </div>
             <hr>
         </div> <!-- main -->
@@ -205,34 +206,32 @@
         <div id="footer" data-role="footer">
             <h1>MLTech</h1>
         </div>
-    </div> <!-- Control Page -->
 
 
+    </div> <!-- Local bluetooth access page -->
         <div data-role="page" id="control-page-bt" data-theme="b">
             <div data-role="popup" id="options-popup" data-theme="b">
-                        <ul data-role="listview" data-inset="true" style="min-width:210px;" data-theme="a">
+                <ul data-role="listview" data-inset="true" style="min-width:210px;" data-theme="a">
                     <li data-role="list-divider">Choose an action</li>
                     <li><a href="#start-page"
                             class="ui-btn ui-shadow ui-corner-all ui-icon-delete ui-btn-icon-home ui-btn-inline">
-                            Delete this unit </a></li>
-                            
+                            Delete this unit </a></li>            
                 </ul>
             </div>
-        
             <div data-role="header" data-position="fixed">
                 <h1> AccRemote </h1>
                 <a href="#options-popup" data-rel="popup" data-icon="gear" class="ui-btn-right"
                     data-transition="slideup">Options</a>
                 <a href="#main-page" data-icon="home" class="ui-btn-left" data-transition="slideup">Go Back</a>
             </div><!-- header -->
-            <div id="control-page-body" class="ui-content">
-        
-                <h4>Device Control</h4>
-                <!-- <p>Use the buttons and sliders to change Spa properties such as date/time, temperature, light, jets and on/off status. Hit the options button 
-                        to go back to dashboard
-                    </p> -->
-                <h1 id="maindisplay"> Display</h1>
-                <div id="canvas-bt"></div>
+            <div id="control-page-body" class="ui-content">        
+            <h4>Local Access</h4>
+                <div data-role="collapsibleset">
+                    <div data-role="collapsible" data-collapsed="false">
+                        <h1 id="maindisplay"> Display</h1>
+                        <div id="canvas-bt"></div>
+                    </div> <!-- Collapsible Display -->
+                </div> <!-- Collapsible set-->
             </div> <!-- control-page-body -->
             <div id="footer" data-role="footer">
                 <h1>MLTech</h1>
@@ -244,7 +243,7 @@
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/constants/objects.js"></script>
-    <script type="text/javascript" src="js/panel.js"></script>
+    <!-- <script type="text/javascript" src="js/panel.js"></script> -->
     <script type="text/javascript" src="js/connection.js"></script>
     <script type="text/javascript" src="js/navigation.js"></script>
     <script type="text/javascript" src="js/constants/load_frames.js"></script>

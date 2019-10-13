@@ -6,3 +6,13 @@
 
 
 Todos los puntos requieren una conexion previa, ya sea wifi o bluetooth. La operacion de la aplicacion cambia segun la conexion. Para respetar esto, la operacion de la aplicacion se habilita segun una conexion exitosa. Se selecciona (o se recuerda) una opcion de operacion y cuando se logra conectar se pasa a la siguiente pantalla donde se opera. 
+
+
+
+
+24/9
+
+hay que ver cuales son las funcionalidades que se van a traer de la app vieja a la nueva para ahorrar tiempo de desarrollo. 
+
+Todo el funcionamiento del servidor es el mismo, entonces todo el manejo de rutas no tiene por que cambiar. Ahora, lo importante entonces es adaptar la aplicacion a el funcionamiento del servidor. Esto significa, por ejemplo, que para ciertas rutas va a haber que tener una autorizacion previa. 
+
