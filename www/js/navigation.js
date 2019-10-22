@@ -66,6 +66,11 @@ ws_module = new WebSocketModule(SERVER_URL, true);
 
 window.onload = function () {
 
+    $.mobile.defaultPageTransition = 'none'
+    $.mobile.defaultDialogTransition = 'none'
+    $.mobile.buttonMarkup.hoverDelay = 0
+
+
 
 
     var buttons = {
@@ -76,13 +81,16 @@ window.onload = function () {
             $.mobile.changePage("#set-device-wifi", { transition: "slidedown", changeHash: false });
         },
         local_access: function () {
+            refresh_screen();
             let type = "spa";
             document.getElementById('canvas-bt').innerHTML = window.frames[type + "_bluetooth"];
             panel.link_buttons();
+            panel.init_leds();
             
             $.mobile.changePage("#control-page-bt", { transition: "slidedown", changeHash: false });
         },
         remote_access: function() {
+            refresh_screen();
             let type = "spa";
             document.getElementById('canvas').innerHTML = window.frames[type];
             panel.link_buttons();
@@ -114,7 +122,14 @@ window.onload = function () {
     $("#remote-use").on('click', buttons.remote_access);
     $("#test-btn").on('click', buttons.send_post);
 
-    var bluetooth = {
+    // page events
+    $(document).on('swipe', function () {
+        $.mobile.changePage("#main-page", { transition: "slide", changeHash: false });
+    });
+
+
+
+    window.bluetooth = {
         scanned_devices : [],
         device_to_connect,
         select_scanned_device : function() {
@@ -122,6 +137,7 @@ window.onload = function () {
             bluetooth.device_to_connect = $(this).find("a").text();
         },
         scan_and_add : function() {
+            // $("#scan-result-list").empty();
             ble.startScan([], function (device) {
                 if (/Acc/.exec(device.name) !== null) {
                     // bt_module.add_scanned_device(device.name, device.id);
@@ -171,15 +187,68 @@ window.onload = function () {
         }
     }
 
+    var counter = 0;
+
+    refresh_screen = function() {
+        if(window.refresh_screen_loop) return;
+        
+        window.refresh_screen_loop = setInterval(() => {
+        // $("#json_recv").text("antes de leer " + counter );
+        ble.isConnected(bluetooth.connected_id, 
+            function(){
+                ble.read(bluetooth.connected_id, SERVICE_UUID_OPERATE, CHARACTERISTIC_UUID_OPERATE_SCREEN,
+                        function(data){
+                            let screen = String.fromCharCode.apply(null, new Uint8Array(data));
+                            $("#json_recv").text(screen);
+                            panel.display(screen);
+                        },
+                        function(){
+                            $("#json_recv").text("errores conectado: " + counter);
+                        });
+            },
+            function(){
+                $("#json_recv").text("errores desconectado: " + counter);
+            });
+        counter++;
+        }, 25);
+    }
+
+    stop_screen = function () {
+        if (!window.refresh_screen_loop)
+            clearInterval(window.refresh_screen_loop);
+    }
+
     var wifi = {
         select_scanned_network : function () {
-            // $("#button-connect-to-device").removeClass("ui-state-disabled");
-            $("ssid").value = $(this).find("a").text();
+            $("#ssid").val($(this).find("a").text());
         },
         scan_networks_on_device : function () {
-            if(ble.isConnected()){
-
+            ble.read(bluetooth.connected_id,
+                SERVICE_UUID_CONFIG,
+                CHARACTERISTIC_UUID_CONFIG_SCANWIFI,
+                function(data){
+                    $("#wifi-scan-result-list").empty();
+                    let scan_list = String.fromCharCode.apply(null, new Uint8Array(data));
+                    scan_list.split(",").forEach(function(item){
+                        $("#wifi-scan-result-list").append(`<li> <a class="found-network ui-btn ui-btn-icon-right ui-icon-carat-r">${item}</a> </li>`);
+                    });
+                },
+                function(){
+                    console.log("couldn't read value");
+                });
+        },
+        connect_device_to_wifi: function() {
+            wifi_data = {
+                "wifi_ssid": $("#ssid").val(),
+                "wifi_passwd": $("#ssid-pw").val()
             }
+            ble.write(bluetooth.connected_id,
+                SERVICE_UUID_CONFIG,
+                CHARACTERISTIC_UUID_CONFIG_SETWIFI,
+                stringToBytes(JSON.stringify(wifi_data)),
+                function () { console.log("Sent wifi data"); },
+                function () { console.log("Couldn't send wifi data"); }
+            );
         }
     }
 
@@ -190,12 +259,13 @@ window.onload = function () {
     $("#scan-result-list").on('click', 'li', bluetooth.select_scanned_device);
 
     //set wifi buttons
-    $("#wifi-scan-result-list").on('click', wifi.select_scanned_network);
+    $("#wifi-scan-result-list").on('click', 'li', wifi.select_scanned_network);
     $("#scan-wifi-networks-in-device").on('click', wifi.scan_networks_on_device);
+    $("#button-connect-device-to-wifi").on('click', wifi.connect_device_to_wifi);
+    // $("#found-network").on('click', 'li', wifi.write_ssid_as_found_network);
     // globals.dry_run = false;
     // all the "frontend" processes driven by events such as clicks and callbacks
 
-    //Click Events
     
     //Add new device
     $('#button-add-new-device').on('click', function () {
@@ -361,8 +431,9 @@ var bt_callbacks = {
 
     // document.getElementById('canvas-bt').innerHTML = window.frames["spa_bluetooth"];
     // $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
-var panel = {
+window.panel = {
     buttons : { 2: 'aux', 3: 'jets', 4: 'system', 7: 'aux2', 6: 'light', 8: 'time-down', 9: 'temp-up'},
+    buttons_codes: {'aux': 'x', 'jets': 'j', 'system': 's', 'light': 'l', 'aux2': 'a', 'time-down': 'd', 'temp-up': 'u'},
     reset_buttons : function() {
         for (var b in panel.buttons) {        
             $("#button-" + buttons[b] + "-frame").attr("style", $("#button-" + buttons[b] + "-frame").data("off"));
@@ -386,14 +457,14 @@ var panel = {
             $("#button-" + panel.buttons[b] + "-frame").data("off", off_style);
             $("#button-" + panel.buttons[b] + "-frame").data("int", off_style + 'stroke-opacity:0;fill-opacity:0.2;fill:#ffffff');
             $("#button-" + panel.buttons[b] + "-frame").data("timer", '');
-            let message = panel.buttons[b];
+            let message = panel.buttons_codes[panel.buttons[b]] + '0' + '\0';
 
-            $("#button-" + panel.buttons[b] + "-frame").on("click", function () { // inside the function, 'this' is the html object that was clicked
+            $("#button-" + panel.buttons[b] + "-frame").on("vclick", function () { // inside the function, 'this' is the html object that was clicked
                 // var bdata = $(this).data("b");
                 // var tout = bdata == 6 ? 1000 : 1000;
                 var tout = 1000;
                 $(this).attr("style", $(this).data("int"));
-                ble.write(bluetooth.connected_id, SERVICE_UUID_OPERATE, CHARACTERISTIC_UUID_OPERATE_ONOFF,
+                ble.write(bluetooth.connected_id, SERVICE_UUID_OPERATE, CHARACTERISTIC_UUID_OPERATE_BUTTON,
                         bluetooth.stringToBytes(message), bt_callbacks.success, bt_callbacks.failure);
                 let self = this;
                 var mytimer = setTimeout( function () {
@@ -492,6 +563,69 @@ var panel = {
             var hstepval = Math.floor(stepval / 2);
             var cval = stepval % 2 ? 8.1 + hstepval * 1.1 : 7.6 + hstepval * 1.1;
             return cval.toFixed(1);
+    },
+
+    digits : [0,1,2,3],
+    snames: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
+    segments : new Array(6),
+    onstyles : new Array(6),
+    offstyles : new Array(6),
+
+    init_leds : function () {
+        for (var d in this.digits) {
+            this.segments[d] = new Array(8);
+            for (var s in this.snames) {
+                this.segments[d][s] = $("#digit-d" + d + "-s" + this.snames[s]);
+            }
+        }
+
+        // Then initializes rest of array with notification leds
+        this.segments[4] = new Array(8);
+        this.segments[4][0] = $("#led-heating"); // led 'system' en sauna
+        this.segments[4][1] = $("#led-airhi");
+        this.segments[4][2] = $("#led-jetslo");
+        this.segments[4][3] = $("#led-jetshi"); // led 'heating' en sauna
+        this.segments[4][4] = $("#led-filtering");
+        this.segments[4][5] = $("#led-edit");
+        this.segments[4][6] = $("#led-overheat");
+        this.segments[4][7] = $("#led-am");
+
+        this.segments[5] = new Array(8);
+        this.segments[5][4] = $("#led-light");
+        this.segments[5][5] = $("#led-jets2hi");
+        this.segments[5][6] = $("#led-jets2lo");
+        this.segments[5][7] = $("#led-airlo");
+
+        for (var d = 0; d < 6; d++) {
+            this.onstyles[d] = new Array(8);
+            this.offstyles[d] = new Array(8);
+            for (var s = 0; s < 8; s++) {
+                if (d == 5 && s < 4) continue;
+                var auxonstyle = this.segments[d][s].attr("style");
+                if (auxonstyle == undefined) continue; // unused led
+                this.onstyles[d][s] = auxonstyle;
+                var auxoffstyle = auxonstyle.replace(/fill-opacity[^;]*;?/, "");
+                //            if (auxoffstyle.match(/^\s*$/)) {auxoffstyle+= ';'};
+                if (auxoffstyle.length > 0) { auxoffstyle += ';' };
+                auxoffstyle += 'fill-opacity:0.1';
+                this.offstyles[d][s] = auxoffstyle;
+            }
+        }
+
+    },
+    display : function (rx) {
+        $("#spascreen").text(rx);
+        if (typeof (rx) == 'string' && rx.length == 12) {
+            for (var ii = 0; ii < 6; ii++) {
+                var dd = parseInt(rx.substring(ii * 2, ii * 2 + 2), 16);
+                if (dd == 'NaN') dd = 0;
+                for (var jj = 0, mm = 1; jj < 8; jj++ , mm <<= 1) {
+                    if (ii == 5 && jj < 4) continue;
+                    if (this.segments[ii][jj].attr("style") == undefined) continue; // unused led
+                    this.segments[ii][jj].attr("style", (mm & dd) ? this.onstyles[ii][jj] : this.offstyles[ii][jj])
+                }
+            }
+        }
     }
 }
 

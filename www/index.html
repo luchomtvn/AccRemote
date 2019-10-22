@@ -61,23 +61,23 @@
 
 
 <div data-role="page" id="set-device-wifi" data-theme="a">
+    <div data-role="header" data-position="fixed">
+        <h1> ACC Smart Control </h1>
+        <a href="#main-page" data-icon="home" class="ui-btn-left" data-transition="slideup">Go Back</a>
+    </div><!-- header -->
     <div role="main" class="centered-container ui-content">
         <!-- <div class="loader" style="position: relative; margin-bottom: 5%;" id="scan-loader-animation"></div> -->
         <a id="scan-wifi-networks-in-device" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a">Scan WiFi networks</a>
         <ul data-role="listview" data-inset="true" id="wifi-scan-result-list">
         </ul>
         <label for="ssid">SSID (Network Name):</label>
-        <input type="text" name="ssid" id="ssid" value="MLM" placeholder="">
+        <input type="text" name="ssid" id="ssid" value="" placeholder="">
         <label for="ssid-pw">Password:</label>
-        <input type="password" name="ssid-pw" id="ssid-pw" value="12365390aa" placeholder="">
-        <a id="button-connect-device-to-wifi" class="ui-state-disabled ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a"
+        <input type="password" name="ssid-pw" id="ssid-pw" value="" placeholder="">
+        <a id="button-connect-device-to-wifi" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a"
             data-transition="slideup">Connect device to this network</a>
     </div>
 </div>
-
-
-
-
 
 
     <div data-role="page" id="connection-page" data-theme="a">
@@ -230,6 +230,7 @@
                     <div data-role="collapsible" data-collapsed="false">
                         <h1 id="maindisplay"> Display</h1>
                         <div id="canvas-bt"></div>
+                        <p id="json_recv">{"json":"yo"}</p>
                     </div> <!-- Collapsible Display -->
                 </div> <!-- Collapsible set-->
             </div> <!-- control-page-body -->
