@@ -46,7 +46,6 @@
         <a href="#main-page" data-icon="home" class="ui-btn-left" data-transition="slideup">Go Back</a>
     </div><!-- header -->
     <div role="main" class="centered-container ui-content">
-        <!-- <div class="loader" style="position: relative; margin-bottom: 5%;" id="scan-loader-animation"></div> -->
         <a id="button-start-stop-scan" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a">Start / Stop Scanning</a>
         <ul data-role="listview" data-inset="true" id="scan-result-list">
         </ul>
@@ -78,60 +77,6 @@
             data-transition="slideup">Connect device to this network</a>
     </div>
 </div>
-
-
-    <div data-role="page" id="connection-page" data-theme="a">
-        <div data-role="header" data-position="fixed">
-            <h1> AccRemote </h1>
-            <a href="#main-page" data-icon="home" class="ui-btn-left" data-transition="slideup">Go Back</a>
-        </div><!-- header -->
-        <div class="ui-content" id="scan-window">
-            <h4>Connection</h4>
-            <!--p>This is the beggining of the registration process for a new equipment. Please, turn on bluetooth on your smartphone and turn
-                on the equipment to be able to connect to it. When both Bluetooth are enabled, press the 'Start/Stop Scan' button. 
-            </p -->
-            <p> When your device appears on list, you can stop scanning. Select your device and then connect</p>
-            <h4>Scanning devices...</h4>
-            <div class="loader" style="position: relative; margin-bottom: 5%;" id="scan-loader-animation"></div>
-            <a id="button-start-stop-scan" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a">Start / Stop Scanning</a>
-            <ul data-role="listview" data-inset="true" id="scan-result-list">
-            </ul>
-            <a id="button-connect-to-device" class="ui-state-disabled ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a"
-            data-transition="slideup">Connect to this device</a>
-        </div>
-        <div data-role="footer" class="ui-bar-a ui-footer" data-position="fixed">
-            <h4> MLTech 2019 </h4>
-        </div><!-- footer -->
-    </div> <!-- Connection Page-->
-
-
-
-
-    <div data-role="page" id="registration-page" data-theme="a">
-        <div class="ui-content">
-            <h4>Registration</h4>
-            <!-- <p>Please, enter the information required below to register your equipment in the web server. The next time you use this app, 
-                it will automatically connect to the server, allowing you to control your equipment. Once you completed all the fields, hit 'Register'
-            </p> -->
-            <h4>Local Network Information</h4>
-            <!-- <label for="ssid">SSID (Network Name):</label> -->
-            <!-- <input type="text" name="ssid" id="ssid" value="MLM" placeholder=""> -->
-            <!-- <label for="ssid-pw">Password:</label> -->
-            <!-- <input type="password" name="ssid-pw" id="ssid-pw" value="12365390aa" placeholder=""> -->
-            <h4>User Information</h4>
-            <label for="email-address">E-Mail Address:</label>
-            <input type="text" name="email-address" id="email-address" value="lucianomanto@gmail.com" placeholder="">
-            <label for="email-address-confirm">Confirm E-Mail Address:</label>
-            <input type="text" name="email-address-confirm" id="email-address-confirm" value="lucianomanto@gmail.com" placeholder="">
-            <button type="submit" id="button-submit-register-button"
-            class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Register</button>
-        </div>
-    </div> <!-- Registration Page-->
-
-
-
-
-
 
     <div data-role="page" id="control-page" data-theme="b"> 
         <div data-role="popup" id="options-popup" data-theme="b">
@@ -177,7 +122,7 @@
                             <a href="#" id="canceltemp" data-role="button">Cancel</a>
                         </div>
                     </div> <!-- Collapsible Program Sauna Temperature    -->
-                    <div data-role="collapsible" id="enableSessionTime">
+                    <div data-role="collapsible" id="session-time">
                         <h1>Set Session Time</h1>
                         <div class="ui-field-contain">
                             <label id="slider-label" for="slider-session"></label>
@@ -231,6 +176,8 @@
                         <h1 id="maindisplay"> Display</h1>
                         <div id="canvas-bt"></div>
                         <p id="json_recv">{"json":"yo"}</p>
+                        <a id="start-refresh" class="ui-btn ui-btn-inline">Refresh</a>
+                        <a id="stop-refresh" class="ui-btn ui-btn-inline">Stop</a>
                     </div> <!-- Collapsible Display -->
                 </div> <!-- Collapsible set-->
             </div> <!-- control-page-body -->
@@ -243,12 +190,9 @@
             
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
-    <script type="text/javascript" src="js/constants/objects.js"></script>
-    <!-- <script type="text/javascript" src="js/panel.js"></script> -->
     <script type="text/javascript" src="js/connection.js"></script>
     <script type="text/javascript" src="js/navigation.js"></script>
     <script type="text/javascript" src="js/constants/load_frames.js"></script>
-    <!-- <script type="text/javascript" src="js/main.js"></script> -->
     <script type="text/javascript" charset="utf-8">
         app.initialize();
     </script>
