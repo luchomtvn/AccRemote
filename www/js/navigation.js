@@ -88,12 +88,12 @@ window.onload = function () {
             function () {
                 bluetooth.connected_id = bluetooth.get_id(bluetooth.device_to_connect);
                 console.log("Connected to device id " + bluetooth.connected_id);
-                alert("Connected!");
+                alert("BT Connected!");
             }, 
             function () {
                 // disable local use
                 console.log("Disconnected from " + bluetooth.connected_id);
-                alert("bluetooth disconnected");
+                alert("BT Disconnected!");
             });
         },
         get_id: function (name) {
@@ -112,6 +112,17 @@ window.onload = function () {
                 array[i] = string.charCodeAt(i);
             }
             return array.buffer;
+        },
+        disconnect_from_device : function () {
+            ble.disconnect(bluetooth.connected_id,
+                function () {
+                    console.log("BT Disconnected!");
+                    alert("BT Disconnected!");
+                },
+                function () {
+                    // disable local use
+                    console.log("Error Disconnecting");
+                });
         }
     }
 
@@ -128,15 +139,29 @@ window.onload = function () {
             $("#ssid").val($(this).find("a").text());
         },
         scan_networks_on_device : function () {
+            ble.write(bluetooth.connected_id,
+                SERVICE_UUID_CONFIG,
+                CHARACTERISTIC_UUID_CONFIG_SCANWIFI,
+                stringToBytes("SCAN"),
+                function () { console.log("Scanning on module..."); },
+                function () { console.log("Couldn't send scan command"); }
+            );
+            setTimeout(() => {
+            }, 1000);
             ble.read(bluetooth.connected_id,
                 SERVICE_UUID_CONFIG,
                 CHARACTERISTIC_UUID_CONFIG_SCANWIFI,
                 function(data){
                     $("#wifi-scan-result-list").empty();
                     let scan_list = String.fromCharCode.apply(null, new Uint8Array(data));
-                    scan_list.split(",").forEach(function(item){
-                        $("#wifi-scan-result-list").append(`<li> <a class="found-network ui-btn ui-btn-icon-right ui-icon-carat-r">${item}</a> </li>`);
-                    });
+                    if (scan_list === ""){
+                        alert("No networks found");
+                    }
+                    else{
+                        scan_list.split(",").forEach(function(item){
+                            $("#wifi-scan-result-list").append(`<li> <a class="found-network ui-btn ui-btn-icon-right ui-icon-carat-r">${item}</a> </li>`);
+                        });
+                    }
                 },
                 function(){
                     console.log("couldn't read value");
@@ -160,6 +185,7 @@ window.onload = function () {
     //bluetooth
     $("#button-start-stop-scan").on('click', bluetooth.scan_and_add);
     $('#button-connect-to-device').on('click', bluetooth.connect_to_device);
+    $("#disconnect-from-device").on('click', bluetooth.disconnect_from_device);
     $("#scan-result-list").on('click', 'li', bluetooth.select_scanned_device);
 
     //set wifi buttons
@@ -177,11 +203,15 @@ var bt_callbacks = {
     };
 
 
+
+
+
     // document.getElementById('canvas-bt').innerHTML = window.frames["spa_bluetooth"];
     // $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
 window.panel = {
-    buttons : { 2: 'aux', 3: 'jets', 4: 'system', 7: 'aux2', 6: 'light', 8: 'time-down', 9: 'temp-up'},
-    buttons_codes: {'aux': 'x', 'jets': 'j', 'system': 's', 'light': 'l', 'aux2': 'a', 'time-down': 'd', 'temp-up': 'u'},
+    buttons : { 2: 'aux', 3: 'jets', 4: 'system', 7: 'aux2', 6: 'light', 8: 'down', 9: 'up', 10: 'set-time', 11: 'set-temp'},
+    buttons_codes: {'aux': 'x0', 'jets': 'j0', 'system': 's0', 'light': 'l0', 'aux2': 'a0',
+                     'down': 'd0', 'up': 'u0', 'set-time' : 'd1', 'set-temp' : 'u1'},
     reset_buttons : function() {
         for (var b in panel.buttons) {        
             $("#button-" + buttons[b] + "-frame").attr("style", $("#button-" + buttons[b] + "-frame").data("off"));
@@ -205,7 +235,7 @@ window.panel = {
             $("#button-" + panel.buttons[b] + "-frame").data("off", off_style);
             $("#button-" + panel.buttons[b] + "-frame").data("int", off_style + 'stroke-opacity:0;fill-opacity:0.2;fill:#ffffff');
             $("#button-" + panel.buttons[b] + "-frame").data("timer", '');
-            let message = panel.buttons_codes[panel.buttons[b]] + '0' + '\0';
+            let message = panel.buttons_codes[panel.buttons[b]] + '\0';
 
             $("#button-" + panel.buttons[b] + "-frame").on("vclick", function () { // inside the function, 'this' is the html object that was clicked
                 // var bdata = $(this).data("b");
@@ -374,43 +404,45 @@ window.panel = {
                 }
             }
         }
+    },
+    start_refresh: function () {
+        if (refresh !== undefined) return;
+        refresh = setInterval(() => {
+            ble.read(bluetooth.connected_id, SERVICE_UUID_OPERATE, CHARACTERISTIC_UUID_OPERATE_SCREEN,
+                function (data) {
+                    let screen = String.fromCharCode.apply(null, new Uint8Array(data));
+                    $("#json_recv").text(screen);
+                    panel.display(screen);
+                },
+                function () {
+                    $("#json_recv").text("errores conectado: " + ++counter);
+                });
+        }, 100);
+    },
+        stop_refresh: function () {
+            if (refresh !== undefined) {
+                clearInterval(refresh);
+                refresh = undefined;
+            }
+        }
     }
-    // refresh_start : setInterval(() => {
-    //         ble.read(bluetooth.connected_id, SERVICE_UUID_OPERATE, CHARACTERISTIC_UUID_OPERATE_SCREEN,
-    //             function (data) {
-    //                 let screen = String.fromCharCode.apply(null, new Uint8Array(data));
-    //                 $("#json_recv").text(screen);
-    //                 panel.display(screen);
-    //             },
-    //             function () {
-    //                 $("#json_recv").text("errores conectado: " + counter);
-    //             });
-    // }, 250),
-    // refresh_stop : function () { clearInterval(panel.refresh_start); }
-    }
+$("#start-refresh").on("click", panel.start_refresh);
+$("#stop-refresh").on("click", panel.stop_refresh);
+
 }
+
 
 var refresh;
 var counter = 0;
 
-$("#start-refresh").on("click", function () {
-    if (refresh !== undefined) return;
-    refresh = setInterval(() => {
-        ble.read(bluetooth.connected_id, SERVICE_UUID_OPERATE, CHARACTERISTIC_UUID_OPERATE_SCREEN,
-            function (data) {
-                let screen = String.fromCharCode.apply(null, new Uint8Array(data));
-                $("#json_recv").text(screen);
-                panel.display(screen);
-            },
-            function () {
-                $("#json_recv").text("errores conectado: " + ++counter);
-            });
-    }, 100);    
-});
 
-$("#stop-refresh").on("click", function () {
-    if (refresh !== undefined){
-        clearInterval(refresh);
-        refresh = undefined;
+
+
+
+stringToBytes = function (string) {
+    var array = new Uint8Array(string.length);
+    for (var i = 0, l = string.length; i < l; i++) {
+        array[i] = string.charCodeAt(i);
     }
-});
+    return array.buffer;
+}
