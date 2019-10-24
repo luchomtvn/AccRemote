@@ -18,21 +18,18 @@
             content="default-src * 'unsafe-inline' 'unsafe-eval' 'self' gap: data:;" />
 </head>
 <body>
-    <iframe src="http://localhost:3000/lucho" display="none"></iframe>
-
-
     <div data-role="page" id="main-page" data-theme="a">
         <div data-role="header" data-position="fixed">
             <h1> ACC Smart Control </h1>
         </div><!-- header -->
         <div role="main" class="centered-container ui-content">
             <div id="main-actions">
-                <button class="my-button ui-btn ui-shadow ui-corner-all" id="remote-use" >Remote Access</button>
+                <button class="ui-state-disabled my-button ui-btn ui-shadow ui-corner-all" id="remote-use" >Remote Access</button>
                 <button class="my-button ui-btn ui-shadow ui-corner-all" id="local-use" >Local Access</button>
-                <button class="my-button ui-btn ui-shadow ui-corner-all" id="add-user" >Add User</button>
+                <button class="ui-state-disabled my-button ui-btn ui-shadow ui-corner-all" id="add-user" >Add User</button>
                 <button class="my-button ui-btn ui-shadow ui-corner-all" id="set-device-wifi" >Set Device Wi-Fi</button>
                 <button class="my-button ui-btn ui-shadow ui-corner-all" id="connect-new-device" >Connect to Device</button>
-                <button class="my-button ui-btn ui-shadow ui-corner-all" id="test-btn" >TEST</button>
+                <!-- <button class="my-button ui-btn ui-shadow ui-corner-all" id="test-btn" >TEST</button> -->
             </div>
             <hr>
         </div> <!-- main -->
@@ -80,6 +77,8 @@
         <input type="password" name="ssid-pw" id="ssid-pw" value="" placeholder="">
         <a id="button-connect-device-to-wifi" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a"
             data-transition="slideup">Connect device to this network</a>
+        <a id="button-check-wifi-connection" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a"
+            data-transition="slideup">Check Wifi connection on device </a>
     </div>
 </div>
 
@@ -170,9 +169,9 @@
             </div>
             <div data-role="header" data-position="fixed">
                 <h1> AccRemote </h1>
-                <a href="#options-popup" data-rel="popup" data-icon="gear" class="ui-btn-right"
-                    data-transition="slideup">Options</a>
-                <a href="#main-page" data-icon="home" class="ui-btn-left" data-transition="slideup">Go Back</a>
+                <!-- <a href="#options-popup" data-rel="popup" data-icon="gear" class="ui-btn-right"
+                    data-transition="slideup">Options</a> -->
+                <a href="#main-page" data-icon="home" class="ui-btn-left" data-transition="slideup" onclick="panel.stop_refresh()" >Go Back</a>
             </div><!-- header -->
             <div id="control-page-body" class="ui-content">        
             <h4>Local Access</h4>
@@ -180,9 +179,9 @@
                     <div data-role="collapsible" data-collapsed="false">
                         <h1 id="maindisplay"> Display</h1>
                         <div id="canvas-bt"></div>
-                        <p id="json_recv">{"json":"yo"}</p>
-                        <a id="start-refresh" class="ui-btn ui-btn-inline">Refresh</a>
-                        <a id="stop-refresh" class="ui-btn ui-btn-inline">Stop</a>
+                        <!-- <p id="json_recv">{"json":"yo"}</p> -->
+                        <!-- <a id="start-refresh" class="ui-btn ui-btn-inline">Refresh</a> -->
+                        <!-- <a id="stop-refresh" class="ui-btn ui-btn-inline">Stop</a> -->
                     </div> <!-- Collapsible Display -->
                 </div> <!-- Collapsible set-->
             </div> <!-- control-page-body -->

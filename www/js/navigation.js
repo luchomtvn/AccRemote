@@ -1,8 +1,8 @@
 window.onload = function () {
-
     // page events
     $(document).on('swipe', function () {
-        $.mobile.changePage("#main-page", { transition: "slide", changeHash: false });
+        panel.stop_refresh();
+        $.mobile.changePage("#main-page", { transition: "slideleft", changeHash: false });
     });
 
     $.mobile.defaultPageTransition = 'none'
@@ -22,7 +22,7 @@ window.onload = function () {
             document.getElementById('canvas-bt').innerHTML = window.frames[type + "_bluetooth"];
             panel.link_buttons();
             panel.init_leds();
-            // panel.refresh_start();
+            panel.start_refresh();
             
             $.mobile.changePage("#control-page-bt", { transition: "slidedown", changeHash: false });
         },
@@ -69,32 +69,53 @@ window.onload = function () {
         },
         scan_and_add : function() {
             // $("#scan-result-list").empty();
-            ble.startScan([], function (device) {
-                if (/Acc/.exec(device.name) !== null) {
-                    // bt_module.add_scanned_device(device.name, device.id);
-                    console.log("Device found: " + device.name);
-                    bluetooth.scanned_devices.push(device);
-                    $("#scan-result-list").append(`<li> <a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">${device.name}</a> </li>`);
-                    ble.stopScan(function () { console.log("stopped scanning") }, function () { console.log("couldn't stop scanning") });
+            ble.isEnabled(
+                function(){
+                    ble.startScan([], function (device) {
+                        if (/Acc/.exec(device.name) !== null) {
+                            // bt_module.add_scanned_device(device.name, device.id);
+                            console.log("Device found: " + device.name);
+                            bluetooth.scanned_devices.push(device);
+                            $("#scan-result-list").append(`<li> <a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">${device.name}</a> </li>`);
+                            ble.stopScan(function () { console.log("stopped scanning") }, function () { console.log("couldn't stop scanning") });
+                        }
+                    }, function () {
+                        alert("Could not scan");
+                        console.log("Could not scan");
+                    });
+                },
+                function() {
+                    alert("Bluetooth is disabled");
                 }
-            }, function () {
-                alert("Could not scan (maybe Bluetooth is off?)");
-                console.log("Could not scan (maybe Bluetooth is off?)");
-            });
+            )
         },
         connect_to_device: function () {
-            console.log("Connecting...");
-            ble.connect(bluetooth.get_id(bluetooth.device_to_connect), 
-            function () {
-                bluetooth.connected_id = bluetooth.get_id(bluetooth.device_to_connect);
-                console.log("Connected to device id " + bluetooth.connected_id);
-                alert("BT Connected!");
-            }, 
-            function () {
-                // disable local use
-                console.log("Disconnected from " + bluetooth.connected_id);
-                alert("BT Disconnected!");
-            });
+            ble.isEnabled(
+                function() {
+                    ble.isConnected(bluetooth.connected_id,
+                        function() {
+                            alert("BT Already Connected");
+                        },
+                        function() {
+                            console.log("Connecting...");
+                            ble.connect(bluetooth.get_id(bluetooth.device_to_connect), 
+                            function () {
+                                bluetooth.connected_id = bluetooth.get_id(bluetooth.device_to_connect);
+                                console.log("Connected to device id " + bluetooth.connected_id);
+                                alert("BT Connected!");
+                            }, 
+                            function () {
+                                // disable local use
+                                console.log("Disconnected from " + bluetooth.connected_id);
+                                alert("BT Disconnected!");
+                            });
+                        }
+                    );
+                },
+                function(){
+                    alert("Bluetooth Disabled!");
+                }
+            )
         },
         get_id: function (name) {
             for (var i = 0; i < bluetooth.scanned_devices.length; i++) {
@@ -139,46 +160,81 @@ window.onload = function () {
             $("#ssid").val($(this).find("a").text());
         },
         scan_networks_on_device : function () {
-            ble.write(bluetooth.connected_id,
-                SERVICE_UUID_CONFIG,
-                CHARACTERISTIC_UUID_CONFIG_SCANWIFI,
-                stringToBytes("SCAN"),
-                function () { console.log("Scanning on module..."); },
-                function () { console.log("Couldn't send scan command"); }
-            );
-            setTimeout(() => {
-            }, 1000);
-            ble.read(bluetooth.connected_id,
-                SERVICE_UUID_CONFIG,
-                CHARACTERISTIC_UUID_CONFIG_SCANWIFI,
-                function(data){
-                    $("#wifi-scan-result-list").empty();
-                    let scan_list = String.fromCharCode.apply(null, new Uint8Array(data));
-                    if (scan_list === ""){
-                        alert("No networks found");
-                    }
-                    else{
-                        scan_list.split(",").forEach(function(item){
-                            $("#wifi-scan-result-list").append(`<li> <a class="found-network ui-btn ui-btn-icon-right ui-icon-carat-r">${item}</a> </li>`);
-                        });
-                    }
-                },
-                function(){
-                    console.log("couldn't read value");
-                });
+            ble.isConnected(bluetooth.connected_id,
+            function(){
+                ble.write(bluetooth.connected_id,
+                    SERVICE_UUID_WIFI,
+                    CHARACTERISTIC_UUID_WIFI_SCAN,
+                    stringToBytes("SCAN"),
+                    function () { console.log("Scanning on module..."); },
+                    function () { console.log("Couldn't send scan command"); }
+                );
+                setTimeout(() => {
+                }, 1000);
+                ble.read(bluetooth.connected_id,
+                    SERVICE_UUID_WIFI,
+                    CHARACTERISTIC_UUID_WIFI_SCAN,
+                    function(data){
+                        $("#wifi-scan-result-list").empty();
+                        let scan_list = String.fromCharCode.apply(null, new Uint8Array(data));
+                        if (scan_list === ""){
+                            alert("No networks found");
+                        }
+                        else{
+                            scan_list.split(",").forEach(function(item){
+                                $("#wifi-scan-result-list").append(`<li> <a class="found-network ui-btn ui-btn-icon-right ui-icon-carat-r">${item}</a> </li>`);
+                            });
+                        }
+                    },
+                    function(){
+                        console.log("couldn't read value");
+                    });
+            },
+            function() {
+                alert("Bluetooth not connected");
+            });
         },
         connect_device_to_wifi: function() {
             wifi_data = {
                 "wifi_ssid": $("#ssid").val(),
                 "wifi_passwd": $("#ssid-pw").val()
             }
-            ble.write(bluetooth.connected_id,
-                SERVICE_UUID_CONFIG,
-                CHARACTERISTIC_UUID_CONFIG_SETWIFI,
-                stringToBytes(JSON.stringify(wifi_data)),
-                function () { console.log("Sent wifi data"); },
-                function () { console.log("Couldn't send wifi data"); }
-            );
+            ble.isConnected(bluetooth.connected_id,
+            function() {
+                ble.write(bluetooth.connected_id,
+                    SERVICE_UUID_WIFI,
+                    CHARACTERISTIC_UUID_WIFI_SET,
+                    stringToBytes(JSON.stringify(wifi_data)),
+                    function () { console.log("Sent wifi data"); },
+                    function () { console.log("Couldn't send wifi data"); }
+                );
+            },
+            function() {
+                alert("Not Connected to Bluetooth");
+            });
+        },
+        check_wifi_connection : function () {
+            ble.isConnected(bluetooth.connected_id,
+            function(){
+                ble.read(bluetooth.connected_id,
+                    SERVICE_UUID_WIFI,
+                    CHARACTERISTIC_UUID_WIFI_ISCONNECTED,
+                    function (data) {
+                        let notification = String.fromCharCode.apply(null, new Uint8Array(data));
+                        if (notification === "disconnected"){
+                            alert("disconnected");
+                        }
+                        else{
+                            alert("Connected to network: " + notification);
+                        }
+                    },
+                    function() {
+                        console.log("couldn't read from device");
+                    });
+            },
+            function() {
+                alert("Not Connected to Bluetooth");
+            })
         }
     }
 
@@ -188,10 +244,14 @@ window.onload = function () {
     $("#disconnect-from-device").on('click', bluetooth.disconnect_from_device);
     $("#scan-result-list").on('click', 'li', bluetooth.select_scanned_device);
 
+    // $("#start-refresh").on("click", panel.start_refresh);
+    // $("#stop-refresh").on("click", panel.stop_refresh);
+
     //set wifi buttons
     $("#wifi-scan-result-list").on('click', 'li', wifi.select_scanned_network);
     $("#scan-wifi-networks-in-device").on('click', wifi.scan_networks_on_device);
     $("#button-connect-device-to-wifi").on('click', wifi.connect_device_to_wifi);
+    $("#button-check-wifi-connection").on('click', wifi.check_wifi_connection);
 
 var bt_callbacks = {
         success : function() {
@@ -411,11 +471,13 @@ window.panel = {
             ble.read(bluetooth.connected_id, SERVICE_UUID_OPERATE, CHARACTERISTIC_UUID_OPERATE_SCREEN,
                 function (data) {
                     let screen = String.fromCharCode.apply(null, new Uint8Array(data));
-                    $("#json_recv").text(screen);
+                    // $("#json_recv").text(screen);
                     panel.display(screen);
                 },
                 function () {
-                    $("#json_recv").text("errores conectado: " + ++counter);
+                    alert("Panel disconnected");
+                    panel.stop_refresh();
+                    // $("#json_recv").text("errores conectado: " + ++counter);
                 });
         }, 100);
     },
@@ -426,8 +488,7 @@ window.panel = {
             }
         }
     }
-$("#start-refresh").on("click", panel.start_refresh);
-$("#stop-refresh").on("click", panel.stop_refresh);
+
 
 }
 
