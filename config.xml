@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.phonegap.helloworld" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:gap="http://phonegap.com/ns/1.0">
+<widget id="com.mantotech.accsmartcontrol" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:gap="http://phonegap.com/ns/1.0">
     <gap:config-file parent="/manifest" platform="android">
         <application android:debuggable="true" />
     </gap:config-file>
-    <name>AccRemote</name>
+    <name>Acc Smart Control</name>
     <description>
-        A blank PhoneGap app.
+        Phonegap App for controlling ACC spa and sauna devices. Funtionality is limited to bluetooth usage.
     </description>
-    <author email="support@phonegap.com" href="http://phonegap.com">
-        PhoneGap Team
+    <author email="lucianomanto@gmail.com">
+        MLTech
     </author>
     <content src="index.html" />
     <access origin="*" />
