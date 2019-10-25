@@ -1,7 +1,7 @@
 
 
 var refresh;
-var pool_interval = 500; // ms for pool BT screen
+var pool_interval = 200; // ms for pool BT screen
 
 window.onload = function () {
     // page events
