@@ -82,18 +82,21 @@ window.onload = function () {
             // $("#scan-result-list").empty();
             ble.isEnabled(
                 function () {
+                    $("#scan-result-list").empty();
                     ble.startScan([], function (device) {
                         if (/Acc/.exec(device.name) !== null) {
                             // bt_module.add_scanned_device(device.name, device.id);
                             console.log("Device found: " + device.name);
                             bluetooth.scanned_devices.push(device);
                             $("#scan-result-list").append(`<li> <a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">${device.name}</a> </li>`);
-                            ble.stopScan(function () { console.log("stopped scanning") }, function () { console.log("couldn't stop scanning") });
                         }
                     }, function () {
                         alert("Could not scan");
                         console.log("Could not scan");
                     });
+                    setTimeout(() => {
+                        ble.stopScan(function () { console.log("stopped scanning") }, function () { console.log("couldn't stop scanning") });
+                    }, 5000);
                 },
                 function () {
                     alert("Bluetooth is disabled");
