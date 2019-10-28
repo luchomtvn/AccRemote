@@ -24,7 +24,7 @@ window.onload = function () {
         },
         local_access: function () {
             ble.isConnected(bluetooth.connected_id,
-                function() {
+                function () {
                     let type = "spa";
                     document.getElementById('canvas-bt').innerHTML = window.frames[type + "_bluetooth"];
                     panel.link_buttons();
@@ -33,12 +33,11 @@ window.onload = function () {
 
                     $.mobile.changePage("#control-page-bt", { transition: "slidedown", changeHash: false });
                 },
-                function() {
+                function () {
                     alert("Must be connected to device via Bluetooth");
                 });
         },
         remote_access: function () {
-            refresh_screen();
             let type = "spa";
             document.getElementById('canvas').innerHTML = window.frames[type];
             panel.link_buttons();
@@ -401,16 +400,14 @@ window.onload = function () {
 
             // var slider_session = new Slider("session", 10, MAX_SESSION, MIN_SESSION, bt_module);
 
-            if (type == "sauna") {
-                $("#slider-session").attr("min", device_limits["session_min"]);
-                $("#slider-session").attr("max", device_limits["session_max"]);
-                $("#slider-session").change(function () {
-                    $("#slider-session").val(this.value);
-                }).change();
-                $("#submit-session").on('click', function () {
-                    alert("submitted session");
-                });
-            }
+            $("#slider-session").attr("min", device_limits["session_min"]);
+            $("#slider-session").attr("max", device_limits["session_max"]);
+            $("#slider-session").change(function () {
+                $("#slider-session").val(this.value);
+            }).change();
+            $("#submit-session").on('click', function () {
+                alert("submitted session");
+            });
         },
         f2c: function (far) {
             var stepval = far - 45;
