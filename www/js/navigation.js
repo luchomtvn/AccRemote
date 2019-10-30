@@ -510,10 +510,6 @@ window.onload = function () {
 }
 
 
-
-
-
-
 stringToBytes = function (string) {
     var array = new Uint8Array(string.length);
     for (var i = 0, l = string.length; i < l; i++) {
