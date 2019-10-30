@@ -13,7 +13,10 @@
     <content src="index.html" />
     <access origin="*" />
     <platform name="ios">
-        <icon height="180" src="images/icons/apple-touch-icon-114x114-precomposed.png" width="180" />
+        <icon src="images/icons/apple-touch-icon-114x114-precomposed.png" height="180" width="180" />
+        <icon src="images/icons/apple-touch-icon-144x144-precomposed.png" height="144" width="144" />
+        <icon src="images/icons/apple-touch-icon-72x72-precomposed.png" height="72" width="72" />
+        <icon src="images/icons/apple-touch-icon-precomposed.png" />
         <config-file parent="UIBackgroundModes" target="*-Info.plist">
             <array>
                 <string>bluetooth-central</string>
