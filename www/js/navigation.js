@@ -5,10 +5,6 @@ var pool_interval = 200; // ms for pool BT screen
 
 window.onload = function () {
     // page events
-    $(document).on('swipe', function () {
-        panel.stop_refresh();
-        $.mobile.changePage("#main-page", { transition: "slideleft", changeHash: false });
-    });
 
     $.mobile.defaultPageTransition = 'none'
     $.mobile.defaultDialogTransition = 'none'
@@ -36,6 +32,12 @@ window.onload = function () {
                 function () {
                     alert("Must be connected to device via Bluetooth");
                 });
+        },
+        local_access_dry: function() {
+            let type = "spa";
+            document.getElementById('canvas-bt').innerHTML = window.frames[type + "_bluetooth"];
+            panel.link_buttons();
+            $.mobile.changePage("#control-page-bt", { transition: "slidedown", changeHash: false });
         },
         remote_access: function () {
             let type = "spa";
@@ -66,6 +68,7 @@ window.onload = function () {
     $("#connect-new-device").on('click', buttons.connect_new_device);
     $("#set-device-wifi").on('click', buttons.set_device_wifi);
     $("#local-use").on('click', buttons.local_access);
+    $("#local-use-dry").on('click', buttons.local_access_dry);
     $("#remote-use").on('click', buttons.remote_access);
     $("#test-btn").on('click', buttons.send_post);
 
@@ -331,19 +334,19 @@ window.onload = function () {
 
         },
         device_limits: {
-            "spa": {
-                "temp_max_f": 104,
-                "temp_min_f": 45,
-                "temp_max_c": 40,
-                "temp_min_c": 7.6,
+            spa: {
+                temp_max_f: 104,
+                temp_min_f: 45,
+                temp_max_c: 40,
+                temp_min_c: 7.6,
             },
-            "sauna": {
-                "temp_max_f": 160,
-                "temp_min_f": 50,
-                "temp_max_c": 70.8,
-                "temp_min_c": 10.3,
-                "session_max": 60,
-                "session_min": 10
+            sauna: {
+                temp_max_f: 160,
+                temp_min_f: 50,
+                temp_max_c: 70.8,
+                temp_min_c: 10.3,
+                session_max: 60,
+                session_min: 10
             }
         },
         set_sliders: function (type) {
@@ -351,21 +354,17 @@ window.onload = function () {
             let f2c = this.f2c;
             $("#flip-scale").on("change", function () {
                 var scale = this.value;
-                var textslider = '';
                 if (scale == 0) {
-                    // textslider = 'Slider (°F):';
-                    $("#slider-temp").attr("min", device_limits["temp_min_f"])
-                        .attr("max", device_limits["temp_max_f"])
+                    $("#slider-temp").attr("min", device_limits[type].temp_min_f)
+                        .attr("max", device_limits[type].temp_max_f)
                         .attr("step", 1).val($("#slider-2-temp").val());
                 }
                 else {
-                    // textslider = 'Slider (°C):';
                     var cval = f2c($("#slider-2-temp").val());
-                    $("#slider-temp").attr("min", device_limits["temp_min_c"])
-                        .attr("max", device_limits["temp_max_c"])
+                    $("#slider-temp").attr("min", device_limits[type].temp_min_c)
+                        .attr("max", device_limits[type].temp_max_c)
                         .attr("step", .1).val(cval);
                 }
-                $("#slider-label").text(textslider);
             });
             $("#flip-scale").change();
 
@@ -373,7 +372,7 @@ window.onload = function () {
             $("#slider-temp").change(function () {
                 if ($("#flip-scale").val() == 1) {
                     var number = parseFloat(this.value);
-                    if (!(number <= device_limits["temp_max_c"] && number >= device_limits["temp_min_c"])) number = f2c(parseFloat(oldvalue));
+                    if (!(number <= device_limits[type].temp_max_c && number >= device_limits[type].temp_min_c)) number = f2c(parseFloat(oldvalue));
                     var n10 = ((number - 7.6) * 10).toFixed(0);
                     var delta = n10 % 11;
                     var base = Math.floor(n10 / 11);
@@ -389,7 +388,7 @@ window.onload = function () {
                     $("#slider-2-temp").val(far.toFixed(0));
                 }
                 else {
-                    if (!(this.value <= device_limits["temp_max_f"] && this.value >= device_limits["temp_min_f"])) this.value = oldvalue;
+                    if (!(this.value <= device_limits[type].temp_max_f && this.value >= device_limits[type].temp_min_f)) this.value = oldvalue;
                     $("#slider-2-temp").val(this.value);
                 }
             }).change();
@@ -400,13 +399,13 @@ window.onload = function () {
 
             // var slider_session = new Slider("session", 10, MAX_SESSION, MIN_SESSION, bt_module);
 
-            $("#slider-session").attr("min", device_limits["session_min"]);
-            $("#slider-session").attr("max", device_limits["session_max"]);
+            $("#slider-session").attr("min", device_limits[type].session_min);
+            $("#slider-session").attr("max", device_limits[type].session_max);
             $("#slider-session").change(function () {
                 $("#slider-session").val(this.value);
             }).change();
             $("#submit-session").on('click', function () {
-                alert("submitted session");
+                alert("submitted session " + $("#slider-session").val());
             });
         },
         f2c: function (far) {

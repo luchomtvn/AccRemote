@@ -1,3 +1,7 @@
+html {
+    -webkit-user-select: none;
+}
+
 .my-button {
     /* font-size: smaller; */
     margin-top: 7%;
