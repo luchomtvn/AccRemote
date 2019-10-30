@@ -12,11 +12,19 @@
     </author>
     <content src="index.html" />
     <access origin="*" />
+    <icon height="180" platform="ios" src="images/icons/res/icon/ios/icon-60@3x.png" width="180" />
+    <icon height="60" platform="ios" src="images/icons/res/icon/ios/icon-60.png" width="60" />
+    <icon height="120" platform="ios" src="images/icons/res/icon/ios/icon-60@2x.png" width="120" />
+    <icon height="76" platform="ios" src="images/icons/res/icon/ios/icon-76.png" width="76" />
+    <icon height="152" platform="ios" src="images/icons/res/icon/ios/icon-76@2x.png" width="152" />
+    <icon height="167" platform="ios" src="images/icons/res/icon/ios/icon-83.5@2x.png" width="167" />
+    <icon height="29" platform="ios" src="images/icons/res/icon/ios/icon-small.png" width="29" />
+    <icon height="58" platform="ios" src="images/icons/res/icon/ios/icon-small@2x.png" width="58" />
+    <icon height="87" platform="ios" src="images/icons/res/icon/ios/icon-small@3x.png" width="87" />
+    <icon height="40" platform="ios" src="images/icons/res/icon/ios/icon-40.png" width="40" />
+    <icon height="80" platform="ios" src="images/icons/res/icon/ios/icon-40@2x.png" width="80" />
+    <icon height="120" platform="ios" src="images/icons/res/icon/ios/icon-40@3x.png" width="120" />
     <platform name="ios">
-        <!-- <icon src="images/icons/apple-touch-icon-114x114-precomposed.png" height="180" width="180" />
-        <icon src="images/icons/apple-touch-icon-144x144-precomposed.png" height="144" width="144" />
-        <icon src="images/icons/apple-touch-icon-72x72-precomposed.png" height="72" width="72" />
-        <icon src="images/icons/apple-touch-icon-precomposed.png" /> -->
         <config-file parent="UIBackgroundModes" target="*-Info.plist">
             <array>
                 <string>bluetooth-central</string>
