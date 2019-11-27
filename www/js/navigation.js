@@ -10,6 +10,19 @@ window.onload = function () {
     $.mobile.defaultDialogTransition = 'none'
     $.mobile.buttonMarkup.hoverDelay = 0
 
+    window.websocket = {
+        ws: null,
+        url: "ws://localhost:3001/spa/HrU6CUAaSlsB9r0jxJTWr1Bzt7f032_0KVKfHy5IT9jGrtbs/wsa",
+        onMessageCallback: function(msg) {
+            console.log(msg);
+            let screen = JSON.parse(msg.data).dsp;
+            panel.display(screen);
+        },
+        openCallback: function() {
+            console.log("WebSocket open on server");
+        }
+    }
+
 
     window.buttons = {
         connect_new_device: function () {
@@ -43,7 +56,14 @@ window.onload = function () {
             let type = "spa";
             document.getElementById('canvas').innerHTML = window.frames[type];
             panel.link_buttons();
+            panel.init_leds();
+            $("button-system-frame").on('vclick', function () {
+                this.ws.send("s0");
+            });
             panel.set_sliders(type);
+            websocket.ws = new WebSocket(websocket.url);
+            websocket.ws.onopen = websocket.openCallback;
+            websocket.ws.onmessage = websocket.onMessageCallback;
             $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
 
         },

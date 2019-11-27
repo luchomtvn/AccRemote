@@ -24,12 +24,12 @@
     <icon height="40" platform="ios" src="images/icons/res/icon/ios/icon-40.png" width="40" />
     <icon height="80" platform="ios" src="images/icons/res/icon/ios/icon-40@2x.png" width="80" />
     <icon height="120" platform="ios" src="images/icons/res/icon/ios/icon-40@3x.png" width="120" />
-    <icon src="images/icons/res/icon/android/ldpi.png" platform="android" qualifier="ldpi" />
-    <icon src="images/icons/res/icon/android/mdpi.png" platform="android" qualifier="mdpi" />
-    <icon src="images/icons/res/icon/android/hdpi.png" platform="android" qualifier="hdpi" />
-    <icon src="images/icons/res/icon/android/xhdpi.png" platform="android" qualifier="xhdpi" />
-    <icon src="images/icons/res/icon/android/xxhdpi.png" platform="android" qualifier="xxhdpi" />
-    <icon src="images/icons/res/icon/android/xxxhdpi.png" platform="android" qualifier="xxxhdpi" />
+    <icon platform="android" qualifier="ldpi" src="images/icons/res/icon/android/ldpi.png" />
+    <icon platform="android" qualifier="mdpi" src="images/icons/res/icon/android/mdpi.png" />
+    <icon platform="android" qualifier="hdpi" src="images/icons/res/icon/android/hdpi.png" />
+    <icon platform="android" qualifier="xhdpi" src="images/icons/res/icon/android/xhdpi.png" />
+    <icon platform="android" qualifier="xxhdpi" src="images/icons/res/icon/android/xxhdpi.png" />
+    <icon platform="android" qualifier="xxxhdpi" src="images/icons/res/icon/android/xxxhdpi.png" />
     <platform name="ios">
         <config-file parent="UIBackgroundModes" target="*-Info.plist">
             <array>
