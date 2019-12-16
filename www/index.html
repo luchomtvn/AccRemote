@@ -18,99 +18,36 @@
             content="default-src * 'unsafe-inline' 'unsafe-eval' 'self' gap: data:;" />
 </head>
 <body>
-    <div data-role="page" id="main-page" data-theme="a">
-        <div data-role="header" data-position="fixed">
-            <h1> ACC Smart Control </h1>
-        </div><!-- header -->
-        <div role="main" class="centered-container ui-content">
-            <div id="main-actions">
-                <button class="my-button ui-btn ui-shadow ui-corner-all" id="remote-use" >Remote Access</button>
-                <button class="my-button ui-btn ui-shadow ui-corner-all" id="local-use" >Local Access</button>
-                <!-- <button class="my-button ui-btn ui-shadow ui-corner-all" id="local-use-dry" >Local Access Dry</button> -->
-                <button class="ui-state-disabled my-button ui-btn ui-shadow ui-corner-all" id="add-user" >Add User</button>
-                <button class="my-button ui-btn ui-shadow ui-corner-all" id="set-device-wifi" >Set Device Wi-Fi</button>
-                <button class="my-button ui-btn ui-shadow ui-corner-all" id="connect-new-device" >Connect to Device</button>
-                <!-- <button class="my-button ui-btn ui-shadow ui-corner-all" id="test-btn" >TEST</button> -->
+        <div data-role="page" id="main-page" data-theme="b">
+            <div data-role="popup" id="options-popup" data-theme="b">
+                        <ul data-role="listview" data-inset="true" style="min-width:210px;" data-theme="a">
+                    <li data-role="list-divider">Choose an action</li>
+                    <li><a href="#start-page"
+                            class="ui-btn ui-shadow ui-corner-all ui-icon-delete ui-btn-icon-home ui-btn-inline">
+                            Delete this unit </a></li>
+                            
+                </ul>
             </div>
-            <hr>
-        </div> <!-- main -->
-        <div data-role="footer" class="ui-bar-a ui-footer" data-position="fixed">
-            <h4> MLTech 2019 </h4>
-        </div><!-- footer -->
-    </div><!-- start page -->
-
-
-
-<div data-role="page" id="connect-new-device" data-theme="a">
-    <div data-role="header" data-position="fixed">
-        <h1> ACC Smart Control </h1>
-        <a href="#main-page" data-icon="home" class="ui-btn-left" data-transition="slideup">Go Back</a>
-    </div><!-- header -->
-    <div role="main" class="centered-container ui-content">
-        <a id="button-start-stop-scan" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a">Start / Stop Scanning</a>
-        <ul data-role="listview" data-inset="true" id="scan-result-list">
-        </ul>
-        <a id="button-connect-to-device" class="ui-state-disabled ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a"
-            data-transition="slideup">Connect to this device</a>
-        <a id="disconnect-from-device" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a"
-            data-transition="slideup">Disconnect</a>
-    </div>
-    <div data-role="footer" class="ui-bar-a ui-footer" data-position="fixed">
-        <h4> MLTech 2019 </h4>
-    </div><!-- footer -->
-</div>
-
-
-
-<div data-role="page" id="set-device-wifi" data-theme="a">
-    <div data-role="header" data-position="fixed">
-        <h1> ACC Smart Control </h1>
-        <a href="#main-page" data-icon="home" class="ui-btn-left" data-transition="slideup">Go Back</a>
-    </div><!-- header -->
-    <div role="main" class="centered-container ui-content">
-        <!-- <div class="loader" style="position: relative; margin-bottom: 5%;" id="scan-loader-animation"></div> -->
-        <a id="scan-wifi-networks-in-device" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a">Scan WiFi networks</a>
-        <ul data-role="listview" data-inset="true" id="wifi-scan-result-list">
-        </ul>
-        <label for="ssid">SSID (Network Name):</label>
-        <input type="text" name="ssid" id="ssid" value="" placeholder="">
-        <label for="ssid-pw">Password:</label>
-        <input type="password" name="ssid-pw" id="ssid-pw" value="" placeholder="">
-        <a id="button-connect-device-to-wifi" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a"
-            data-transition="slideup">Connect device to this network</a>
-        <a id="button-check-wifi-connection" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a"
-            data-transition="slideup">Check Wifi connection on device </a>
-    </div>
-</div>
-
-    <div data-role="page" id="control-page" data-theme="b"> 
-        <div data-role="popup" id="options-popup" data-theme="b">
-            <ul data-role="listview" data-inset="true" style="min-width:210px;" data-theme="a">
-                <li data-role="list-divider">Choose an action</li>
-                <li><a href="#start-page" class="ui-btn ui-shadow ui-corner-all ui-icon-delete ui-btn-icon-home ui-btn-inline">
-                    Delete this unit </a></li>
-            </ul>
-        </div>
         
-        <div data-role="header" data-position="fixed">
-            <h1> AccRemote </h1>
-            <a href="#options-popup" data-rel="popup" data-icon="gear" class="ui-btn-right" data-transition="slideup">Options</a>
-            <a href="#start-page" data-icon="home" class="ui-btn-left" data-transition="slideup">Go Back</a>
-        </div><!-- header -->
-        <div id="control-page-body" class="ui-content">
-
-            <h4>Device Control</h4>
-            <!-- <p>Use the buttons and sliders to change Spa properties such as date/time, temperature, light, jets and on/off status. Hit the options button 
-                to go back to dashboard
-            </p> -->
-            <div data-role="collapsibleset">
-                <div data-role="collapsible" data-collapsed="false">
-                    <h1 id="maindisplay"> Display</h1>
-                    <div id="canvas"></div>
-                </div> <!-- Collapsible Display -->
-                <div data-role="collapsible">
-                    <h1>Set Temperature</h1>
-                    <div class="ui-field-contain" style="text-align: left;">
+            <div data-role="header" data-position="fixed">
+                <h1> AccRemote </h1>
+                <a href="#options-popup" data-rel="popup" data-icon="gear" class="ui-btn-right"
+                    data-transition="slideup">Options</a>
+            </div><!-- header -->
+            <div id="control-page-body" class="ui-content">
+        
+                <h4>Device Control</h4>
+                <!-- <p>Use the buttons and sliders to change Spa properties such as date/time, temperature, light, jets and on/off status. Hit the options button 
+                        to go back to dashboard
+                    </p> -->
+                <div data-role="collapsibleset">
+                    <div data-role="collapsible" data-collapsed="false">
+                        <h1 id="maindisplay"> Display</h1>
+                        <div id="canvas"></div>
+                    </div> <!-- Collapsible Display -->
+                    <div data-role="collapsible">
+                        <h1>Set Temperature</h1>
+                        <div class="ui-field-contain" style="text-align: left;">
                             <label for="flip-scale"></label>
                             <select name="flip-scale" id="flip-scale" data-role="slider" data-mini="true" value="0">
                                 <option value="0">°F</option>
@@ -150,12 +87,107 @@
                             <a href="#" id="canceltz" data-role="button">Cancel</a>
                         </div>
                     </div> <!-- Collapsible Program Sauna Timezone    -->
-            </div> <!-- Collapsibleset    -->
-            <div id="sends"></div>
-        </div> <!-- control-page-body -->
-        <div id="footer" data-role="footer">
-            <h1>MLTech</h1>
-        </div>
+                    <div data-role="collapsible">
+                        <h1>Configuration</h1>
+                        <!-- <a id="scan-wifi-networks-in-device" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-b">Scan WiFi networks</a> -->
+                        <ul data-role="listview" data-inset="true" id="wifi-scan-result-list">
+                        </ul>
+                        <h4>Connect Bluetooth</h4>
+                        <div role="main" class="centered-container ui-content">
+                            <a id="button-start-stop-scan" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-b">Start / Stop Scanning</a>
+                            <ul data-role="listview" data-inset="true" id="scan-result-list">
+                            </ul>
+                            <a id="button-connect-to-device" class="ui-state-disabled ui-btn-inline ui-btn ui-mini ui-corner-all ui-shadow ui-btn-b"
+                                data-transition="slideup">Connect</a>
+                            <a id="disconnect-from-device" class="ui-btn ui-mini ui-corner-all ui-btn-inline ui-shadow ui-btn-b"
+                                data-transition="slideup">Disconnect</a>
+                        </div>
+                        <h4>Set Device Wi-Fi</h4>
+                            <div role="main" class="centered-container ui-content">
+                            <input type="text" name="text-6" id="ssid-input" value="" placeholder="SSID" data-mini="true">
+                            <input type="text" name="text-6" id="wifi-password" value="" placeholder="Password" data-mini="true">
+                            <a id="button-connect-device-to-wifi" class="ui-btn ui-btn-inline ui-corner-all ui-shadow ui-btn-b"
+                                data-transition="slideup">Set</a>
+                        </div>
+
+                    </div>
+                </div> <!-- Collapsibleset    -->
+                <div id="sends"></div>
+            </div> <!-- control-page-body -->
+            <div id="footer" data-role="footer">
+                <h1>MLTech</h1>
+            </div>
+
+
+
+
+
+
+
+    <div data-role="page" id="deprecated-page" data-theme="a">
+        <div data-role="header" data-position="fixed">
+            <h1> ACC Smart Control </h1>
+        </div><!-- header -->
+        <div role="main" class="centered-container ui-content">
+            <div id="main-actions">
+                <button class="my-button ui-btn ui-shadow ui-corner-all" id="remote-use" >Remote Access</button>
+                <button class="my-button ui-btn ui-shadow ui-corner-all" id="local-use" >Local Access</button>
+                <!-- <button class="my-button ui-btn ui-shadow ui-corner-all" id="local-use-dry" >Local Access Dry</button> -->
+                <button class="ui-state-disabled my-button ui-btn ui-shadow ui-corner-all" id="add-user" >Add User</button>
+                <button class="my-button ui-btn ui-shadow ui-corner-all" id="set-device-wifi" >Set Device Wi-Fi</button>
+                <button class="my-button ui-btn ui-shadow ui-corner-all" id="connect-new-device" >Connect to Device</button>
+                <!-- <button class="my-button ui-btn ui-shadow ui-corner-all" id="test-btn" >TEST</button> -->
+            </div>
+            <hr>
+        </div> <!-- main -->
+        <div data-role="footer" class="ui-bar-a ui-footer" data-position="fixed">
+            <h4> MLTech 2019 </h4>
+        </div><!-- footer -->
+    </div><!-- start page --> 
+
+<div data-role="page" id="connect-new-device" data-theme="a">
+    <div data-role="header" data-position="fixed">
+        <h1> ACC Smart Control </h1>
+        <a href="#main-page" data-icon="home" class="ui-btn-left" data-transition="slideup">Go Back</a>
+    </div><!-- header -->
+    <div role="main" class="centered-container ui-content">
+        <a id="button-start-stop-scan" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-b">Start / Stop Scanning</a>
+        <ul data-role="listview" data-inset="true" id="scan-result-list">
+        </ul>
+        <a id="button-connect-to-device" class="ui-state-disabled ui-btn ui-mini ui-corner-all ui-shadow ui-btn-b"
+            data-transition="slideup">Connect to this device</a>
+        <a id="disconnect-from-device" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-b"
+            data-transition="slideup">Disconnect</a>
+    </div>
+    <div data-role="footer" class="ui-bar-a ui-footer" data-position="fixed">
+        <h4> MLTech 2019 </h4>
+    </div><!-- footer -->
+</div>
+
+
+
+<div data-role="page" id="set-device-wifi" data-theme="a">
+    <div data-role="header" data-position="fixed">
+        <h1> ACC Smart Control </h1>
+        <a href="#main-page" data-icon="home" class="ui-btn-left" data-transition="slideup">Go Back</a>
+    </div><!-- header -->
+    <div role="main" class="centered-container ui-content">
+        <!-- <div class="loader" style="position: relative; margin-bottom: 5%;" id="scan-loader-animation"></div> -->
+        <a id="scan-wifi-networks-in-device" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a">Scan WiFi networks</a>
+        <ul data-role="listview" data-inset="true" id="wifi-scan-result-list">
+        </ul>
+        <label for="ssid">SSID (Network Name):</label>
+        <input type="text" name="ssid" id="ssid" value="" placeholder="">
+        <label for="ssid-pw">Password:</label>
+        <input type="password" name="ssid-pw" id="ssid-pw" value="" placeholder="">
+        <a id="button-connect-device-to-wifi" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a"
+            data-transition="slideup">Connect device to this network</a>
+        <a id="button-check-wifi-connection" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-a"
+            data-transition="slideup">Check Wifi connection on device </a>
+    </div>
+</div>
+
+   
 
 
     </div> <!-- Local bluetooth access page -->
@@ -196,6 +228,7 @@
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/connection.js"></script>
+    <script type="text/javascript" src="js/statemachine.js"></script>
     <script type="text/javascript" src="js/navigation.js"></script>
     <script type="text/javascript" src="js/wsreconnect.js"></script>
     <script type="text/javascript" src="js/constants/load_frames.js"></script>
