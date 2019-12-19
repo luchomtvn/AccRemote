@@ -36,14 +36,13 @@ var sm = {
             }, timeouts.TIMEOUT_EDIT_SCREEN)
         }
     },
-    edit_mask: 0b00010000,
+    edit_mask: 0b00100000,
     ds : {
         editing : false,
     }
 }
 
 function decode_screen(screen){
-
     sm.ds = {
         hour: "",
         temperature: 0,
@@ -64,15 +63,63 @@ function decode_screen(screen){
         (screen[4] + screen[5] == false) && (screen[6] + screen[7] == false))
         return "Err:02";
     
-    if ((screen & sm.edit_mask) > 0)
-        sm.ds.editing = true;
-    else 
-        sm.ds.editing = false;
+    if (parseInt(screen[8] + screen[9], 16) & sm.edit_mask)
+        sm.ds.editing = 1;
 
     return sm.ds;
 }
 
-let screen = 0x0;
+function decode_digit(dig_1, dig_2){
+
+    let digit = parseInt(dig_1 + dig_2, 16);
+
+    let table = {
+        0b00111111: 0,
+        0b00000110: 1,
+        0b01011011: 2,
+        0b01001111: 3,
+        0b01100110: 4,
+        0b01101101: 5,
+        0b01111101: 6,
+        0b00000111: 7,
+        0b01111111: 8,
+        0b01101111: 9,
+        0b00000000: '',
+        0b01110001: 'F',
+        0b01110110: 'H',
+        0b00111000: 'L',
+        0b01111001: 'E',
+        0b01010000: 'r',
+        0b01011100: 'o',
+        0b01010100: 'n',
+        0b00111001: 'C',
+        0b01101101: 'S',
+        0b01110011: 'P',
+        0b01111000: 't',
+        0b01110111: 'A',
+        0b01011110: 'd',
+        0b00111110: 'U'
+    }
+    return table[digit];
+}
+
+function invert_digit(dig_1, dig_2){
+    let digit = parseInt(dig_1 + dig_2, 16).toString(2).split("");
+    if(digit.length < 8){
+        for (let i = 0; i < 8 - digit.length; i++) // adds 0s to the left
+            digit.unshift("0");
+    }
+    let inverted = [];
+    for (let i = digit.length - 1; i >= 0; i--){
+        inverted.push(digit[i]);
+    }
+    let result = parseInt(inverted.join(""), 2).toString(16);
+
+    if(result.length == 1) 
+        return "0" + result; // adds a 0 to the left
+    else return result;
+
+}
 
 // setInterval(() => {
 //     decode_screen()

@@ -1,3 +1,5 @@
+sm.edit_mask = 0b00100000 // testing with 'spa'
+
 describe('State change logic', function () {
     it('should change to waiting_initial when state is idle and there is a new enetered value for temp', function () {
         sm.state = states.SM_IDLE;
@@ -25,7 +27,7 @@ describe('State change logic', function () {
     });
     it('should change to waiting_final when state is waiting_edit and editing is true', function () {
         sm.state = states.SM_WAITING_EDIT_SCREEN;
-        sm.ds = decode_screen("111111110000");
+        sm.ds = decode_screen("111111112000");
         sm_run();
         chai.assert.equal(sm.state, states.SM_WAITING_FINAL_SCREEN);
     });
@@ -65,5 +67,41 @@ describe('Decode screen logic', function () {
     });
     it('Error 02: Should give error when digit 3 and 4 are off', function () {
         chai.assert.equal(decode_screen("111100000000"), "Err:02"); 
+    });
+    it('Should set editing on true (spa)', function () {
+        let ds = decode_screen("111111112000");
+        chai.assert.equal(ds.editing, 1);
+    });
+    it('Should set editing on false (spa)', function () {
+        let ds = decode_screen("111111111000");
+        chai.assert.equal(ds.editing, 0);
+    });
+    it('Should set editing on true (sauna)', function () {
+        sm.edit_mask = 0b00010000 // testing with 'sauna'
+        let ds = decode_screen("111111111000");
+        chai.assert.equal(ds.editing, 1);
+    });
+    it('Should set editing on false (sauna)', function () {
+        // sm.edit_mask = 0b00010000 // testing with 'sauna'
+        let ds = decode_screen("111111112000");
+        chai.assert.equal(ds.editing, 0);
+    });
+});
+
+describe('Digit Operations', function () {
+    it('decode_digit Sould decode a "0"', function () {
+        chai.assert.equal(decode_digit("3","F"), "0");
+    });
+    it('decode_digit Sould decode a "P"', function () {
+        chai.assert.equal(decode_digit("7","3"), "P");
+    });
+    it('invert_digit Sould return "ce"', function () {
+        chai.assert.equal(invert_digit("7", "3"), "ce");
+    });
+    it('invert_digit Sould return "ff"', function () {
+        chai.assert.equal(invert_digit("F", "F"), "ff");
+    });
+    it('invert_digit Sould return "0f"', function () {
+        chai.assert.equal(invert_digit("F", "0"), "0f");
     });
 });
