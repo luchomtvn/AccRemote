@@ -238,6 +238,8 @@ window.onload = function () {
     panel.init_leds();
     panel.set_sliders(type);
 
+    $("#time-zone-selector").timezones();
+
     window.websocket = {
         ws: null,
         url: "ws://localhost:3001/spa/HrU6CUAaSlsB9r0jxJTWr1Bzt7f032_0KVKfHy5IT9jGrtbs/wsa",
