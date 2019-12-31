@@ -8,6 +8,22 @@ var pool_interval = 200; // ms for pool BT screen
 window.onload = function () {
     // page events
 
+    window.registered_devices = [{ // should get this info from app memory
+        name: "spa suite",
+        type: "spa",
+        module_bt_name: "AccModule",
+        module_ssid: "MLM",
+        module_pass: "12365390aa",
+        user_email: "lucianomanto@gmail.com"
+    },{
+        name: "sauna pool",
+        type: "sauna",
+        module_bt_name: "AccModule",
+        module_ssid: "MLM",
+        module_pass: "12365390aa",
+        user_email: "lucianomanto@gmail.com"
+    }]; 
+ 
     let type = "spa";
 
     window.panel = {
@@ -439,6 +455,10 @@ window.onload = function () {
         }
     }
 
+
+    // add new device
+    
+    // Step 1: connection
     //bluetooth
     $("#button-start-stop-scan").on('click', bluetooth.scan_and_add);
     $('#button-connect-to-device').on('click', bluetooth.connect_to_device);
@@ -448,11 +468,26 @@ window.onload = function () {
     // $("#start-refresh").on("click", panel.start_refresh);
     // $("#stop-refresh").on("click", panel.stop_refresh);
 
-    //set wifi buttons
-    $("#wifi-scan-result-list").on('click', 'li', wifi.select_scanned_network);
+    //Step 2: Wi-Fi
+    //wifi
     $("#scan-wifi-networks-in-device").on('click', wifi.scan_networks_on_device);
+    $("#wifi-scan-result-list").on('click', 'li', wifi.select_scanned_network);
     $("#button-connect-device-to-wifi").on('click', wifi.connect_device_to_wifi);
     $("#button-check-wifi-connection").on('click', wifi.check_wifi_connection);
+    $("#ssid");
+    $("#ssid-pw");
+    $("#user-e-mail");
+
+
+    //configuration
+
+    registered_devices.forEach( (dev) => {
+        opt = document.createElement("option");
+        opt.text = dev.name;
+        $("#choose-device-list").append(opt);
+    });
+
+
 
     var bt_callbacks = {
         success: function () {
