@@ -2,6 +2,10 @@ html {
     -webkit-user-select: none;
 }
 
+.page-title {
+    text-align: center;
+}
+
 .my-button {
     /* font-size: smaller; */
     margin-top: 7%;

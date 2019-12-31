@@ -3,8 +3,12 @@
 var refresh;
 var pool_interval = 200; // ms for pool BT screen
 
+
+
 window.onload = function () {
     // page events
+
+    let type = "spa";
 
     window.panel = {
         buttons: { 2: 'aux', 3: 'jets', 4: 'system', 7: 'aux2', 6: 'light', 8: 'down', 9: 'up', 10: 'set-time', 11: 'set-temp' },
@@ -229,14 +233,14 @@ window.onload = function () {
         }
     }
 
-    $.mobile.defaultPageTransition = 'none'
-    $.mobile.defaultDialogTransition = 'none'
-    $.mobile.buttonMarkup.hoverDelay = 0
-    let type = "spa";
+    $.mobile.defaultPageTransition = 'none';
+    $.mobile.defaultDialogTransition = 'none';
+    $.mobile.buttonMarkup.hoverDelay = 0;
     document.getElementById('canvas').innerHTML = window.frames[type];
     panel.link_buttons();
     panel.init_leds();
     panel.set_sliders(type);
+
 
     $("#time-zone-selector").timezones();
 
@@ -252,76 +256,6 @@ window.onload = function () {
             console.log("WebSocket open on server");
         }
     }
-
-
-    window.buttons = {
-        connect_new_device: function () {
-            $.mobile.changePage("#connect-new-device", { transition: "slidedown", changeHash: false });
-        },
-        set_device_wifi: function () {
-            $.mobile.changePage("#set-device-wifi", { transition: "slidedown", changeHash: false });
-        },
-        local_access: function () {
-            ble.isConnected(bluetooth.connected_id,
-                function () {
-                    let type = "spa";
-                    document.getElementById('canvas-bt').innerHTML = window.frames[type + "_bluetooth"];
-                    panel.link_buttons();
-                    panel.init_leds();
-                    panel.start_refresh();
-
-                    $.mobile.changePage("#control-page-bt", { transition: "slidedown", changeHash: false });
-                },
-                function () {
-                    alert("Must be connected to device via Bluetooth");
-                });
-        },
-        local_access_dry: function() {
-            let type = "spa";
-            document.getElementById('canvas-bt').innerHTML = window.frames[type + "_bluetooth"];
-            panel.link_buttons();
-            $.mobile.changePage("#control-page-bt", { transition: "slidedown", changeHash: false });
-        },
-        remote_access: function () {
-            let type = "spa";
-            document.getElementById('canvas').innerHTML = window.frames[type];
-            panel.link_buttons();
-            panel.init_leds();
-            $("button-system-frame").on('vclick', function () {
-                this.ws.send("s0");
-            });
-            panel.set_sliders(type);
-            websocket.ws = new WebSocket(websocket.url);
-            websocket.ws.onopen = websocket.openCallback;
-            websocket.ws.onmessage = websocket.onMessageCallback;
-            $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
-
-        },
-        send_post: function () {
-            $.ajax({
-                type: 'POST',
-                url: 'http://localhost:3001/asettemp',
-                data: {
-                    'temp': 50,
-                    'mac': '3C:71:BF:84:AB:64'
-                },
-                success: function () {
-                    alert('POSTed value of 50 for temp.');
-                },
-                failure: function () {
-                    alert('couldn\'t post');
-                }
-            })
-        }
-    }
-    //main page buttons
-    $("#connect-new-device").on('click', buttons.connect_new_device);
-    $("#set-device-wifi").on('click', buttons.set_device_wifi);
-    $("#local-use").on('click', buttons.local_access);
-    $("#local-use-dry").on('click', buttons.local_access_dry);
-    $("#remote-use").on('click', buttons.remote_access);
-    $("#test-btn").on('click', buttons.send_post);
-
 
     window.bluetooth = {
         scanned_devices: [],
