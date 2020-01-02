@@ -3,7 +3,10 @@
 var refresh;
 var pool_interval = 200; // ms for pool BT screen
 
-
+const MODES = {
+    LOCAL: 'local',
+    REMOTE: 'remote'
+};
 
 window.onload = function () {
     // page events
@@ -27,6 +30,7 @@ window.onload = function () {
     let type = "spa";
 
     window.panel = {
+        mode: MODES.REMOTE, // starts on remote by default 
         buttons: { 2: 'aux', 3: 'jets', 4: 'system', 7: 'aux2', 6: 'light', 8: 'down', 9: 'up', 10: 'set-time', 11: 'set-temp' },
         buttons_codes: {
             'aux': 'x0', 'jets': 'j0', 'system': 's0', 'light': 'l0', 'aux2': 'a0',
@@ -373,6 +377,7 @@ window.onload = function () {
     }
 
     var wifi = {
+        module_connected: false,
         select_scanned_network: function () {
             $("#ssid").val($(this).find("a").text());
         },
@@ -486,6 +491,39 @@ window.onload = function () {
         opt.text = dev.name;
         $("#choose-device-list").append(opt);
     });
+
+    window.configuration = {
+        use_local_mode: function() {
+            bluetooth.connect_to_device();
+            ble.isConnected(bluetooth.connected_id, 
+            function() {
+                panel.mode = MODES.LOCAL;
+                $("#enable-local-mode").button('disable');
+                $("#enable-remote-mode").button('enable');
+            },
+            function(){
+                alert("Could not connect to device");
+            })
+        },
+        use_remote_mode: function() {
+            if (!window.navigator.onLine) { // checks internet connection on smartphone
+                alert("No internet connection");
+            }
+            else{
+                panel.mode = MODES.REMOTE;
+                $("#enable-local-mode").button('enable');
+                $("#enable-remote-mode").button('disable');
+
+            }
+             
+        }
+    }
+
+    $("#enable-remote-mode").button('disable');
+    $("#enable-remote-mode").on('click', configuration.use_remote_mode);
+    $("#enable-local-mode").on('click', configuration.use_local_mode);
+
+
 
 
 
