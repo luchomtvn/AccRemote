@@ -6,6 +6,11 @@ html {
     text-align: center;
 }
 
+.description {
+    font-size: small;
+    color: darkgray;
+}
+
 .my-button {
     /* font-size: smaller; */
     margin-top: 7%;

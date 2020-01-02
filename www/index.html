@@ -37,7 +37,7 @@
                     <div id="canvas" class="centered-container"></div>
                 </div> <!-- Collapsible Display -->
                 <div data-role="collapsible">
-                    <h1>Set Temperature</h1>
+                    <h1>Temperature</h1>
                     <div class="ui-field-contain" style="text-align: left;">
                         <label for="flip-scale"></label>
                         <select name="flip-scale" id="flip-scale" data-role="slider" data-mini="true" value="0">
@@ -56,7 +56,7 @@
                     </div>
                 </div> <!-- Collapsible Program Sauna Temperature    -->
                 <div data-role="collapsible" id="session-time">
-                    <h1>Set Session Time</h1>
+                    <h1>Session Time</h1>
                     <div class="ui-field-contain">
                         <label id="slider-label" for="slider-session"></label>
                         <input type="range" name="void" id="slider-session" min="10" max="90" step="1" value="30">
@@ -68,7 +68,7 @@
                     </div>
                 </div> <!-- Collapsible Program Sauna Set Time    -->
                 <div data-role="collapsible">
-                    <h1>Set Time Zone</h1>
+                    <h1>Time Zone</h1>
                     <div class="ui-field-contain">
                         <label for="time-zone-selector">Select Time Zone</label>
                         <select name="time-zone-selector" id="time-zone-selector" class="form-timezones"></select>
@@ -111,21 +111,20 @@
                 </div>
                 <div data-role="collapsible">
                     <h1> Access Mode </h1>
-                    <div class="centered-container">
-                        <a href="#" id="canceltz" data-inline="true" data-role="button">Local</a>
-                        <a href="#" id="canceltz" data-inline="true" data-role="button">Remote</a>
-                    </div>
-                    <!-- <input type="button" data-inline="true" value="Remote"> -->
-                    <!-- <input type="button" data-inline="true" value="Local"> -->
+                        <p class="description">Local mode requires Bluetooth connection. Remote mode requires Internet connection</p>
+                        <div data-role="controlgroup" data-type="horizontal">
+                            <input type="submit" data-inline="true" value="Remote" id="enable-remote-mode">
+                            <input type="submit" data-inline="true" value="Local" id="enable-local-mode">
+                        </div>
                 </div>
                 <div data-role="collapsible">
-                    <h1> Set Wi-Fi Credentials </h1>
+                    <h1> Set Wi-Fi Credentials on device</h1>
                     <label for="ssid">SSID (Network Name):</label>
                     <input type="text" name="ssid" id="ssid" value="" placeholder="">
                     <label for="ssid-pw">Password:</label>
                     <input type="password" name="ssid-pw" id="ssid-pw" value="" placeholder="">
                     <a id="button-connect-device-to-wifi" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-b"
-                        data-transition="slideup">Send</a>
+                        data-transition="slideup">Set</a>
                 </div>
             </div>
         </div>
@@ -148,30 +147,47 @@
     </div><!-- header -->
     <div id="control-page-body" class="ui-content">
         <h3 class="page-title">Add New Device</h3>
-            <h4>Step 1: Set up connection</h4>
-            <a id="button-start-stop-scan" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-b">Start / Stop Scanning</a>
+            <h4>Step 1: Connect to module</h4>
+            <p class="description">Enable bluetooth and scan for devices with button below, search in the list for module named "AccModule".</p>
+            <a id="button-start-stop-scan" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-b">Scan Bluetooth BLE devices</a>
             <ul data-role="listview" data-inset="true" id="scan-result-list">
             </ul>
             <div class="centered-container">
                 <a id="button-connect-to-device"
-                    class="ui-state-disabled ui-btn-inline ui-btn ui-mini ui-corner-all ui-shadow ui-btn-b"
+                    class="ui-state-disabled ui-btn-inline ui-btn ui-corner-all ui-shadow ui-btn-b"
                     data-transition="slideup">Connect</a>
-                <a id="disconnect-from-device" class="ui-btn ui-mini ui-corner-all ui-btn-inline ui-shadow ui-btn-b"
+                <a id="disconnect-from-device" class="ui-btn ui-corner-all ui-btn-inline ui-shadow ui-btn-b"
                     data-transition="slideup">Disconnect</a>
             </div>
-            <h4>Step 2: Set Wi-Fi on device</h4>
+            <hr>
+            <h4>Step 2: Registration</h4>
+            <p class="description">Complete with required information</p>
+            <label for="ssid">SSID (Network Name):</label>
+            <input type="text" name="ssid" id="ssid" value="" placeholder="">
             <a id="scan-wifi-networks-in-device" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-b">Scan WiFi networks</a>
             <ul data-role="listview" data-inset="true" id="wifi-scan-result-list">
             </ul>
-            <label for="ssid">SSID (Network Name):</label>
-            <input type="text" name="ssid" id="ssid" value="" placeholder="">
             <label for="ssid-pw">Password:</label>
             <input type="password" name="ssid-pw" id="ssid-pw" value="" placeholder="">
-            <h4>Step 3: Enter E-Mail Address to verify user</h4>
-            <label for="ssid-pw">E-Mail:</label>
+            <label for="e-mail">E-Mail:</label>
             <input type="text" name="e-mail" id="user-e-mail" value="" placeholder="">
-            <a id="button-connect-device-to-wifi" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-b"
-                data-transition="slideup">Send</a>
+            <label for="module-name">Module Name:</label>
+            <input type="text" name="module-name" id="module-name" value="" placeholder="">
+            <div data-role="controlgroup" data-type="horizontal" class="centered-container">
+                <a id="submit-register-data" data-inline="true" type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b"
+                    data-transition="slideup">Submit</a>
+            </div>
+            <hr>
+
+            <h4>Step 3: 20 Digit Code Verification</h4>
+            <p class="description">Enter 20-digit code sent to your e-mail account</p>
+            <label for="code-20-digits">20-digit Code:</label>
+            <input type="text" name="code-20-digits" id="code-20-digits" value="" placeholder="">
+            <div data-role="controlgroup" data-type="horizontal" class="centered-container">
+                <a id="submit-20-digit-code" class="ui-btn ui-corner-all ui-shadow ui-btn-b"
+                    data-transition="slideup">Register device</a>
+            </div>
+            <hr>
     </div>
     <div id="footer" data-role="footer" data-position="fixed">
         <h1>MLTech</h1>
