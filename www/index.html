@@ -30,7 +30,7 @@
             <a href="#register-new-device" data-icon="plus" class="ui-btn-left" data-transition="slide" data-direction="reverse">New</a>
         </div><!-- header -->
         <div id="control-page-body" class="ui-content">
-            <h3 class="page-title">Device Control</h3>
+            <h3 class="page-title" id="panel-title"></h3>
             <div data-role="collapsibleset">
                 <div data-role="collapsible" data-collapsed="false">
                     <h1 id="maindisplay"> Display</h1>
@@ -149,6 +149,7 @@
     </div><!-- header -->
     <div id="control-page-body" class="ui-content">
         <h3 class="page-title">Add New Device</h3>
+            <p class="description" style="font-style: italic;"> Note: If you already have your 20-digit code, skip steps 1 and 2.</p>
             <h4>Step 1: Connect to module</h4>
             <p class="description">Enable bluetooth and scan for devices with button below, search in the list for module named "AccModule".</p>
             <a id="button-start-stop-scan" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-b">Scan Bluetooth BLE devices</a>

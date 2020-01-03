@@ -11,7 +11,7 @@ const MODES = {
 window.onload = function () {
     // page events
 
-    window.registered_devices = [{ // should get this info from app memory
+    window.registered_devices = [{ // todo: should get this info from app memory
         name: "spa suite",
         type: "spa",
         module_bt_name: "AccModule",
@@ -25,7 +25,9 @@ window.onload = function () {
         module_ssid: "MLM",
         module_pass: "12365390aa",
         user_email: "lucianomanto@gmail.com"
-    }]; 
+    }];
+
+    window.current_device = registered_devices[0]; // todo: should get this info from app memory
  
     let type = "spa";
 
@@ -95,6 +97,11 @@ window.onload = function () {
             }
         },
         set_sliders: function (type) {
+            if(type === "spa")
+                $("#session-time").hide();
+            else if (type === "sauna")
+                $("#session-time").show();
+
             let device_limits = this.device_limits;
             let f2c = this.f2c;
             $("#flip-scale").on("change", function () {
@@ -250,16 +257,21 @@ window.onload = function () {
                 clearInterval(refresh);
                 refresh = undefined;
             }
+        },
+        load_device: function() {
+            $("#panel-title").text(current_device.name); 
+            document.getElementById('canvas').innerHTML = window.frames[current_device.type];
+            panel.link_buttons();
+            panel.init_leds();
+            panel.set_sliders(current_device.type);
         }
     }
 
     $.mobile.defaultPageTransition = 'none';
     $.mobile.defaultDialogTransition = 'none';
     $.mobile.buttonMarkup.hoverDelay = 0;
-    document.getElementById('canvas').innerHTML = window.frames[type];
-    panel.link_buttons();
-    panel.init_leds();
-    panel.set_sliders(type);
+
+    panel.load_device();
 
 
     $("#time-zone-selector").timezones();
@@ -498,6 +510,12 @@ window.onload = function () {
 
             if(!registration.re_name.test(String($("#reg-module-name").val())))
                 errors.push("invalid module name (4 to 20 characters long)");
+            
+            registered_devices.forEach(element => {
+                if (this.name == $("#reg-module-name").val()){
+                    errors.push("invalid module name (name already registered)");
+                }
+            });
 
             if(errors.length != 0){
                 alert(errors.join('\n'));
@@ -549,12 +567,22 @@ window.onload = function () {
 
             }
              
+        },
+        choose_device_list: function(){
+            console.log($("#choose-device-list").val());
+            registered_devices.forEach(element => {
+                if (element.name === $("#choose-device-list").val()){
+                    current_device = element;
+                    panel.load_device();
+                }
+            });
         }
     }
     
-    $("#enable-remote-mode").button('disable');
+    // $("#enable-remote-mode").button('disable');
     $("#enable-remote-mode").on('click', configuration.use_remote_mode);
     $("#enable-local-mode").on('click', configuration.use_local_mode);
+    $("#choose-device-list").on('change', configuration.choose_device_list)
 
 
 
@@ -568,8 +596,6 @@ window.onload = function () {
             console.log("failed to send message");
         }
     };
-
-
 
 
 
