@@ -479,10 +479,45 @@ window.onload = function () {
     $("#wifi-scan-result-list").on('click', 'li', wifi.select_scanned_network);
     $("#button-connect-device-to-wifi").on('click', wifi.connect_device_to_wifi);
     $("#button-check-wifi-connection").on('click', wifi.check_wifi_connection);
-    $("#ssid");
-    $("#ssid-pw");
-    $("#user-e-mail");
 
+
+
+    registration = {
+        re_ssid: /^\w{0,32}$/,
+        re_mail: /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,}$/i,
+        re_name: /^[\w-]{4,20}$/,
+        re_code: /^[\w]{20}$/,
+        submit_registration_info: function() {
+            errors = [];
+
+            if(!registration.re_ssid.test(String($("#reg-ssid").val())))
+                errors.push("invalid ssid");
+            
+            if(!registration.re_mail.test(String($("#reg-user-e-mail").val()).toLowerCase()))
+                errors.push("invalid e-mail");
+
+            if(!registration.re_name.test(String($("#reg-module-name").val())))
+                errors.push("invalid module name (4 to 20 characters long)");
+
+            if(errors.length != 0){
+                alert(errors.join('\n'));
+            }
+            else{
+                alert("sent data to module");
+            }
+        },
+        submit_20_digit_code: function() {
+            if (!registration.re_code.test($("#code-20-digits").val())){
+                alert("invalid code");
+            }
+            else{
+                alert("sent data to server");
+            }
+        }
+    }
+
+    $("#submit-register-data").on('click', registration.submit_registration_info);
+    $("#submit-20-digit-code").on('click', registration.submit_20_digit_code);
 
     //configuration
 
@@ -501,9 +536,7 @@ window.onload = function () {
                 $("#enable-local-mode").button('disable');
                 $("#enable-remote-mode").button('enable');
             },
-            function(){
-                alert("Could not connect to device");
-            })
+            function(){});
         },
         use_remote_mode: function() {
             if (!window.navigator.onLine) { // checks internet connection on smartphone
@@ -518,7 +551,7 @@ window.onload = function () {
              
         }
     }
-
+    
     $("#enable-remote-mode").button('disable');
     $("#enable-remote-mode").on('click', configuration.use_remote_mode);
     $("#enable-local-mode").on('click', configuration.use_local_mode);
