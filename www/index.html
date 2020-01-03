@@ -2,7 +2,6 @@
 <html>
 <head>
     <!-- <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" /> -->
-    <link rel="stylesheet" type="text/css" href="style.css" />
     <!-- <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script> -->
     <!-- <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script> -->
     <link rel="stylesheet" href="jquery.mobile-1.4.5/jquery.mobile-1.4.5.css"></link>
@@ -16,6 +15,7 @@
     <title>AccRemote</title>
     <meta http-equiv="Content-Security-Policy" 
             content="default-src * 'unsafe-inline' 'unsafe-eval' 'self' gap: data:;" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
 </head>
 <body>
     <!------------------------------------------------------------------------------------------------>
@@ -39,14 +39,14 @@
                 <div data-role="collapsible">
                     <h1>Temperature</h1>
                     <div class="ui-field-contain" style="text-align: left;">
-                        <label for="flip-scale"></label>
+                        <label class="labels"   for="flip-scale"></label>
                         <select name="flip-scale" id="flip-scale" data-role="slider" data-mini="true" value="0">
                             <option value="0">°F</option>
                             <option value="1">°C</option>
                         </select>
                     </div>
                     <div class="ui-field-contain">
-                        <label id="slider-label" for="slider-temp"></label>
+                        <label class="labels"   id="slider-label" for="slider-temp"></label>
                         <input type="range" name="void" id="slider-temp" min="0" max="1" step="1" value="50">
                         <input type="hidden" name="temp" id="slider-2-temp" value="50">
                     </div>
@@ -58,7 +58,7 @@
                 <div data-role="collapsible" id="session-time">
                     <h1>Session Time</h1>
                     <div class="ui-field-contain">
-                        <label id="slider-label" for="slider-session"></label>
+                        <label class="labels"   id="slider-label" for="slider-session"></label>
                         <input type="range" name="void" id="slider-session" min="10" max="90" step="1" value="30">
                         <input type="hidden" name="tsession" id="slider-2-session" value="30">
                     </div>
@@ -70,7 +70,7 @@
                 <div data-role="collapsible">
                     <h1>Time Zone</h1>
                     <div class="ui-field-contain">
-                        <label for="time-zone-selector">Select Time Zone</label>
+                        <label class="labels"   for="time-zone-selector">Select Time Zone</label>
                         <select name="time-zone-selector" id="time-zone-selector" class="form-timezones"></select>
                     </div>
                     <div data-role="controlgroup" data-type="horizontal">
@@ -102,7 +102,7 @@
                 <div data-role="collapsible">
                     <h1> Choose Device </h1>
                     <div class="ui-field-contain">
-                        <label for="select-native-1">Select another spa or sauna from your registered devices</label>
+                        <label class="labels"   for="select-native-1">Select another spa or sauna from your registered devices:</label>
                         <select name="select-native-1" id="choose-device-list">
                             <!--         <option value="1">Sauna pool</option> -->
                             <!--         <option value="2">Spa pool</option> -->
@@ -119,9 +119,9 @@
                 </div>
                 <div data-role="collapsible">
                     <h1> Set Wi-Fi Credentials on device</h1>
-                    <label for="ssid">SSID (Network Name):</label>
+                    <label class="labels" for="ssid" class="labels">SSID (Network Name):</label>
                     <input type="text" name="ssid" id="ssid" value="" placeholder="">
-                    <label for="ssid-pw">Password:</label>
+                    <label class="labels"   for="ssid-pw">Password:</label>
                     <input type="password" name="ssid-pw" id="ssid-pw" value="" placeholder="">
                     <div data-role="controlgroup" data-type="horizontal" class="centered-container">
                         <a id="button-connect-device-to-wifi" class="ui-btn ui-corner-all ui-shadow ui-btn-b"
@@ -164,17 +164,17 @@
             <hr>
             <h4>Step 2: Registration</h4>
             <p class="description">Complete with required information</p>
-            <label for="ssid">SSID (Network Name):</label>
-            <input type="text" name="ssid" id="ssid" value="" placeholder="">
+            <label class="labels"   for="ssid">SSID (Network Name):</label>
+            <input type="text" name="ssid" id="reg-ssid" value="" placeholder="" maxlength="32">
             <a id="scan-wifi-networks-in-device" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-b">Scan WiFi networks</a>
             <ul data-role="listview" data-inset="true" id="wifi-scan-result-list">
             </ul>
-            <label for="ssid-pw">Password:</label>
-            <input type="password" name="ssid-pw" id="ssid-pw" value="" placeholder="">
-            <label for="e-mail">E-Mail:</label>
-            <input type="text" name="e-mail" id="user-e-mail" value="" placeholder="">
-            <label for="module-name">Module Name:</label>
-            <input type="text" name="module-name" id="module-name" value="" placeholder="">
+            <label class="labels"   for="ssid-pw">Password:</label>
+            <input type="password" name="ssid-pw" id="reg-ssid-pw" value="" placeholder="" maxlength="63">
+            <label class="labels"   for="e-mail">E-Mail:</label>
+            <input type="text" name="e-mail" id="reg-user-e-mail" value="" placeholder="" maxlength="320">
+            <label class="labels"   for="module-name">Module Name:</label>
+            <input type="text" name="module-name" id="reg-module-name" value="" placeholder="" maxlength="20">
             <div data-role="controlgroup" data-type="horizontal" class="centered-container">
                 <a id="submit-register-data" data-inline="true" type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b"
                     data-transition="slideup">Submit</a>
@@ -183,8 +183,8 @@
 
             <h4>Step 3: 20 Digit Code Verification</h4>
             <p class="description">Enter 20-digit code sent to your e-mail account</p>
-            <label for="code-20-digits">20-digit Code:</label>
-            <input type="text" name="code-20-digits" id="code-20-digits" value="" placeholder="">
+            <!-- <label class="labels"   for="code-20-digits">20-digit Code:</label> -->
+            <input type="text" name="code-20-digits" id="code-20-digits" value="" placeholder="" maxlength="20">
             <div data-role="controlgroup" data-type="horizontal" class="centered-container">
                 <a id="submit-20-digit-code" class="ui-btn ui-corner-all ui-shadow ui-btn-b"
                     data-transition="slideup">Register device</a>

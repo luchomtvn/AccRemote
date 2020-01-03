@@ -11,6 +11,12 @@ html {
     color: darkgray;
 }
 
+.labels {
+    font-size: small !important;
+    color: darkgrey !important;
+    font-style: italic !important;
+}
+
 .my-button {
     /* font-size: smaller; */
     margin-top: 7%;
