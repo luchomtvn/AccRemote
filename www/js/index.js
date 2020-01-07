@@ -3,28 +3,38 @@
     // Wait for device API libraries to load
     //
     var app = {
-    // Application Constructor
-    initialize: function() {
-        this.bindEvents();
-    },
-    // Bind Event Listeners
-    //
-    // Bind any events that are required on startup. Common events are:
-    // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-    },
-    // deviceready Event Handler
-    //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
-        console.log("deviceReady fired");
-        // alert("deviceReady fired");
-    },
-    // Update DOM on a Received Event
+        // Application Constructor
+        initialize: function() {
+            this.bindEvents();
+        },
+        // Bind Event Listeners
+        //
+        // Bind any events that are required on startup. Common events are:
+        // 'load', 'deviceready', 'offline', and 'online'.
+        bindEvents: function() {
+            document.addEventListener('deviceready', this.onDeviceReady, false);
+        },
+        // deviceready Event Handler
+        //
+        // The scope of 'this' is the event. In order to call the 'receivedEvent'
+        // function, we must explicitly call 'app.receivedEvent(...);'
+        onDeviceReady: function() {
+            console.log("deviceReady fired");
+            
+            database.openDatabase();
+            database.populateDatabase();
+
+
+            // universalLinks.subscribe(null, function (eventData) {
+            //     // do some work
+            //     console.log('Did launch application from the link: ' + eventData.url);
+            // });
+            // alert("deviceReady fired");
+
+        },
+        // Update DOM on a Received Event
    
-};
+    };
 
 ///////////////////////////////////////////////////////////////
 ///////////////// Helper to allow classes and inheritance /////

@@ -39,11 +39,15 @@
     </platform>
     <platform name="android" />
     <universal-links>
+        <ios-team-id value="8XMMQJCWHN" />
         <host name="accremote">
             <path url="/register" />
         </host>
     </universal-links>
     <preference name="AndroidLaunchMode" value="singleInstance" />
+    <gap:plugin name="cordova-plugin-customurlscheme" source="npm">
+        <param name="URL_SCHEME" value="accsmartcontrol" />
+    </gap:plugin>
     <engine name="browser" spec="^5.0.4" />
     <engine name="ios" spec="^4.5.5" />
     <engine name="android" spec="^7.1.4" />
@@ -52,5 +56,5 @@
     <plugin name="cordova-plugin-ble-central" spec="1.2.2">
         <variable name="BLUETOOTH_USAGE_DESCRIPTION" value=" " />
     </plugin>
-    <plugin name="cordova-plugin-deeplinks" spec="1.1.1" />
+    <plugin name="cordova-sqlite-evcore-extbuild-free" spec="0.11.0" />
 </widget>

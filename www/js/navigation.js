@@ -11,29 +11,9 @@ const MODES = {
 window.onload = function () {
 
     // page events
-    universalLinks.subscribe('eventName', function (eventData) {
-        // do some work
-        console.log('Did launch application from the link: ' + eventData.url);
-    });
+    
 
-    window.registered_devices = [{ // todo: should get this info from app memory
-        name: "spa suite",
-        type: "spa",
-        module_bt_name: "AccModule",
-        module_ssid: "MLM",
-        module_pass: "12365390aa",
-        user_email: "lucianomanto@gmail.com"
-    },{
-        name: "sauna pool",
-        type: "sauna",
-        module_bt_name: "AccModule",
-        module_ssid: "MLM",
-        module_pass: "12365390aa",
-        user_email: "lucianomanto@gmail.com"
-    }];
 
-    window.current_device = registered_devices[0]; // todo: should get this info from app memory
- 
     let type = "spa";
 
     window.panel = {
@@ -42,6 +22,11 @@ window.onload = function () {
         buttons_codes: {
             'aux': 'x0', 'jets': 'j0', 'system': 's0', 'light': 'l0', 'aux2': 'a0',
             'down': 'd0', 'up': 'u0', 'set-time': 'd1', 'set-temp': 'u1'
+        },
+        openWebsocket: function() {
+            // appws = new WebSocket("ws://accsmartlink.com/wsa");
+            appws = new WebSocket("ws://localhost:3001/wsa");
+
         },
         reset_buttons: function () {
             for (var b in panel.buttons) {
@@ -393,7 +378,7 @@ window.onload = function () {
             clearInterval(window.refresh_screen_loop);
     }
 
-    var wifi = {
+    window.wifi = {
         module_connected: false,
         select_scanned_network: function () {
             $("#ssid").val($(this).find("a").text());
@@ -498,47 +483,6 @@ window.onload = function () {
     $("#button-check-wifi-connection").on('click', wifi.check_wifi_connection);
 
 
-
-    registration = {
-        re_ssid: /^\w{0,32}$/,
-        re_mail: /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,}$/i,
-        re_name: /^[\w-]{4,20}$/,
-        re_code: /^[\w]{20}$/,
-        submit_registration_info: function() {
-            errors = [];
-
-            if(!registration.re_ssid.test(String($("#reg-ssid").val())))
-                errors.push("invalid ssid");
-            
-            if(!registration.re_mail.test(String($("#reg-user-e-mail").val()).toLowerCase()))
-                errors.push("invalid e-mail");
-
-            if(!registration.re_name.test(String($("#reg-module-name").val())))
-                errors.push("invalid module name (4 to 20 characters long)");
-            
-            registered_devices.forEach(element => {
-                if (this.name == $("#reg-module-name").val()){
-                    errors.push("invalid module name (name already registered)");
-                }
-            });
-
-            if(errors.length != 0){
-                alert(errors.join('\n'));
-            }
-            else{
-                alert("sent data to module");
-            }
-        },
-        submit_20_digit_code: function() {
-            if (!registration.re_code.test($("#code-20-digits").val())){
-                alert("invalid code");
-            }
-            else{
-                alert("sent data to server");
-            }
-        }
-    }
-
     $("#submit-register-data").on('click', registration.submit_registration_info);
     $("#submit-20-digit-code").on('click', registration.submit_20_digit_code);
 
@@ -601,8 +545,6 @@ window.onload = function () {
             console.log("failed to send message");
         }
     };
-
-
 
     // document.getElementById('canvas-bt').innerHTML = window.frames["spa_bluetooth"];
     // $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });

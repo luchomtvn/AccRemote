@@ -3,8 +3,9 @@
 
 <head>
     <meta charset="utf-8" />
-    <!-- <script src="jquery-1.11.1.js"></script> -->
-    <!-- <script src="jquery.mobile-1.4.5/jquery.mobile-1.4.5.js"></script> -->
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
     <title>Mocha Tests</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,14 +17,14 @@
 
     <script src="https://unpkg.com/chai/chai.js"></script>
     <script src="./libs/chai.js"></script>
+    <script src="./libs/sinon.js"></script>
     <script src="https://unpkg.com/mocha/mocha.js"></script>
 
     <script class="mocha-init">
         mocha.setup('bdd');
         mocha.checkLeaks();
     </script>
-    <script src="../index.html"></script>
-    <!-- <script src="../js/navigation.js"></script> -->
+    <script src="../js/registration.js"></script>
     <script src="navigation.test.js"></script>
     <script class="mocha-exec">
         mocha.run();
