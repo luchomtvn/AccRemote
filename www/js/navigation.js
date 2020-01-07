@@ -9,7 +9,12 @@ const MODES = {
 };
 
 window.onload = function () {
+
     // page events
+    universalLinks.subscribe('eventName', function (eventData) {
+        // do some work
+        console.log('Did launch application from the link: ' + eventData.url);
+    });
 
     window.registered_devices = [{ // todo: should get this info from app memory
         name: "spa suite",

@@ -38,6 +38,12 @@
         </config-file>
     </platform>
     <platform name="android" />
+    <universal-links>
+        <host name="accremote">
+            <path url="/register" />
+        </host>
+    </universal-links>
+    <preference name="AndroidLaunchMode" value="singleInstance" />
     <engine name="browser" spec="^5.0.4" />
     <engine name="ios" spec="^4.5.5" />
     <engine name="android" spec="^7.1.4" />
@@ -46,4 +52,5 @@
     <plugin name="cordova-plugin-ble-central" spec="1.2.2">
         <variable name="BLUETOOTH_USAGE_DESCRIPTION" value=" " />
     </plugin>
+    <plugin name="cordova-plugin-deeplinks" spec="1.1.1" />
 </widget>

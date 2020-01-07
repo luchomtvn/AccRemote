@@ -13,7 +13,8 @@
       "cordova-custom-config": {},
       "cordova-plugin-ble-central": {
         "BLUETOOTH_USAGE_DESCRIPTION": " "
-      }
+      },
+      "cordova-plugin-deeplinks": {}
     }
   },
   "dependencies": {
@@ -23,6 +24,7 @@
     "cordova-ios": "^4.5.5",
     "cordova-plugin-ble-central": "1.2.2",
     "cordova-plugin-compat": "1.2.0",
+    "cordova-plugin-deeplinks": "1.1.1",
     "cordova-plugin-device": "2.0.2",
     "mocha": "^6.1.4",
     "mocha-sinon": "^2.1.0",
