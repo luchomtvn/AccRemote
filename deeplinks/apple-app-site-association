@@ -1,0 +1,9 @@
+{
+    "applinks": {
+        "apps": [],
+        "details": [{
+            "appID": "8XMMQJCWHN.com.mantotech.accsmartcontrol",
+            "paths": ["/register/*"]
+            }]
+    }
+}

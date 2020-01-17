@@ -40,9 +40,9 @@
     <platform name="android" />
     <universal-links>
         <ios-team-id value="8XMMQJCWHN" />
-        <host name="accremote">
-            <path url="/register" />
-        </host>
+    <host name="11mltech.com" scheme="https" event="extern_url">
+        <path url="/register"/>
+    </host>
     </universal-links>
     <preference name="AndroidLaunchMode" value="singleInstance" />
     <gap:plugin name="cordova-plugin-customurlscheme" source="npm">

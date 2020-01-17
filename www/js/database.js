@@ -20,10 +20,10 @@ var database = {
         });
     },
     getUrlByName: function(name) {
-        this.db.executeSql('SELECT * from devices where spaname=?', [1],
+        this.db.executeSql('SELECT * from devices where spaname=?', [name],
             function (tx) {
                 console.log("Success, rows " + tx.rows.length);
-                console.log("device name: " + tx.rows.item(0).privateurl)
+                console.log("device url: " + tx.rows.item(0).privateurl)
             },
             function (e) {
                 console.log("Error: " + e)

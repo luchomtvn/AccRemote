@@ -24,6 +24,9 @@ window.onload = function () {
             'down': 'd0', 'up': 'u0', 'set-time': 'd1', 'set-temp': 'u1'
         },
         openWebsocket: function() {
+            // get url from current spa
+            
+
             // appws = new WebSocket("ws://accsmartlink.com/wsa");
             appws = new WebSocket("ws://localhost:3001/wsa");
 
