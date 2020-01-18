@@ -14,7 +14,7 @@
     <access origin="*" />
     <icon height="180" platform="ios" src="images/icons/res/icon/ios/icon-60@3x.png" width="180" />
     <icon height="60" platform="ios" src="images/icons/res/icon/ios/icon-60.png" width="60" />
-    <icon height="120" platform="ios" src="images/icons/res/icon/ios/icon-60@2x.png" width="120" />
+    <icon height="120" platform="ios" src="images/icons/res/icon/ios/icon-60@2x.png" />
     <icon height="76" platform="ios" src="images/icons/res/icon/ios/icon-76.png" width="76" />
     <icon height="152" platform="ios" src="images/icons/res/icon/ios/icon-76@2x.png" width="152" />
     <icon height="167" platform="ios" src="images/icons/res/icon/ios/icon-83.5@2x.png" width="167" />
@@ -36,17 +36,33 @@
                 <string>bluetooth-central</string>
             </array>
         </config-file>
+        <config-file parent="CFBundleURLTypes" target="*-Info.plist">
+            <array>
+                <dict>
+                    <key>CFBundleURLSchemes</key>
+                    <array>
+                        <string>https://accsmartcontrol/register</string>
+                        <string>ACC-SMART-CONTROL</string>
+                    </array>
+                </dict>
+            </array>
+        </config-file>
     </platform>
-    <platform name="android" />
-    <universal-links>
-        <ios-team-id value="8XMMQJCWHN" />
-    <host name="11mltech.com" scheme="https" event="extern_url">
-        <path url="/register"/>
-    </host>
-    </universal-links>
+    <platform name="android">
+        <config-file parent="application" target="AndroidManifest.xml">
+            <activity android:label="webIntentFilter" android:name="com.mantotech.accsmartcontrol">
+                <intent-filter android:autoVerify="true">
+                    <action android:name="android.intent.action.VIEW" />
+                    <category android:name="android.intent.category.DEFAULT" />
+                    <category android:name="android.intent.category.BROWSABLE" />
+                    <data android:host="accsmartcontrol" android:pathPrefix="/register" android:scheme="https" />
+                </intent-filter>
+            </activity>
+        </config-file>
+    </platform>
     <preference name="AndroidLaunchMode" value="singleInstance" />
     <gap:plugin name="cordova-plugin-customurlscheme" source="npm">
-        <param name="URL_SCHEME" value="accsmartcontrol" />
+        <param name="URL_SCHEME" value="https" />
     </gap:plugin>
     <engine name="browser" spec="^5.0.4" />
     <engine name="ios" spec="^4.5.5" />

@@ -14,7 +14,13 @@
       "cordova-plugin-ble-central": {
         "BLUETOOTH_USAGE_DESCRIPTION": " "
       },
-      "cordova-sqlite-evcore-extbuild-free": {}
+      "cordova-sqlite-evcore-extbuild-free": {},
+      "cordova-plugin-customurlscheme": {
+        "URL_SCHEME": "accsmartcontrol",
+        "ANDROID_SCHEME": " ",
+        "ANDROID_HOST": " ",
+        "ANDROID_PATHPREFIX": "/"
+      }
     }
   },
   "dependencies": {
@@ -24,6 +30,7 @@
     "cordova-ios": "^4.5.5",
     "cordova-plugin-ble-central": "1.2.2",
     "cordova-plugin-compat": "1.2.0",
+    "cordova-plugin-customurlscheme": "5.0.0",
     "cordova-plugin-device": "2.0.2",
     "cordova-sqlite-evcore-extbuild-free": "0.11.0",
     "mocha": "^6.1.4",
