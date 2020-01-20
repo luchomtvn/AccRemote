@@ -41,7 +41,7 @@
                 <dict>
                     <key>CFBundleURLSchemes</key>
                     <array>
-                        <string>https://accsmartcontrol/register</string>
+                        <string>accsmartcontrol://register</string>
                         <string>ACC-SMART-CONTROL</string>
                     </array>
                 </dict>
@@ -55,14 +55,14 @@
                     <action android:name="android.intent.action.VIEW" />
                     <category android:name="android.intent.category.DEFAULT" />
                     <category android:name="android.intent.category.BROWSABLE" />
-                    <data android:host="accsmartcontrol" android:pathPrefix="/register" android:scheme="https" />
+                    <data android:host="register" android:scheme="accsmartcontrol" />
                 </intent-filter>
             </activity>
         </config-file>
     </platform>
     <preference name="AndroidLaunchMode" value="singleInstance" />
     <gap:plugin name="cordova-plugin-customurlscheme" source="npm">
-        <param name="URL_SCHEME" value="https" />
+        <param name="URL_SCHEME" value="accsmartcontrol" />
     </gap:plugin>
     <engine name="browser" spec="^5.0.4" />
     <engine name="ios" spec="^4.5.5" />
