@@ -64,6 +64,7 @@
     <gap:plugin name="cordova-plugin-customurlscheme" source="npm">
         <param name="URL_SCHEME" value="accsmartcontrol" />
     </gap:plugin>
+    <allow-intent href="accsmartcontrol:" />
     <engine name="browser" spec="^5.0.4" />
     <engine name="ios" spec="^4.5.5" />
     <engine name="android" spec="^7.1.4" />
@@ -73,4 +74,10 @@
         <variable name="BLUETOOTH_USAGE_DESCRIPTION" value=" " />
     </plugin>
     <plugin name="cordova-sqlite-evcore-extbuild-free" spec="0.11.0" />
+    <plugin name="cordova-plugin-customurlscheme" spec="5.0.0">
+        <variable name="URL_SCHEME" value="accsmartcontrol" />
+        <variable name="ANDROID_SCHEME" value=" " />
+        <variable name="ANDROID_HOST" value=" " />
+        <variable name="ANDROID_PATHPREFIX" value="/" />
+    </plugin>
 </widget>

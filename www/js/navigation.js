@@ -11,7 +11,21 @@ const MODES = {
 window.onload = function () {
 
     // page events
-    
+
+    window.handleOpenURL = function(url) {
+        $.mobile.changePage("#register-new-device", { transition: "slidedown", changeHash: false });
+        autofill_registered(url);
+    }
+
+    window.autofill_registered = function(url){
+        params = new URLSearchParams(url.split("?", 2)[1]);
+        code = params.get("code");
+        $("#code-20-digits").val(code);
+        $([document.documentElement, document.body]).animate({
+            scrollTop: $("#submit-20-digit-code").offset().top
+        }, 700);
+    }
+
 
 
     let type = "spa";
