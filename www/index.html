@@ -104,8 +104,6 @@
                     <div class="ui-field-contain">
                         <label class="labels"   for="select-native-1">Select another spa or sauna from your registered devices:</label>
                         <select name="select-native-1" id="choose-device-list">
-                            <!--         <option value="1">Sauna pool</option> -->
-                            <!--         <option value="2">Spa pool</option> -->
                         </select>
                     </div>
                 </div>
@@ -126,6 +124,23 @@
                     <div data-role="controlgroup" data-type="horizontal" class="centered-container">
                         <a id="button-connect-device-to-wifi" class="ui-btn ui-corner-all ui-shadow ui-btn-b"
                             data-transition="slideup">Set</a>
+                    </div>
+                </div>
+                <div data-role="collapsible">
+                    <h1>Delete Device</h1>
+                    <div class="ui-field-contain">
+                            <label class="labels" for="select-native-2">Select device to delete:</label>
+                            <select name="select-native-2" id="delete-device-list">
+                            </select>
+                    </div>
+                    <a href="#delete-device-dialog" data-rel="popup" data-position-to="window" data-transition="pop" class="ui-shadow ui-btn ui-corner-all ui-btn-inline">Delete
+                        Device</a>
+                    <div data-role="popup" id="delete-device-dialog">
+                        <div class="ui-content centered-container">
+                            <p>Are you sure you want to delete this device?</p>
+                            <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline" data-rel="back" data-transition="flow">Delete</a>
+                            <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline" data-rel="back" >No</a>
+                        </div>
                     </div>
                 </div>
             </div>

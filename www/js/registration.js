@@ -36,8 +36,13 @@ registration = {
             alert("sent data to server");
             // POST to server with 20 digits. 
             // answer to POST will be url of device.
-            // make new database entry (alarm if already exists) with new url
+            this.register_new_device("privateurl", $("#reg-module-name").val(), "spa");
+            configuration.refresh_device_list();
         }
+    },
+    register_new_device: function(privateurl, modulename, type) {
+        database.addDevice(privateurl, modulename, type);
+        configuration.refresh_device_list();
     }
 }
 

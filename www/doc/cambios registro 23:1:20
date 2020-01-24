@@ -1,0 +1,7 @@
+- EL usuario se identifica con el mail, y no va a ser necesario que ingrese su mail en cada equipo nuevo registrado.
+- EL usuario va a poder controlar el modulo via bluetooth sin antes haberlo registrado. 
+- El proceso de registro del equipo ahora es mas liviano, ya que el usuario es lo primero que se registra en el servidor antes que cualquier equipo.
+- Cuando el usuario esta registrado, va a poder agregar un equipo nuevo a su lista de equipos agregados en el servidor. Para obtener esta lista lo unico que tiene que hacer es conectarse a internet y pedirla.
+- En el caso que quiera manejar un dispositivo por bluetooth, hay algunas cosas a tener en cuenta:
+    1. Si nunca antes se conecto con el dispositivo, tiene que escanear (usando la app) los dispositivos ble cercanos y buscar el equipo. Cuando intente conectarse, debe ingresar una contraseña que es sabida por el dueño del equipo. Una vez conectado, se guardan los datos de la mac del usuario en el modulo, para que la proxima vez que se conecte, se haga sin necesidad de ingresar la contraseña. Se deberia poder borrar la lista de usuarios permitidos del modulo. 
+    2. Si ya lo escaneo antes, deberia poder buscarlo dentro de los equipos guardados en el local storage. 

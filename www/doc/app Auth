@@ -1,0 +1,9 @@
+Phonegap tiene implementada una autenticacion via sesion y usando localstorage de HTML5. Vamos a usar esto para autenticarnos. La secuencia seria esta:
+
+1. El usuario se baja la aplicacion. La abre
+2. La aplicacion detecta que no hay ningun token de sesion guardado, entonces le pide al usuario un mail.
+3. Con el mail, la app se comunica con el servidor mediante un post para agregar un nuevo usuario. 
+4. El servidor guarda los datos del usuario (aun no verificado) en una nueva entrada de la base de datos, genera un token nuevo y se lo pasa a la aplicacion. Luego de esto, genera un numero random y manda un mail al usuario con un link donde esta este numero. 
+5. El usuario abre el mail, y hace un click en el link, que realiza un posta al servidor que finaliza el proceso de registro, verificando su direccion de mail.
+
+Con esto el servidor tiene al usuario verificado. Cada vez que el usuario ingrese a la aplicacion, esta le envia el token al servidor para autenticarlo. 

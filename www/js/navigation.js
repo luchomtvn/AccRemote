@@ -504,12 +504,11 @@ window.onload = function () {
     $("#submit-20-digit-code").on('click', registration.submit_20_digit_code);
 
     //configuration
-
-    registered_devices.forEach( (dev) => {
-        opt = document.createElement("option");
-        opt.text = dev.name;
-        $("#choose-device-list").append(opt);
-    });
+    // registered_devices.forEach( (dev) => {
+    //     opt = document.createElement("option");
+    //     opt.text = dev.name;
+    //     $("#choose-device-list").append(opt);
+    // });
 
     window.configuration = {
         use_local_mode: function() {
@@ -542,8 +541,38 @@ window.onload = function () {
                     panel.load_device();
                 }
             });
+        },
+        refresh_device_list: function() { // goes through the device database and repopulates device selection section
+            database.db.executeSql('SELECT * from devices', [],
+                function (tx) {
+                    console.log("Success, rows " + tx.rows.length);
+                    $("#choose-device-list").empty();
+                    $("#delete-device-list").empty();
+                    for (let i = 0; i < tx.rows.length; i++) {
+                        // add names taken from bdd to device list
+                        opt = document.createElement("option");
+                        opt.text = tx.rows.item(i).spaname;
+                        $("#choose-device-list").append(opt);
+                        $("#delete-device-list").append(opt);
+                    }
+                },
+                function (e) {
+                    console.log("Error: " + e)
+                });
+        },
+        delete_device: function(name){
+            database.db.executeSql('DELETE FROM devices WHERE spaname=?', [name],
+            function(tx) {
+                console.log("Row elminated");
+                this.refresh_device_list();
+            },
+            function (e) {
+                console.log("Error: " + e)
+            });
         }
     }
+
+
     
     // $("#enable-remote-mode").button('disable');
     $("#enable-remote-mode").on('click', configuration.use_remote_mode);

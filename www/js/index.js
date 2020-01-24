@@ -22,7 +22,8 @@
             console.log("deviceReady fired");
             
             database.openDatabase();
-            database.populateDatabase();
+            database.createTable();
+            configuration.refresh_device_list();
 
 
             // universalLinks.subscribe(null, function (eventData) {
