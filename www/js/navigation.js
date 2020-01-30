@@ -12,6 +12,24 @@ window.onload = function () {
 
     // page events
 
+    $("#submit-email").on('click', function() {
+        if (!registration.re_mail.test(String($("#txt-email-address").val()).toLowerCase()))
+            alert("Wrong E-Mail format");
+        else{
+            // TODO: do a POST to server setting new user and getting final_token. after getting final_token, notify user to check e-mail
+            let user = {
+                email: $("#txt-email-address").val(),
+                final_token: "",
+                creation_date: Date.now(),
+                devices: [] // aca tengo que tener los nombres de los devices y ademas tengo que tener una forma de abrir el websocket en el servidor. la app vieja lo hace con la url, no se si seguira asi. 
+
+            };
+            window.session.getInstance().set(user);
+            $.mobile.changePage("#main-page", { transition: "slidedown", changeHash: false });
+
+        }
+    });
+
     window.handleOpenURL = function(url) {
         $.mobile.changePage("#register-new-device", { transition: "slidedown", changeHash: false });
         autofill_registered(url);
@@ -42,7 +60,7 @@ window.onload = function () {
             
 
             // appws = new WebSocket("ws://accsmartlink.com/wsa");
-            appws = new WebSocket("ws://localhost:3001/wsa");
+            let appws = new WebSocket("ws://localhost:3001/wsa");
 
         },
         reset_buttons: function () {
@@ -68,15 +86,16 @@ window.onload = function () {
                 $("#button-" + panel.buttons[b] + "-frame").data("off", off_style);
                 $("#button-" + panel.buttons[b] + "-frame").data("int", off_style + 'stroke-opacity:0;fill-opacity:0.2;fill:#ffffff');
                 $("#button-" + panel.buttons[b] + "-frame").data("timer", '');
-                let message = panel.buttons_codes[panel.buttons[b]] + '\0';
+                let button = panel.buttons_codes[panel.buttons[b]] + '\0';
 
                 $("#button-" + panel.buttons[b] + "-frame").on("vclick", function () { // inside the function, 'this' is the html object that was clicked
                     // var bdata = $(this).data("b");
                     // var tout = bdata == 6 ? 1000 : 1000;
                     var tout = 1000;
                     $(this).attr("style", $(this).data("int"));
-                    ble.write(bluetooth.connected_id, SERVICE_UUID_OPERATE, CHARACTERISTIC_UUID_OPERATE_BUTTON,
-                        bluetooth.stringToBytes(message), bt_callbacks.success, bt_callbacks.failure);
+                    transmitter.send_to_module("button",button);
+                    // ble.write(bluetooth.connected_id, SERVICE_UUID_OPERATE, CHARACTERISTIC_UUID_OPERATE_BUTTON,
+                    //     bluetooth.stringToBytes(message), bt_callbacks.success, bt_callbacks.failure);
                     let self = this;
                     var mytimer = setTimeout(function () {
                         $(self).attr("style", off_style);
@@ -153,7 +172,8 @@ window.onload = function () {
             }).change();
 
             $("#submit-temp").on('click', function () {
-                alert("submitted temp " + $("#slider-temp").val());
+                // alert("submitted temp " + $("#slider-temp").val());
+                transmitter.send_to_module("temperature", $("#slider-temp").val() + $("#flip-scale").val() == 1 ? "C" : "F")
             });
 
             // var slider_session = new Slider("session", 10, MAX_SESSION, MIN_SESSION, bt_module);
@@ -164,7 +184,9 @@ window.onload = function () {
                 $("#slider-session").val(this.value);
             }).change();
             $("#submit-session").on('click', function () {
-                alert("submitted session " + $("#slider-session").val());
+                // alert("submitted session " + $("#slider-session").val());
+                transmitter.send_to_module("session",$("#slider-session").val());
+
             });
         },
         f2c: function (far) {
@@ -309,12 +331,12 @@ window.onload = function () {
                 function () {
                     $("#scan-result-list").empty();
                     ble.startScan([], function (device) {
-                        if (/Acc/.exec(device.name) !== null) {
+                        // if (/Acc/.exec(device.name) !== null) {
                             // bt_module.add_scanned_device(device.name, device.id);
                             console.log("Device found: " + device.name);
                             bluetooth.scanned_devices.push(device);
                             $("#scan-result-list").append(`<li> <a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">${device.name}</a> </li>`);
-                        }
+                        // }
                     }, function () {
                         alert("Could not scan");
                         console.log("Could not scan");
@@ -341,6 +363,9 @@ window.onload = function () {
                                 function () {
                                     bluetooth.connected_id = bluetooth.get_id(bluetooth.device_to_connect);
                                     console.log("Connected to device id " + bluetooth.connected_id);
+                                    let session = window.session.getInstance().get();
+                                    session.bt_module_name = bluetooth.get_id(bluetooth.device_to_connect);
+                                    window.session.getInstance().set(session)
                                     alert("BT Connected!");
                                 },
                                 function () {
@@ -384,6 +409,118 @@ window.onload = function () {
                 function () {
                     // disable local use
                     console.log("Error Disconnecting");
+                });
+        },
+        writeFailure: function() {
+            console.log("Couldn't write to module by bluetooth");
+        },
+        send_temperature: function(temp){
+            ble.write(bluetooth.connected_id, 
+                SERVICE_UUID_OPERATION,
+                CHARACTERISTIC_UUID_TEMPERATURE,
+                bluetooth.stringToBytes(temp),
+                function() {
+                    console.log("sent temperature: " + temp)
+                },
+                bluetooth.writeFailure
+            );
+        },
+        send_session: function(session){
+            ble.write(bluetooth.connected_id, 
+                SERVICE_UUID_OPERATION,
+                CHARACTERISTIC_UUID_SESSION,
+                bluetooth.stringToBytes(session),
+                function() {
+                    console.log("sent session: " + session)
+                },
+                bluetooth.writeFailure
+            );
+        },
+        send_time: function (time) {
+            ble.write(bluetooth.connected_id,
+                SERVICE_UUID_OPERATION,
+                CHARACTERISTIC_UUID_TIME,
+                bluetooth.stringToBytes(time),
+                function () {
+                    console.log("sent time: " + time)
+                },
+                bluetooth.writeFailure
+            );
+        },
+        send_button: function (button) {
+            ble.write(bluetooth.connected_id,
+                SERVICE_UUID_OPERATION,
+                CHARACTERISTIC_UUID_BUTTON,
+                bluetooth.stringToBytes(button),
+                function () {
+                    console.log("sent button: " + button)
+                },
+                bluetooth.writeFailure
+            );
+        },
+        send_wificreds: function (wificreds) {
+            ble.write(bluetooth.connected_id,
+                SERVICE_UUID_OPERATION,
+                CHARACTERISTIC_UUID_WIFICREDS,
+                bluetooth.stringToBytes(wificreds),
+                function () {
+                    console.log("sent wificreds: " + wificreds)
+                },
+                bluetooth.writeFailure
+            );
+        },
+        send_usertoken: function (usertoken) {
+            ble.write(bluetooth.connected_id,
+                SERVICE_UUID_OPERATION,
+                CHARACTERISTIC_UUID_USERTOKEN,
+                bluetooth.stringToBytes(usertoken),
+                function () {
+                    console.log("sent usertoken: " + usertoken)
+                },
+                bluetooth.writeFailure
+            );
+        },
+        send: function (characteristic, message) {
+            ble.isConnected(bluetooth.connected_id,
+                function(){
+                    window["bluetooth"]["send_" + characteristic](message);
+                },
+                function(){
+                    console.log("Bluetooth disconnected");
+                })
+        },
+        read_characteristic: function (characteristic){
+            ble.isConnected(bluetooth.connected_id, 
+                function(){
+                    ble.read(bluetooth.connected_id, SERVICE_UUID_OPERATION, characteristic,
+                        function (data) {
+                            let data_read = String.fromCharCode.apply(null, new Uint8Array(data));
+                            console.log("read data from characteristic: " + data_read);
+                        },
+                        function(){
+                            console.log("couldn't read from characteristic");
+                        }
+                    )
+                },
+                function(){
+                    console.log("bluetooth not connected");
+            });
+        },
+        subscribe_to_characteristic: function(characteristic){
+            ble.isConnected(bluetooth.connected_id,
+                function () {
+                    ble.startNotification(bluetooth.connected_id, SERVICE_UUID_OPERATION, characteristic,
+                        function (data) {
+                            let data_read = String.fromCharCode.apply(null, new Uint8Array(data));
+                            console.log("read data from characteristic: " + data_read);
+                        },
+                        function () {
+                            console.log("couldn't read from characteristic");
+                        }
+                    )
+                },
+                function () {
+                    console.log("bluetooth not connected");
                 });
         }
     }
@@ -479,6 +616,27 @@ window.onload = function () {
         }
     }
 
+    transmitter = {
+        types: ["temperature", "session", "time", "button", "usertoken", "wificreds"],
+        send_to_module: function(type, message){
+            if (!transmitter.types.includes(type)){
+                console.log("error invoking transmitter. invalid type: " + type)
+            }
+            else{
+                let session = window.session.getInstance().get();
+                ble.isConnected(session.bt_module_name,   // if bt is connected, send by bt
+                                transmitter.send_by_bt(type, message),
+                                transmitter.send_by_wifi(type, message));
+            }
+        },
+        send_by_bt: function(characteristic,message) {
+            bluetooth.send(characteristic,message);
+        },
+        send_by_wifi: function(type,message){
+            console.log("yet to be implemented");
+        }
+    }
+
 
     // add new device
     
@@ -529,46 +687,24 @@ window.onload = function () {
                 panel.mode = MODES.REMOTE;
                 $("#enable-local-mode").button('enable');
                 $("#enable-remote-mode").button('disable');
-
             }
              
         },
         choose_device_list: function(){
             console.log($("#choose-device-list").val());
-            registered_devices.forEach(element => {
-                if (element.name === $("#choose-device-list").val()){
-                    current_device = element;
-                    panel.load_device();
-                }
-            });
-        },
-        refresh_device_list: function() { // goes through the device database and repopulates device selection section
-            database.db.executeSql('SELECT * from devices', [],
-                function (tx) {
-                    console.log("Success, rows " + tx.rows.length);
-                    $("#choose-device-list").empty();
-                    $("#delete-device-list").empty();
-                    for (let i = 0; i < tx.rows.length; i++) {
-                        // add names taken from bdd to device list
-                        opt = document.createElement("option");
-                        opt.text = tx.rows.item(i).spaname;
-                        $("#choose-device-list").append(opt);
-                        $("#delete-device-list").append(opt);
+            user = session.getInstance().get();
+            if(user.devices == undefined){
+                $.mobile.changePage("#login-page", { transition: "slidedown", changeHash: false });
+            }
+            else{
+                user.devices.forEach(element => {
+                    if (element.name === $("#choose-device-list").val()){
+                        current_device = element;
+                        panel.load_device();
                     }
-                },
-                function (e) {
-                    console.log("Error: " + e)
                 });
-        },
-        delete_device: function(name){
-            database.db.executeSql('DELETE FROM devices WHERE spaname=?', [name],
-            function(tx) {
-                console.log("Row elminated");
-                this.refresh_device_list();
-            },
-            function (e) {
-                console.log("Error: " + e)
-            });
+
+            }
         }
     }
 

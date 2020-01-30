@@ -9,8 +9,8 @@ registration = {
         if (!registration.re_ssid.test(String($("#reg-ssid").val())))
             errors.push("invalid ssid");
 
-        if (!registration.re_mail.test(String($("#reg-user-e-mail").val()).toLowerCase()))
-            errors.push("invalid e-mail");
+        // if (!registration.re_mail.test(String($("#reg-user-e-mail").val()).toLowerCase()))
+            // errors.push("invalid e-mail");
 
         if (!registration.re_name.test(String($("#reg-module-name").val())))
             errors.push("invalid module name (4 to 20 characters long)");
@@ -25,7 +25,17 @@ registration = {
             alert(errors.join('\n'));
         }
         else {
-            alert("sent data to module");
+            user = session.getInstance().get();
+            if (user == undefined)
+                $.mobile.changePage("#login-page", { transition: "slidedown", changeHash: false });
+            else{
+                user.devices.push({
+                    name: $("#reg-module-name").val(),
+                    privateurl: "url"
+                });
+                alert("sent data to module");
+
+            }
         }
     },
     submit_20_digit_code: function () {

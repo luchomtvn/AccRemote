@@ -3,7 +3,35 @@ Phonegap tiene implementada una autenticacion via sesion y usando localstorage d
 1. El usuario se baja la aplicacion. La abre
 2. La aplicacion detecta que no hay ningun token de sesion guardado, entonces le pide al usuario un mail.
 3. Con el mail, la app se comunica con el servidor mediante un post para agregar un nuevo usuario. 
-4. El servidor guarda los datos del usuario (aun no verificado) en una nueva entrada de la base de datos, genera un token nuevo y se lo pasa a la aplicacion. Luego de esto, genera un numero random y manda un mail al usuario con un link donde esta este numero. 
+4. El servidor guarda los datos del usuario (aun no verificado) en una nueva entrada de la base de datos, genera un token nuevo y se lo pasa a la aplicacion. Luego de esto, genera un numero random y manda un mail al usuario con un link donde esta este numero.     
 5. El usuario abre el mail, y hace un click en el link, que realiza un posta al servidor que finaliza el proceso de registro, verificando su direccion de mail.
 
 Con esto el servidor tiene al usuario verificado. Cada vez que el usuario ingrese a la aplicacion, esta le envia el token al servidor para autenticarlo. 
+
+La app identifica al usuario. Lo que queda por ver es como entonces la app se comunica con el servidor para levantar el websocket. Como es ahora, la app necesita enviarle una cookie firmada al servidor para que este autentique y abra el websocket. Seria la urlkey, que no estaria mas en la app, por lo que la app tendria que pedirla. 
+La app sabe que el que se conecto es el usuario, porque entra a la aplicacion y hay un token generado. 
+
+Cuando el usuario pone su mail la primera vez que ingresa a la aplicacion, la app genera un token con el mail del usuario, y envia esta info al servidor. Ahi el servidor genera dos token, un final y otro de mail. El final se lo devuelve a la app para que lo guarde en su propio token. EL de mail se le manda por mail al usuario, cuando el usuario clickea el link que le llega por mail, el token se queda como verificado en el servidor. CUando un token esta verificado, cada vez que llegue una request de websocket de la aplicacion, se va a permitir. 
+
+
+que tiene que hacer la app entonces? 
+tiene que llenar la info del token cuando este no tiene ningun mail registrado, tambien mandarselo al servidor para que lo guarde esa primera vez. Cada vez que el usuario abre la app y hay un token guardado con un mail, se va a intentar abrir un spa con ese token. 
+
+
+Cuando la app quiere registrar un device nuevo, tiene que conectarse al modulo por primera vez y pasarle las credenciales del wifi local. 
+Cuando una app se conecta por primera vez a un modulo, le pasa las credenciales wifi, y su token. 
+
+Cuando el modulo recibe una nueva conexion, chequea el token asociado y se fija si es el mismo. Si es el mismo o no tiene, la nueva conexion es el usuario MASTER. Si es un nuevo master, se registra el usuario como master en el servidor, habilitando el uso del spa de manera remota a traves del servidor. Para hacer esto, el servidor guarda una tabla que asocia tokens de usuario con macs de los devices. 
+
+
+La tabla urlkey en realidad es de usuarios porque guarda una url que termina siendo una instancia de la webapp. Entonces la tabla de usuario que tengamos nosotros va a tener tokens en lugar de urls y va a identificar a los usuarios de esta forma. Deberia haber entonces un token por cada conexion de una app a un device. La urlkey se generaba cada vez que se completaba la seccion del codigo de 20 digitos en la pagina web. Analogo a eso, se creara un token cada vez que se registre un device nuevo con un modulo nuevo. Se puede hacer asi:
+1. lo hace el modulo cuando se registra un nuevo master. 
+2. lo hace la app cuando se activa un link que fue enviado por un master.
+
+la 1. es la que hay que implementar ya, la 2 puede cambiar una vez que veamos como trabaja la 1.
+
+Cuando un modulo registra un token como el master, hace un post al servidor que agrega una entrada en la tabla de tbluserkey (nueva) donde se agrega un token y se especifica el spa id que puede manejar. 
+
+
+
+Cuando la app quiere cambiar la temperatura o la hora,  hace un post con el token y el mac del modulo a modificar. De esta forma el servidor puede verificar al usuario y luego verificar si esta registrado con el modulo. El modulo registra al usuario como Master 

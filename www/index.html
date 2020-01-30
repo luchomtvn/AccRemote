@@ -18,6 +18,26 @@
     <link rel="stylesheet" type="text/css" href="style.css" />
 </head>
 <body>
+    <div data-role="page" id="login-page" data-theme="b">
+        <div data-role="header" data-position="fixed">
+            <a href="#page-index" data-icon="home" data-iconpos="notext" data-transition="slide" data-direction="reverse"></a>
+            <h1>Acc Smart Control</h1>
+        </div><!-- /header -->
+        <div role="main" class="ui-content">
+            <h3>Sign In</h3>
+            <div id="ctn-err" class="bi-invisible"></div>
+            <label for="txt-email-address">Email Address</label>
+            <input type="text" name="txt-email-address" id="txt-email-address" value="">
+            <!-- <label for="txt-password">Password</label> -->
+            <!-- <input type="password" name="txt-password" id="txt-password" value=""> -->
+            <!-- <fieldset data-role="controlgroup"> -->
+                <!-- <label><input type="checkbox" name="chk-keep-signed-in" id="chk-keep-signed-in"> Keep me signed in</label> -->
+            <!-- </fieldset> -->
+            <a href="" data-transition="pop" data-position-to="window" id="submit-email"
+                class="ui-btn ui-btn-b ui-corner-all mc-top-margin-1-5">Submit</a>
+            <p class="mc-top-margin-1-5"><a href="#begin-password-reset-page">Can't access your account?</a></p>
+        </div>
+    </div>
     <!------------------------------------------------------------------------------------------------>
     <!------------------------------------------------------------------------------------------------>
     <!-------------------                          HOME PAGE                       ------------------->
@@ -27,7 +47,7 @@
         <div data-role="header" data-position="fixed">
             <h1> AccRemote </h1>
             <a href="#configure-device-page" data-icon="gear" class="ui-btn-right" data-transition="slide">Config</a>
-            <a href="#register-new-device" data-icon="plus" class="ui-btn-left" data-transition="slide" data-direction="reverse">New</a>
+            <!-- <a href="#register-new-device" data-icon="plus" class="ui-btn-left" data-transition="slide" data-direction="reverse">New</a> -->
         </div><!-- header -->
         <div id="control-page-body" class="ui-content">
             <h3 class="page-title" id="panel-title"></h3>
@@ -100,30 +120,74 @@
             <h3 class="page-title">Configuration</h3>
             <div data-role="collapsibleset">
                 <div data-role="collapsible">
-                    <h1> Choose Device </h1>
+                    <h1> Bluetooth connection</h1>
+                    <div data-role="collapsible">
+                        <h4> Connect to your device</h4>
+                        <a id="button-start-stop-scan" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-b">Scan Bluetooth BLE devices</a>
+                        <ul data-role="listview" data-inset="true" id="scan-result-list">
+                        </ul>
+                        <div class="centered-container">
+                            <a id="button-connect-to-device" class="ui-state-disabled ui-btn-inline ui-btn ui-corner-all ui-shadow ui-btn-b"
+                                data-transition="slideup">Connect</a>
+                            <a id="disconnect-from-device" class="ui-btn ui-corner-all ui-btn-inline ui-shadow ui-btn-b"
+                                data-transition="slideup">Disconnect</a>
+                        </div>
+                    </div>
+                    <div data-role="collapsible">
+                        <h4> Give Wi-Fi access to your device</h4>
+                        <label class="labels" for="ssid" class="labels">SSID (Network Name):</label>
+                        <input type="text" name="ssid" id="ssid" value="" placeholder="">
+                        <label class="labels"   for="ssid-pw">Password:</label>
+                        <input type="password" name="ssid-pw" id="ssid-pw" value="" placeholder="">
+                        <div data-role="controlgroup" data-type="horizontal" class="centered-container">
+                            <a id="button-connect-device-to-wifi" class="ui-btn ui-corner-all ui-shadow ui-btn-b"
+                                data-transition="slideup">Set</a>
+                        </div>
+                    </div>
+                    <div data-role="collapsible">
+                        <h4> Set device Name</h4>
+                        <label class="labels" for="device-name" class="labels">Device Name (4 to 8 characters):</label>
+                        <input type="text" name="device-name" id="device-name" value="" placeholder="">
+                        <div data-role="controlgroup" data-type="horizontal" class="centered-container">
+                            <a id="button-set-device-name" class="ui-btn ui-corner-all ui-shadow ui-btn-b"
+                                data-transition="slideup">Set</a>
+                        </div>
+                    </div>
+                </div>
+                <div data-role="collapsible">
+                    <h1> Select another Device </h1>
                     <div class="ui-field-contain">
-                        <label class="labels"   for="select-native-1">Select another spa or sauna from your registered devices:</label>
+                        <label class="labels"   for="select-native-1">Available devices:</label>
                         <select name="select-native-1" id="choose-device-list">
                         </select>
                     </div>
                 </div>
-                <div data-role="collapsible">
+                <!-- div data-role="collapsible">
                     <h1> Access Mode </h1>
                         <p class="description">Local mode uses Bluetooth connection. Remote mode uses Internet connection</p>
                         <div data-role="controlgroup" data-type="horizontal">
                             <input type="submit" data-inline="true" value="Remote" id="enable-remote-mode">
                             <input type="submit" data-inline="true" value="Local" id="enable-local-mode">
                         </div>
+                < div -->
+                <div data-role="collapsible">
+                    <h1>Add user to your device</h1>
+                    <label class="labels" for="select-native-1">Select device to share:</label>
+                    <select name="select-native-1" id="choose-device-list">
+                    </select>
+                    <label class="labels" for="invit-mail" class="labels">Send invitation to:</label>
+                    <input type="text" name="invit-mail" id="invitation-e-mail" value="" placeholder="e-mail address">
+                    <div data-role="controlgroup" data-type="horizontal" class="centered-container">
+                        <a id="button-send-invitation" class="ui-btn ui-corner-all ui-shadow ui-btn-b"
+                            data-transition="slideup">Send</a>
+                    </div>
                 </div>
                 <div data-role="collapsible">
-                    <h1> Set Wi-Fi Credentials on device</h1>
-                    <label class="labels" for="ssid" class="labels">SSID (Network Name):</label>
-                    <input type="text" name="ssid" id="ssid" value="" placeholder="">
-                    <label class="labels"   for="ssid-pw">Password:</label>
-                    <input type="password" name="ssid-pw" id="ssid-pw" value="" placeholder="">
+                    <h1>Submit invitation</h1>
+                    <label class="labels" for="invitation-url" class="labels">Copy and paste the invitation URL recieved on your e-mail:</label>
+                    <input type="text" name="invitation-url" id="invitation-url" value="" placeholder="invitation URL">
                     <div data-role="controlgroup" data-type="horizontal" class="centered-container">
-                        <a id="button-connect-device-to-wifi" class="ui-btn ui-corner-all ui-shadow ui-btn-b"
-                            data-transition="slideup">Set</a>
+                        <a id="button-submit-invitation-url" class="ui-btn ui-corner-all ui-shadow ui-btn-b" data-transition="slideup">Submit</a>
                     </div>
                 </div>
                 <div data-role="collapsible">
@@ -178,7 +242,7 @@
                     data-transition="slideup">Disconnect</a>
             </div>
             <hr>
-            <h4>Step 2: Registration</h4>
+            <h4>Step 2: Wi-Fi Credentials</h4>
             <p class="description">Complete with required information</p>
             <label class="labels"   for="ssid">SSID (Network Name):</label>
             <input type="text" name="ssid" id="reg-ssid" value="" placeholder="" maxlength="32">
@@ -187,25 +251,12 @@
             </ul>
             <label class="labels"   for="ssid-pw">Password:</label>
             <input type="password" name="ssid-pw" id="reg-ssid-pw" value="" placeholder="" maxlength="63">
-            <label class="labels"   for="e-mail">E-Mail:</label>
-            <input type="text" name="e-mail" id="reg-user-e-mail" value="" placeholder="" maxlength="320">
-            <label class="labels"   for="module-name">Module Name:</label>
-            <input type="text" name="module-name" id="reg-module-name" value="" placeholder="" maxlength="20">
+            <label class="labels"   for="module-name">Module Name (no spaces, 4 to 12 characters):</label>
+            <input type="text" name="module-name" id="reg-module-name" value="" placeholder="" maxlength="12">
             <div data-role="controlgroup" data-type="horizontal" class="centered-container">
                 <a id="submit-register-data" data-inline="true" type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b"
                     data-transition="slideup">Submit</a>
             </div>
-            <hr>
-
-            <h4>Step 3: 20 Digit Code Verification</h4>
-            <p class="description">Enter 20-digit code sent to your e-mail account</p>
-            <!-- <label class="labels"   for="code-20-digits">20-digit Code:</label> -->
-            <input type="text" name="code-20-digits" id="code-20-digits" value="" placeholder="" maxlength="20">
-            <div data-role="controlgroup" data-type="horizontal" class="centered-container">
-                <a id="submit-20-digit-code" class="ui-btn ui-corner-all ui-shadow ui-btn-b"
-                    data-transition="slideup">Register device</a>
-            </div>
-            <hr>
     </div>
     <div id="footer" data-role="footer" data-position="fixed">
         <h1>MLTech</h1>
@@ -214,11 +265,11 @@
             
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/plugins/LaunchMyApp.js"></script>
-    <script type="text/javascript" src="js/database.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/connection.js"></script>
     <script type="text/javascript" src="js/registration.js"></script>
     <script type="text/javascript" src="js/navigation.js"></script>
+    <script type="text/javascript" src="js/session.js"></script>
     <script type="text/javascript" src="js/wsreconnect.js"></script>
     <script type="text/javascript" src="js/constants/load_frames.js"></script>
     <script type="text/javascript" charset="utf-8">
