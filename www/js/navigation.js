@@ -334,8 +334,8 @@ window.onload = function () {
             ble.isEnabled(
                 function () {
                     $("#scan-result-list").empty();
+                    bluetooth.scanned_devices = [];
                     ble.startScan([], function (device) {
-                        bluetooth.scanned_devices = [];
                         if (bluetooth.scanned_devices.includes(device.name) == false && device.name !== undefined){
                             console.log("Device found: " + device.name);
                             bluetooth.scanned_devices.push(device.name);
@@ -418,46 +418,13 @@ window.onload = function () {
         writeFailure: function() {
             console.log("Couldn't write to module by bluetooth");
         },
-        send_temperature: function(temp){
+        send_keyboard: function(keys_info){
             ble.write(bluetooth.connected_id, 
                 SERVICE_UUID_OPERATION,
-                CHARACTERISTIC_UUID_TEMPERATURE,
-                bluetooth.stringToBytes(temp),
+                CHARACTERISTIC_UUID_KEYBOARD,
+                bluetooth.stringToBytes(keys_info),
                 function() {
-                    console.log("sent temperature: " + temp)
-                },
-                bluetooth.writeFailure
-            );
-        },
-        send_session: function(session){
-            ble.write(bluetooth.connected_id, 
-                SERVICE_UUID_OPERATION,
-                CHARACTERISTIC_UUID_SESSION,
-                bluetooth.stringToBytes(session),
-                function() {
-                    console.log("sent session: " + session)
-                },
-                bluetooth.writeFailure
-            );
-        },
-        send_time: function (time) {
-            ble.write(bluetooth.connected_id,
-                SERVICE_UUID_OPERATION,
-                CHARACTERISTIC_UUID_TIME,
-                bluetooth.stringToBytes(time),
-                function () {
-                    console.log("sent time: " + time)
-                },
-                bluetooth.writeFailure
-            );
-        },
-        send_button: function (button) {
-            ble.write(bluetooth.connected_id,
-                SERVICE_UUID_OPERATION,
-                CHARACTERISTIC_UUID_BUTTON,
-                bluetooth.stringToBytes(button),
-                function () {
-                    console.log("sent button: " + button)
+                    console.log("sent keyboard: " + keys_info)
                 },
                 bluetooth.writeFailure
             );
