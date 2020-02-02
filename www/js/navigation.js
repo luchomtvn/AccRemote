@@ -1,7 +1,7 @@
 
 
 var refresh;
-var pool_interval = 200; // ms for pool BT screen
+var pool_interval = 500; // ms for pool BT screen
 
 const MODES = {
     LOCAL: 'local',
@@ -94,6 +94,7 @@ window.onload = function () {
                     var tout = 1000;
                     $(this).attr("style", $(this).data("int"));
                     transmitter.send_to_module("button",button);
+                    panel.start_refresh();
                     // ble.write(bluetooth.connected_id, SERVICE_UUID_OPERATE, CHARACTERISTIC_UUID_OPERATE_BUTTON,
                     //     bluetooth.stringToBytes(message), bt_callbacks.success, bt_callbacks.failure);
                     let self = this;
@@ -266,10 +267,13 @@ window.onload = function () {
                 if (wait_refresh > 0) wait_refresh--;
                 if (wait_refresh != 0) return;
                 wait_refresh = 60000 / pool_interval;
-                ble.read(bluetooth.connected_id, SERVICE_UUID_OPERATE, CHARACTERISTIC_UUID_OPERATE_SCREEN,
+                ble.read(bluetooth.connected_id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY,
                     function (data) {
-                        let screen = String.fromCharCode.apply(null, new Uint8Array(data));
-                        // $("#json_recv").text(screen);
+                        let screen = Array.from(new Uint8Array(data), 
+                                        function(item) { 
+                                            hex_num = item.toString(16);
+                                            return hex_num.length > 1 ? hex_num : hex_num + "0";
+                                        }).join('');
                         panel.display(screen);
                         wait_refresh = 0;
                     },
@@ -331,12 +335,12 @@ window.onload = function () {
                 function () {
                     $("#scan-result-list").empty();
                     ble.startScan([], function (device) {
-                        // if (/Acc/.exec(device.name) !== null) {
-                            // bt_module.add_scanned_device(device.name, device.id);
+                        bluetooth.scanned_devices = [];
+                        if (bluetooth.scanned_devices.includes(device.name) == false && device.name !== undefined){
                             console.log("Device found: " + device.name);
-                            bluetooth.scanned_devices.push(device);
+                            bluetooth.scanned_devices.push(device.name);
                             $("#scan-result-list").append(`<li> <a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">${device.name}</a> </li>`);
-                        // }
+                        }
                     }, function () {
                         alert("Could not scan");
                         console.log("Could not scan");
@@ -494,7 +498,11 @@ window.onload = function () {
                 function(){
                     ble.read(bluetooth.connected_id, SERVICE_UUID_OPERATION, characteristic,
                         function (data) {
-                            let data_read = String.fromCharCode.apply(null, new Uint8Array(data));
+                            let data_read = Array.from(new Uint8Array(data), 
+                                        function(item) { 
+                                            hex_num = item.toString(16);
+                                            return hex_num.length > 1 ? hex_num : hex_num + "0";
+                                        }).join('');
                             console.log("read data from characteristic: " + data_read);
                         },
                         function(){
@@ -511,7 +519,11 @@ window.onload = function () {
                 function () {
                     ble.startNotification(bluetooth.connected_id, SERVICE_UUID_OPERATION, characteristic,
                         function (data) {
-                            let data_read = String.fromCharCode.apply(null, new Uint8Array(data));
+                            let data_read = Array.from(new Uint8Array(data), 
+                                        function(item) { 
+                                            hex_num = item.toString(16);
+                                            return hex_num.length > 1 ? hex_num : hex_num + "0";
+                                        }).join('');
                             console.log("read data from characteristic: " + data_read);
                         },
                         function () {
@@ -554,7 +566,11 @@ window.onload = function () {
                         CHARACTERISTIC_UUID_WIFI_SCAN,
                         function (data) {
                             $("#wifi-scan-result-list").empty();
-                            let scan_list = String.fromCharCode.apply(null, new Uint8Array(data));
+                            let scan_list = Array.from(new Uint8Array(data),
+                                function (item) {
+                                    hex_num = item.toString(16);
+                                    return hex_num.length > 1 ? hex_num : hex_num + "0";
+                                }).join('');
                             if (scan_list === "") {
                                 alert("No networks found");
                             }
@@ -598,7 +614,11 @@ window.onload = function () {
                         SERVICE_UUID_WIFI,
                         CHARACTERISTIC_UUID_WIFI_ISCONNECTED,
                         function (data) {
-                            let notification = String.fromCharCode.apply(null, new Uint8Array(data));
+                            let notification = Array.from(new Uint8Array(data), 
+                                        function(item) { 
+                                            hex_num = item.toString(16);
+                                            return hex_num.length > 1 ? hex_num : hex_num + "0";
+                                        }).join('');
                             if (notification === "disconnected") {
                                 alert("disconnected");
                             }
