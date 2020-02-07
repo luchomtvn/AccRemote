@@ -116,13 +116,69 @@
             <h1> AccRemote </h1>
             <a href="#main-page" data-icon="home" class="ui-btn-left" data-transition="slide" data-direction="reverse">Home</a>
         </div><!-- header -->
-        <div id="configure-device-body" class="ui-content">
+        <div id="configure-device-body" class="ui-content centered-container">
             <h3 class="page-title">Configuration</h3>
             <div data-role="collapsibleset">
                 <div data-role="collapsible">
-                    <h1> Bluetooth connection</h1>
+                <h1> Device Settings</h1>
+
+                <!-- <a href="#popupDeviceList" data-rel="popup" data-transition="slideup"
+                    class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b">Select Device</a> -->
+                <div data-role="popup" id="popupDeviceList" data-theme="b">
+                    <ul id="popup-device-list" data-role="listview" data-inset="true" style="min-width:210px;">
+                    <li data-role="list-divider">Select Device</li>
+                    </ul>
+                    
+                    <div class="ui-content centered-container">
+                    <a href="#" data-rel="back" data-transition="slideup"
+                        class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b">Close</a>
+                    </div>
+                </div>
+                <!-- div data-role="collapsible">
+                    <h1>Add user to your device</h1>
+                    <label class="labels" for="invit-mail" class="labels">Send invitation to:</label>
+                    <input type="text" name="invit-mail" id="invitation-e-mail" value="" placeholder="e-mail address">
+                    <div data-role="controlgroup" data-type="horizontal" class="centered-container">
+                        <a id="button-send-invitation" class="ui-btn ui-corner-all ui-shadow ui-btn-b"
+                            data-transition="slideup">Send</a>
+                    </div>
+                </div -->
+                <div data-role="collapsible">
+                    <h1> Select Device </h1>
+                    <div class="ui-field-contain">
+                        <label class="labels" for="select-native-1">Available devices:</label>
+                        <ul id="device-list"></ul>
+                    </div>
+                    <a href="#" id="button-connect-to-known-device" class="ui-shadow ui-btn ui-corner-all ui-btn-inline">Connect to device</a>
+                    <a href="#delete-device-dialog" data-rel="popup" data-position-to="window" data-transition="pop" class="ui-shadow ui-btn ui-corner-all ui-btn-inline">Delete</a>
+                    <div data-role="popup" id="delete-device-dialog">
+                        <div class="ui-content centered-container">
+                            <p>Are you sure you want to delete this device?</p>
+                            <a href="#" id="delete-device-button" class="ui-shadow ui-btn ui-corner-all ui-btn-inline" data-rel="back" data-transition="flow">Delete</a>
+                            <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline" data-rel="back" >No</a>
+                        </div>
+                    </div>
+                </div>
+                <div data-role="collapsible">
+                    <h4> Register Device</h4>
+                    <label class="labels" for="ssid" class="labels">SSID (Network Name):</label>
+                    <input type="text" name="ssid" id="ssid" value="" placeholder="">
+                    <label class="labels" for="ssid-pw">Password:</label>
+                    <input type="password" name="ssid-pw" id="ssid-pw" value="" placeholder="">
+                    <label class="labels" for="device-name" class="labels">Device Name (4 to 8 characters):</label>
+                    <input type="text" name="device-name" id="device-name" value="" placeholder="">
+                    <div data-role="controlgroup" data-type="horizontal" class="centered-container">
+                        <a id="button-register-device" class="ui-btn ui-corner-all ui-shadow ui-btn-b" data-transition="slideup">Send to device</a>
+                    </div>
+                </div>
+
+
+            </div>
+            <div data-role="collapsibleset">
+                <div data-role="collapsible">
+                <h1> Connect to New Device</h1>
                     <div data-role="collapsible">
-                        <h4> Connect to your device</h4>
+                        <h1>Bluetooth Connection</h1>
                         <a id="button-start-stop-scan" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-b">Scan Bluetooth BLE devices</a>
                         <ul data-role="listview" data-inset="true" id="scan-result-list">
                         </ul>
@@ -133,80 +189,16 @@
                                 data-transition="slideup">Disconnect</a>
                         </div>
                     </div>
-                    <div data-role="collapsible">
-                        <h4> Give Wi-Fi access to your device</h4>
-                        <label class="labels" for="ssid" class="labels">SSID (Network Name):</label>
-                        <input type="text" name="ssid" id="ssid" value="" placeholder="">
-                        <label class="labels"   for="ssid-pw">Password:</label>
-                        <input type="password" name="ssid-pw" id="ssid-pw" value="" placeholder="">
-                        <div data-role="controlgroup" data-type="horizontal" class="centered-container">
-                            <a id="button-connect-device-to-wifi" class="ui-btn ui-corner-all ui-shadow ui-btn-b"
-                                data-transition="slideup">Set</a>
-                        </div>
-                    </div>
-                    <div data-role="collapsible">
-                        <h4> Set device Name</h4>
-                        <label class="labels" for="device-name" class="labels">Device Name (4 to 8 characters):</label>
-                        <input type="text" name="device-name" id="device-name" value="" placeholder="">
-                        <div data-role="controlgroup" data-type="horizontal" class="centered-container">
-                            <a id="button-set-device-name" class="ui-btn ui-corner-all ui-shadow ui-btn-b"
-                                data-transition="slideup">Set</a>
-                        </div>
-                    </div>
-                </div>
                 <div data-role="collapsible">
-                    <h1> Select another Device </h1>
-                    <div class="ui-field-contain">
-                        <label class="labels"   for="select-native-1">Available devices:</label>
-                        <select name="select-native-1" id="choose-device-list">
-                        </select>
-                    </div>
-                </div>
-                <!-- div data-role="collapsible">
-                    <h1> Access Mode </h1>
-                        <p class="description">Local mode uses Bluetooth connection. Remote mode uses Internet connection</p>
-                        <div data-role="controlgroup" data-type="horizontal">
-                            <input type="submit" data-inline="true" value="Remote" id="enable-remote-mode">
-                            <input type="submit" data-inline="true" value="Local" id="enable-local-mode">
-                        </div>
-                < div -->
-                <div data-role="collapsible">
-                    <h1>Add user to your device</h1>
-                    <label class="labels" for="select-native-1">Select device to share:</label>
-                    <select name="select-native-1" id="choose-device-list">
-                    </select>
-                    <label class="labels" for="invit-mail" class="labels">Send invitation to:</label>
-                    <input type="text" name="invit-mail" id="invitation-e-mail" value="" placeholder="e-mail address">
-                    <div data-role="controlgroup" data-type="horizontal" class="centered-container">
-                        <a id="button-send-invitation" class="ui-btn ui-corner-all ui-shadow ui-btn-b"
-                            data-transition="slideup">Send</a>
-                    </div>
-                </div>
-                <div data-role="collapsible">
-                    <h1>Submit invitation</h1>
-                    <label class="labels" for="invitation-url" class="labels">Copy and paste the invitation URL recieved on your e-mail:</label>
+                    <h1>Wi-fi Connection</h1>
+                    <label class="labels" for="invitation-url" class="labels">Paste registration link:</label>
                     <input type="text" name="invitation-url" id="invitation-url" value="" placeholder="invitation URL">
                     <div data-role="controlgroup" data-type="horizontal" class="centered-container">
                         <a id="button-submit-invitation-url" class="ui-btn ui-corner-all ui-shadow ui-btn-b" data-transition="slideup">Submit</a>
                     </div>
+                </div >
                 </div>
-                <div data-role="collapsible">
-                    <h1>Delete Device</h1>
-                    <div class="ui-field-contain">
-                            <label class="labels" for="select-native-2">Select device to delete:</label>
-                            <select name="select-native-2" id="delete-device-list">
-                            </select>
-                    </div>
-                    <a href="#delete-device-dialog" data-rel="popup" data-position-to="window" data-transition="pop" class="ui-shadow ui-btn ui-corner-all ui-btn-inline">Delete
-                        Device</a>
-                    <div data-role="popup" id="delete-device-dialog">
-                        <div class="ui-content centered-container">
-                            <p>Are you sure you want to delete this device?</p>
-                            <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline" data-rel="back" data-transition="flow">Delete</a>
-                            <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline" data-rel="back" >No</a>
-                        </div>
-                    </div>
-                </div>
+  
             </div>
         </div>
         <div id="footer" data-role="footer" data-position="fixed">
@@ -214,60 +206,13 @@
         </div>
 
     </div>
-
-    <!------------------------------------------------------------------------------------------------>
-    <!------------------------------------------------------------------------------------------------>
-    <!-------------------                 NEW DEVICE                       ------------------->
-    <!------------------------------------------------------------------------------------------------>
-    <!------------------------------------------------------------------------------------------------>
-
-<div data-role="page" id="register-new-device" data-theme="b">
-    <div data-role="header" data-position="fixed">
-        <h1> AccRemote </h1>
-        <a href="#main-page" data-icon="home" class="ui-btn-right" data-transition="slide">Home</a>
-    </div><!-- header -->
-    <div id="control-page-body" class="ui-content">
-        <h3 class="page-title">Add New Device</h3>
-            <p class="description" style="font-style: italic;"> Note: If you already have your 20-digit code, skip steps 1 and 2.</p>
-            <h4>Step 1: Connect to module</h4>
-            <p class="description">Enable bluetooth and scan for devices with button below, search in the list for module named "AccModule".</p>
-            <a id="button-start-stop-scan" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-b">Scan Bluetooth BLE devices</a>
-            <ul data-role="listview" data-inset="true" id="scan-result-list">
-            </ul>
-            <div class="centered-container">
-                <a id="button-connect-to-device"
-                    class="ui-state-disabled ui-btn-inline ui-btn ui-corner-all ui-shadow ui-btn-b"
-                    data-transition="slideup">Connect</a>
-                <a id="disconnect-from-device" class="ui-btn ui-corner-all ui-btn-inline ui-shadow ui-btn-b"
-                    data-transition="slideup">Disconnect</a>
-            </div>
-            <hr>
-            <h4>Step 2: Wi-Fi Credentials</h4>
-            <p class="description">Complete with required information</p>
-            <label class="labels"   for="ssid">SSID (Network Name):</label>
-            <input type="text" name="ssid" id="reg-ssid" value="" placeholder="" maxlength="32">
-            <a id="scan-wifi-networks-in-device" class="ui-btn ui-mini ui-corner-all ui-shadow ui-btn-b">Scan WiFi networks</a>
-            <ul data-role="listview" data-inset="true" id="wifi-scan-result-list">
-            </ul>
-            <label class="labels"   for="ssid-pw">Password:</label>
-            <input type="password" name="ssid-pw" id="reg-ssid-pw" value="" placeholder="" maxlength="63">
-            <label class="labels"   for="module-name">Module Name (no spaces, 4 to 12 characters):</label>
-            <input type="text" name="module-name" id="reg-module-name" value="" placeholder="" maxlength="12">
-            <div data-role="controlgroup" data-type="horizontal" class="centered-container">
-                <a id="submit-register-data" data-inline="true" type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b"
-                    data-transition="slideup">Submit</a>
-            </div>
-    </div>
-    <div id="footer" data-role="footer" data-position="fixed">
-        <h1>MLTech</h1>
-    </div>
-</div>            
             
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/plugins/LaunchMyApp.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/connection.js"></script>
     <script type="text/javascript" src="js/registration.js"></script>
+    <script type="text/javascript" src="js/panel.js"></script>
     <script type="text/javascript" src="js/navigation.js"></script>
     <script type="text/javascript" src="js/session.js"></script>
     <script type="text/javascript" src="js/wsreconnect.js"></script>

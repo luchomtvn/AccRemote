@@ -20,27 +20,16 @@
         // function, we must explicitly call 'app.receivedEvent(...);'
         onDeviceReady: function() {
             console.log("deviceReady fired");
-            
-            if(window.session.getInstance().get().devices == undefined){
+            // console.log($("#device-list").val());
+            user = window.session.getInstance().get();
+            if (user.devices == undefined) {
                 $.mobile.changePage("#login-page", { transition: "slidedown", changeHash: false });
             }
-            else{
+            else {
+                window.devices.dev_unit = user.devices
+                window.devices.refresh_device_list();
                 $.mobile.changePage("#main-page", { transition: "slidedown", changeHash: false });
-                window.session.getInstance().get().devices.forEach(element => {
-                    opt = document.createElement("option");
-                    opt.text = element.name;
-                    $("#choose-device-list").append(opt);
-                });
-                // ble.connect(window.session.getInstance().get().bt_module_name,
-                // function(){alert("Bluetooth connected")},
-                // function(){alert("Bluetooth disconnected")});
             }
-
-            // universalLinks.subscribe(null, function (eventData) {
-            //     // do some work
-            //     console.log('Did launch application from the link: ' + eventData.url);
-            // });
-            // alert("deviceReady fired");
 
         },
         // Update DOM on a Received Event

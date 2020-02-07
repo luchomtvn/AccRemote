@@ -19,10 +19,9 @@ window.onload = function () {
             // TODO: do a POST to server setting new user and getting final_token. after getting final_token, notify user to check e-mail
             let user = {
                 email: $("#txt-email-address").val(),
-                final_token: "",
+                final_token: "12345678901234567890",
                 creation_date: Date.now(),
-                devices: [] // aca tengo que tener los nombres de los devices y ademas tengo que tener una forma de abrir el websocket en el servidor. la app vieja lo hace con la url, no se si seguira asi. 
-
+                devices: window.devices.dev_unit
             };
             window.session.getInstance().set(user);
             $.mobile.changePage("#main-page", { transition: "slidedown", changeHash: false });
@@ -44,267 +43,13 @@ window.onload = function () {
         }, 700);
     }
 
-
-
     let type = "spa";
-
-    window.panel = {
-        mode: MODES.REMOTE, // starts on remote by default 
-        buttons: { 2: 'aux', 3: 'jets', 4: 'system', 7: 'aux2', 6: 'light', 8: 'down', 9: 'up', 10: 'set-time', 11: 'set-temp' },
-        buttons_codes: {
-            'aux': 'x0', 'jets': 'j0', 'system': 's0', 'light': 'l0', 'aux2': 'a0',
-            'down': 'd0', 'up': 'u0', 'set-time': 'd1', 'set-temp': 'u1'
-        },
-        openWebsocket: function() {
-            // get url from current spa
-            
-
-            // appws = new WebSocket("ws://accsmartlink.com/wsa");
-            let appws = new WebSocket("ws://localhost:3001/wsa");
-
-        },
-        reset_buttons: function () {
-            for (var b in panel.buttons) {
-                $("#button-" + buttons[b] + "-frame").attr("style", $("#button-" + buttons[b] + "-frame").data("off"));
-                var mytimer = $("#button-" + buttons[b] + "-frame").data("timer");
-                if (mytimer !== '') {
-                    clearTimeout(mytimer);
-                    $("#button-" + buttons[b] + "-frame").data("timer", '');
-                }
-            }
-        },
-        link_buttons: function () {
-
-            for (var b in panel.buttons) {
-                let on_style = $("#button-" + panel.buttons[b] + "-frame").attr("style");
-                if (on_style == undefined) continue; // unused button
-                let off_style = on_style.replace(/stroke-opacity[^;]*;?/, "");
-                if (off_style.length > 0) { off_style += ';' };
-                off_style += 'stroke-opacity:0;fill-opacity:0;fill:#00ffff';
-                $("#button-" + panel.buttons[b] + "-frame").attr("style", off_style);
-                // $("#button-" + panel.buttons[b] + "-frame").data("b", 0);
-                $("#button-" + panel.buttons[b] + "-frame").data("off", off_style);
-                $("#button-" + panel.buttons[b] + "-frame").data("int", off_style + 'stroke-opacity:0;fill-opacity:0.2;fill:#ffffff');
-                $("#button-" + panel.buttons[b] + "-frame").data("timer", '');
-                let button = panel.buttons_codes[panel.buttons[b]] + '\0';
-
-                $("#button-" + panel.buttons[b] + "-frame").on("vclick", function () { // inside the function, 'this' is the html object that was clicked
-                    // var bdata = $(this).data("b");
-                    // var tout = bdata == 6 ? 1000 : 1000;
-                    var tout = 1000;
-                    $(this).attr("style", $(this).data("int"));
-                    transmitter.send_to_module("button",button);
-                    panel.start_refresh();
-                    // ble.write(bluetooth.connected_id, SERVICE_UUID_OPERATE, CHARACTERISTIC_UUID_OPERATE_BUTTON,
-                    //     bluetooth.stringToBytes(message), bt_callbacks.success, bt_callbacks.failure);
-                    let self = this;
-                    var mytimer = setTimeout(function () {
-                        $(self).attr("style", off_style);
-                    }, tout);
-                    $(this).data("timer", mytimer);
-                });
-
-            }
-
-        },
-        device_limits: {
-            spa: {
-                temp_max_f: 104,
-                temp_min_f: 45,
-                temp_max_c: 40,
-                temp_min_c: 7.6,
-            },
-            sauna: {
-                temp_max_f: 160,
-                temp_min_f: 50,
-                temp_max_c: 70.8,
-                temp_min_c: 10.3,
-                session_max: 60,
-                session_min: 10
-            }
-        },
-        set_sliders: function (type) {
-            if(type === "spa")
-                $("#session-time").hide();
-            else if (type === "sauna")
-                $("#session-time").show();
-
-            let device_limits = this.device_limits;
-            let f2c = this.f2c;
-            $("#flip-scale").on("change", function () {
-                var scale = this.value;
-                if (scale == 0) {
-                    $("#slider-temp").attr("min", device_limits[type].temp_min_f)
-                        .attr("max", device_limits[type].temp_max_f)
-                        .attr("step", 1).val($("#slider-2-temp").val());
-                }
-                else {
-                    var cval = f2c($("#slider-2-temp").val());
-                    $("#slider-temp").attr("min", device_limits[type].temp_min_c)
-                        .attr("max", device_limits[type].temp_max_c)
-                        .attr("step", .1).val(cval);
-                }
-            });
-            $("#flip-scale").change();
-
-            let oldvalue = $("#slider-temp").attr("value");
-            $("#slider-temp").change(function () {
-                if ($("#flip-scale").val() == 1) {
-                    var number = parseFloat(this.value);
-                    if (!(number <= device_limits[type].temp_max_c && number >= device_limits[type].temp_min_c)) number = f2c(parseFloat(oldvalue));
-                    var n10 = ((number - 7.6) * 10).toFixed(0);
-                    var delta = n10 % 11;
-                    var base = Math.floor(n10 / 11);
-                    if (delta > 7) { base++; delta = 0 }
-                    else if (delta > 3) { delta = 5 }
-                    else { delta = 0 };
-                    var sal = base * 11 + delta;
-                    sal /= 10;
-                    sal += 7.6;
-                    $(this).val(sal.toFixed(1));
-                    var far = 45 + base * 2;
-                    if (delta) far++;
-                    $("#slider-2-temp").val(far.toFixed(0));
-                }
-                else {
-                    if (!(this.value <= device_limits[type].temp_max_f && this.value >= device_limits[type].temp_min_f)) this.value = oldvalue;
-                    $("#slider-2-temp").val(this.value);
-                }
-            }).change();
-
-            $("#submit-temp").on('click', function () {
-                // alert("submitted temp " + $("#slider-temp").val());
-                transmitter.send_to_module("temperature", $("#slider-temp").val() + $("#flip-scale").val() == 1 ? "C" : "F")
-            });
-
-            // var slider_session = new Slider("session", 10, MAX_SESSION, MIN_SESSION, bt_module);
-
-            $("#slider-session").attr("min", device_limits[type].session_min);
-            $("#slider-session").attr("max", device_limits[type].session_max);
-            $("#slider-session").change(function () {
-                $("#slider-session").val(this.value);
-            }).change();
-            $("#submit-session").on('click', function () {
-                // alert("submitted session " + $("#slider-session").val());
-                transmitter.send_to_module("session",$("#slider-session").val());
-
-            });
-        },
-        f2c: function (far) {
-            var stepval = far - 45;
-            stepval = stepval.toFixed(0);
-            var hstepval = Math.floor(stepval / 2);
-            var cval = stepval % 2 ? 8.1 + hstepval * 1.1 : 7.6 + hstepval * 1.1;
-            return cval.toFixed(1);
-        },
-
-        digits: [0, 1, 2, 3],
-        snames: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
-        segments: new Array(6),
-        onstyles: new Array(6),
-        offstyles: new Array(6),
-
-        init_leds: function () {
-            for (var d in this.digits) {
-                this.segments[d] = new Array(8);
-                for (var s in this.snames) {
-                    this.segments[d][s] = $("#digit-d" + d + "-s" + this.snames[s]);
-                }
-            }
-
-            // Then initializes rest of array with notification leds
-            this.segments[4] = new Array(8);
-            this.segments[4][0] = $("#led-heating"); // led 'system' en sauna
-            this.segments[4][1] = $("#led-airhi");
-            this.segments[4][2] = $("#led-jetslo");
-            this.segments[4][3] = $("#led-jetshi"); // led 'heating' en sauna
-            this.segments[4][4] = $("#led-filtering");
-            this.segments[4][5] = $("#led-edit");
-            this.segments[4][6] = $("#led-overheat");
-            this.segments[4][7] = $("#led-am");
-
-            this.segments[5] = new Array(8);
-            this.segments[5][4] = $("#led-light");
-            this.segments[5][5] = $("#led-jets2hi");
-            this.segments[5][6] = $("#led-jets2lo");
-            this.segments[5][7] = $("#led-airlo");
-
-            for (var d = 0; d < 6; d++) {
-                this.onstyles[d] = new Array(8);
-                this.offstyles[d] = new Array(8);
-                for (var s = 0; s < 8; s++) {
-                    if (d == 5 && s < 4) continue;
-                    var auxonstyle = this.segments[d][s].attr("style");
-                    if (auxonstyle == undefined) continue; // unused led
-                    this.onstyles[d][s] = auxonstyle;
-                    var auxoffstyle = auxonstyle.replace(/fill-opacity[^;]*;?/, "");
-                    //            if (auxoffstyle.match(/^\s*$/)) {auxoffstyle+= ';'};
-                    if (auxoffstyle.length > 0) { auxoffstyle += ';' };
-                    auxoffstyle += 'fill-opacity:0.1';
-                    this.offstyles[d][s] = auxoffstyle;
-                }
-            }
-
-        },
-        display: function (rx) {
-            $("#spascreen").text(rx);
-            if (typeof (rx) == 'string' && rx.length == 12) {
-                for (var ii = 0; ii < 6; ii++) {
-                    var dd = parseInt(rx.substring(ii * 2, ii * 2 + 2), 16);
-                    if (dd == 'NaN') dd = 0;
-                    for (var jj = 0, mm = 1; jj < 8; jj++ , mm <<= 1) {
-                        if (ii == 5 && jj < 4) continue;
-                        if (this.segments[ii][jj].attr("style") == undefined) continue; // unused led
-                        this.segments[ii][jj].attr("style", (mm & dd) ? this.onstyles[ii][jj] : this.offstyles[ii][jj])
-                    }
-                }
-            }
-        },
-        start_refresh: function () {
-            if (refresh !== undefined) return;
-            var wait_refresh = 0;
-            refresh = setInterval(() => {
-                if (wait_refresh > 0) wait_refresh--;
-                if (wait_refresh != 0) return;
-                wait_refresh = 60000 / pool_interval;
-                ble.read(bluetooth.connected_id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY,
-                    function (data) {
-                        let screen = Array.from(new Uint8Array(data), 
-                                        function(item) { 
-                                            hex_num = item.toString(16);
-                                            return hex_num.length > 1 ? hex_num : hex_num + "0";
-                                        }).join('');
-                        panel.display(screen);
-                        wait_refresh = 0;
-                    },
-                    function () {
-                        alert("Panel disconnected");
-                        wait_refresh = 10000 / pool_interval;
-                        // panel.stop_refresh();
-                        // $("#json_recv").text("errores conectado: " + ++counter);
-                    });
-            }, pool_interval);
-        },
-        stop_refresh: function () {
-            if (refresh !== undefined) {
-                clearInterval(refresh);
-                refresh = undefined;
-            }
-        },
-        load_device: function() {
-            $("#panel-title").text(current_device.name); 
-            document.getElementById('canvas').innerHTML = window.frames[current_device.type];
-            panel.link_buttons();
-            panel.init_leds();
-            panel.set_sliders(current_device.type);
-        }
-    }
 
     $.mobile.defaultPageTransition = 'none';
     $.mobile.defaultDialogTransition = 'none';
     $.mobile.buttonMarkup.hoverDelay = 0;
 
-    panel.load_device();
+    window.panel.load_device();
 
 
     $("#time-zone-selector").timezones();
@@ -315,7 +60,7 @@ window.onload = function () {
         onMessageCallback: function(msg) {
             console.log(msg);
             let screen = JSON.parse(msg.data).dsp;
-            panel.display(screen);
+            window.panel.display(screen);
         },
         openCallback: function() {
             console.log("WebSocket open on server");
@@ -323,8 +68,12 @@ window.onload = function () {
     }
 
     window.bluetooth = {
+        write_cb: {
+            success: function(){console.log("bluetooth success write ")},
+            failure: function(){console.log("bluetooth failure write ")}
+        },
         scanned_devices: [],
-        device_to_connect: {},
+        device_to_connect: "",
         select_scanned_device: function () {
             $("#button-connect-to-device").removeClass("ui-state-disabled");
             bluetooth.device_to_connect = $(this).find("a").text();
@@ -336,9 +85,9 @@ window.onload = function () {
                     $("#scan-result-list").empty();
                     bluetooth.scanned_devices = [];
                     ble.startScan([], function (device) {
-                        if (bluetooth.scanned_devices.includes(device.name) == false && device.name !== undefined){
+                        if (/Acc/.exec(device.name) !== null) {
                             console.log("Device found: " + device.name);
-                            bluetooth.scanned_devices.push(device.name);
+                            bluetooth.scanned_devices.push(device);
                             $("#scan-result-list").append(`<li> <a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">${device.name}</a> </li>`);
                         }
                     }, function () {
@@ -354,7 +103,7 @@ window.onload = function () {
                 }
             )
         },
-        connect_to_device: function () {
+        connect_to_device: function (device_id) {
             ble.isEnabled(
                 function () {
                     ble.isConnected(bluetooth.connected_id,
@@ -363,20 +112,22 @@ window.onload = function () {
                         },
                         function () {
                             console.log("Connecting...");
-                            ble.connect(bluetooth.get_id(bluetooth.device_to_connect),
+                            ble.connect(device_id,
                                 function () {
-                                    bluetooth.connected_id = bluetooth.get_id(bluetooth.device_to_connect);
+                                    bluetooth.connected_id = device_id;
                                     console.log("Connected to device id " + bluetooth.connected_id);
                                     let session = window.session.getInstance().get();
-                                    session.bt_module_name = bluetooth.get_id(bluetooth.device_to_connect);
-                                    window.session.getInstance().set(session)
+                                    bluetooth.send_usertoken(session.final_token);
+                                    if (!window.devices.hasDevice(device_id))
+                                        window.devices.add_device(bluetooth.device_to_connect, device_id);
                                     alert("BT Connected!");
+                                    window.panel.start_refresh();
                                 },
                                 function () {
                                     // disable local use
                                     console.log("Disconnected from " + bluetooth.connected_id);
                                     alert("BT Disconnected!");
-                                    panel.stop_refresh();
+                                    window.panel.stop_refresh();
                                 });
                         }
                     );
@@ -408,10 +159,12 @@ window.onload = function () {
                 function () {
                     console.log("BT Disconnected!");
                     alert("BT Disconnected!");
-                    panel.stop_refresh();
+                    window.panel.stop_refresh();
                 },
                 function () {
                     // disable local use
+                    window.panel.stop_refresh();
+                    alert("Error Disconnecting");
                     console.log("Error Disconnecting");
                 });
         },
@@ -419,6 +172,7 @@ window.onload = function () {
             console.log("Couldn't write to module by bluetooth");
         },
         send_keyboard: function(keys_info){
+
             ble.write(bluetooth.connected_id, 
                 SERVICE_UUID_OPERATION,
                 CHARACTERISTIC_UUID_KEYBOARD,
@@ -604,7 +358,7 @@ window.onload = function () {
     }
 
     transmitter = {
-        types: ["temperature", "session", "time", "button", "usertoken", "wificreds"],
+        types: ["keyboard", "usertoken", "wificreds"],
         send_to_module: function(type, message){
             if (!transmitter.types.includes(type)){
                 console.log("error invoking transmitter. invalid type: " + type)
@@ -630,12 +384,12 @@ window.onload = function () {
     // Step 1: connection
     //bluetooth
     $("#button-start-stop-scan").on('click', bluetooth.scan_and_add);
-    $('#button-connect-to-device').on('click', bluetooth.connect_to_device);
+    $('#button-connect-to-device').on('click', function(){return bluetooth.connect_to_device(bluetooth.get_id(bluetooth.device_to_connect))} ); 
     $("#disconnect-from-device").on('click', bluetooth.disconnect_from_device);
     $("#scan-result-list").on('click', 'li', bluetooth.select_scanned_device);
 
-    // $("#start-refresh").on("click", panel.start_refresh);
-    // $("#stop-refresh").on("click", panel.stop_refresh);
+    // $("#start-refresh").on("click", window.panel.start_refresh);
+    // $("#stop-refresh").on("click", window.panel.stop_refresh);
 
     //Step 2: Wi-Fi
     //wifi
@@ -652,56 +406,104 @@ window.onload = function () {
     // registered_devices.forEach( (dev) => {
     //     opt = document.createElement("option");
     //     opt.text = dev.name;
-    //     $("#choose-device-list").append(opt);
+    //     $("#device-list").append(opt);
     // });
 
-    window.configuration = {
-        use_local_mode: function() {
-            bluetooth.connect_to_device();
-            ble.isConnected(bluetooth.connected_id, 
-            function() {
-                panel.mode = MODES.LOCAL;
-                $("#enable-local-mode").button('disable');
-                $("#enable-remote-mode").button('enable');
-            },
-            function(){});
-        },
-        use_remote_mode: function() {
-            if (!window.navigator.onLine) { // checks internet connection on smartphone
-                alert("No internet connection");
-            }
-            else{
-                panel.mode = MODES.REMOTE;
-                $("#enable-local-mode").button('enable');
-                $("#enable-remote-mode").button('disable');
-            }
+    // window.configuration = {
+    //     use_local_mode: function() {
+    //         bluetooth.connect_to_device();
+    //         ble.isConnected(bluetooth.connected_id, 
+    //         function() {
+    //             window.panel.mode = MODES.LOCAL;
+    //             $("#enable-local-mode").button('disable');
+    //             $("#enable-remote-mode").button('enable');
+    //         },
+    //         function(){});
+    //     },
+    //     use_remote_mode: function() {
+    //         if (!window.navigator.onLine) { // checks internet connection on smartphone
+    //             alert("No internet connection");
+    //         }
+    //         else{
+    //             window.panel.mode = MODES.REMOTE;
+    //             $("#enable-local-mode").button('enable');
+    //             $("#enable-remote-mode").button('disable');
+    //         }
              
-        },
-        choose_device_list: function(){
-            console.log($("#choose-device-list").val());
-            user = session.getInstance().get();
-            if(user.devices == undefined){
-                $.mobile.changePage("#login-page", { transition: "slidedown", changeHash: false });
-            }
-            else{
-                user.devices.forEach(element => {
-                    if (element.name === $("#choose-device-list").val()){
-                        current_device = element;
-                        panel.load_device();
-                    }
-                });
+    //     }
+    // }
 
+
+
+
+    window.devices = {
+        dev_unit: [],
+        selected: "",
+        add_device: function(name, ble_id){
+            devices.dev_unit.push({
+                name: name,
+                ble_id: ble_id,
+
+            });
+            item = '<li><a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">' + name + '</a></li>'
+            $("#device-list").append(item);
+            let user = window.session.getInstance().get();
+            user.devices = devices.dev_unit;
+            window.session.getInstance().set(user);
+        },
+        remove_device_from_list: function(){
+            for(var i = 0; i < devices.dev_unit.length; i++){
+                if (devices.dev_unit[i].name === devices.selected){
+                    devices.dev_unit.splice(i,1);
+                }
             }
+            let user = window.session.getInstance().get();
+            user.devices = devices.dev_unit;
+            window.session.getInstance().set(user);
+            devices.refresh_device_list();
+        },
+        refresh_device_list: function(){
+            $("#device-list").empty();
+            devices.dev_unit.forEach(element => { 
+                item = '<li><a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">' + element.name + '</a></li>'
+                $("#device-list").append(item);
+            });
+        },
+        connect_to_selected_device: function(){
+            devices.dev_unit.forEach(element => {
+            if(element.name === devices.selected)
+                bluetooth.connect_to_device(element.ble_id);
+                return;
+            });
+        },
+        hasDevice: function(ble_id){
+            for(var i = 0; i < devices.dev_unit.length; i++)
+                if(devices.dev_unit[i].ble_id === ble_id)
+                    return true;
+            return false;
+        },
+        select_known_device: function() {
+            devices.selected = $(this).find("a").text();
+        },
+        register_device: function(){
+            if(devices.selected == "")
+                alert("Tap a device first");
+            else
+                devices.dev_unit.forEach(element => {
+                    if (element.name === devices.selected)
+                        if(reg = registration.registration_info())
+                            bluetooth.send_wificreds(reg.ssid + "," + reg.ssid_pw)
+                });
         }
     }
-
-
-    
     // $("#enable-remote-mode").button('disable');
-    $("#enable-remote-mode").on('click', configuration.use_remote_mode);
-    $("#enable-local-mode").on('click', configuration.use_local_mode);
-    $("#choose-device-list").on('change', configuration.choose_device_list)
-
+    // $("#enable-remote-mode").on('click', configuration.use_remote_mode);
+    // $("#enable-local-mode").on('click', configuration.use_local_mode);
+    // $("#device-list").on('change', configuration.choose_device_list)
+    $("#button-connect-to-known-device").on('click', devices.connect_to_selected_device);
+    $("#device-list").on('click', 'li', devices.select_known_device);
+    $("#delete-device-button").on('click', devices.remove_device_from_list);
+    $("#button-register-device").on('click', devices.register_device);
 
 
 
