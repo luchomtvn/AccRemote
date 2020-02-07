@@ -41,7 +41,7 @@ window.panel = {
             $("#button-" + panel.buttons[b] + "-frame").on("vclick", function () { // inside the function, 'this' is the html object that was clicked
                 var tout = 1000;
                 $(this).attr("style", $(this).data("int"));
-                transmitter.send_to_module("keyboard", button);
+                transmitter.send_to_module("key", {key:button});
                 let self = this;
                 var mytimer = setTimeout(function () {
                     $(self).attr("style", off_style);
@@ -119,7 +119,7 @@ window.panel = {
 
         $("#submit-temp").on('click', function () {
             // alert("submitted temp " + $("#slider-temp").val());
-            transmitter.send_to_module("keyboard", {val: $("#slider-temp").val() , unit: ($("#flip-scale").val() == 1 ? "C" : "F")})
+            transmitter.send_to_module("temperature", {val: $("#slider-temp").val() , unit: ($("#flip-scale").val() == 1 ? "C" : "F")})
         });
 
         // var slider_session = new Slider("session", 10, MAX_SESSION, MIN_SESSION, bt_module);
@@ -131,7 +131,7 @@ window.panel = {
         }).change();
         $("#submit-session").on('click', function () {
             // alert("submitted session " + $("#slider-session").val());
-            transmitter.send_to_module("keyboard", $("#slider-session").val());
+            transmitter.send_to_module("session", $("#slider-session").val());
 
         });
     },

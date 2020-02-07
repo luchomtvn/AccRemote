@@ -52,7 +52,7 @@ window.onload = function () {
     window.panel.load_device();
 
 
-    $("#time-zone-selector").timezones();
+    // $("#time-zone-selector").timezones();
 
     window.websocket = {
         ws: null,
@@ -194,9 +194,18 @@ window.onload = function () {
             ble.write(bluetooth.connected_id,
                 SERVICE_UUID_OPERATION,
                 CHARACTERISTIC_UUID_WIFICREDS,
-                bluetooth.stringToBytes(wificreds),
+                bluetooth.stringToBytes("S" + wificreds.ssid),
                 function () {
-                    console.log("sent wificreds: " + wificreds)
+                    console.log("sent wificreds: " + wificreds.ssid)
+                    ble.write(bluetooth.connected_id,
+                        SERVICE_UUID_OPERATION,
+                        CHARACTERISTIC_UUID_WIFICREDS,
+                        bluetooth.stringToBytes("P" + wificreds.ssid_pw),
+                        function () {
+                            console.log("sent wificreds: " + wificreds.ssid_pw)
+                        },
+                        bluetooth.writeFailure
+                    );
                 },
                 bluetooth.writeFailure
             );
@@ -480,8 +489,25 @@ window.onload = function () {
                 devices.dev_unit.forEach(element => {
                     if (element.name === devices.selected)
                         if(reg = registration.registration_info())
-                            bluetooth.send_wificreds(reg.ssid + "," + reg.ssid_pw)
+                            transmitter.send_to_module("wificreds", {
+                                ssid: reg.ssid,
+                                ssid_pw: reg.ssid_pw
+                            })
+                            // bluetooth.send_wificreds(reg.ssid + "," + reg.ssid_pw)
                 });
+        },
+        set_time_on_device: function () {
+            now = new Date();
+            var hours, ampm;
+            hours = now.getHours();
+            if (now.getHours() > 12) {
+                hours = now.getHours() - 12;
+                ampm = "pm";
+            }
+            else {
+                ampm = "am";
+            }
+            window.transmitter.send_to_module("time", { hour: hours, minute: now.getMinutes(), ampm: ampm });
         }
     }
     // $("#enable-remote-mode").button('disable');
@@ -492,6 +518,7 @@ window.onload = function () {
     $("#device-list").on('click', 'li', devices.select_known_device);
     $("#delete-device-button").on('click', devices.remove_device_from_list);
     $("#button-register-device").on('click', devices.register_device);
+    $("#submit-time-zone").on('click', devices.set_time_on_device)
 
 
 
