@@ -153,7 +153,14 @@ window.onload = function () {
                 array[i] = string.charCodeAt(i);
             }
             return array.buffer;
-        },
+        }, 
+        arrayToBytes: function (arr) {
+            var bytearray = new Uint8Array(arr.length);
+            for (var i = 0; i < arr.length; i++) {
+                bytearray[i] = arr[i];
+            }
+            return bytearray.buffer;
+        },   
         disconnect_from_device: function () {
             ble.disconnect(bluetooth.connected_id,
                 function () {
@@ -176,7 +183,7 @@ window.onload = function () {
             ble.write(bluetooth.connected_id, 
                 SERVICE_UUID_OPERATION,
                 CHARACTERISTIC_UUID_KEYBOARD,
-                bluetooth.stringToBytes(keys_info),
+                bluetooth.arrayToBytes(keys_info),
                 function() {
                     console.log("sent keyboard: " + keys_info)
                 },
@@ -357,26 +364,7 @@ window.onload = function () {
         }
     }
 
-    transmitter = {
-        types: ["keyboard", "usertoken", "wificreds"],
-        send_to_module: function(type, message){
-            if (!transmitter.types.includes(type)){
-                console.log("error invoking transmitter. invalid type: " + type)
-            }
-            else{
-                let session = window.session.getInstance().get();
-                ble.isConnected(session.bt_module_name,   // if bt is connected, send by bt
-                                transmitter.send_by_bt(type, message),
-                                transmitter.send_by_wifi(type, message));
-            }
-        },
-        send_by_bt: function(characteristic,message) {
-            bluetooth.send(characteristic,message);
-        },
-        send_by_wifi: function(type,message){
-            console.log("yet to be implemented");
-        }
-    }
+
 
 
     // add new device
@@ -440,7 +428,7 @@ window.onload = function () {
         dev_unit: [],
         selected: "",
         add_device: function(name, ble_id){
-            devices.dev_unit.push({
+            devices.dev_unit.push({ 
                 name: name,
                 ble_id: ble_id,
 
@@ -521,6 +509,7 @@ window.onload = function () {
     // $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
     
 }
+
 
 
 stringToBytes = function (string) {

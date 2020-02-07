@@ -119,7 +119,7 @@ window.panel = {
 
         $("#submit-temp").on('click', function () {
             // alert("submitted temp " + $("#slider-temp").val());
-            transmitter.send_to_module("keyboard", $("#slider-temp").val() + ($("#flip-scale").val() == 1 ? "C" : "F"))
+            transmitter.send_to_module("keyboard", {val: $("#slider-temp").val() , unit: ($("#flip-scale").val() == 1 ? "C" : "F")})
         });
 
         // var slider_session = new Slider("session", 10, MAX_SESSION, MIN_SESSION, bt_module);
@@ -237,10 +237,10 @@ window.panel = {
         }
     },
     load_device: function () {
-        $("#panel-title").text(current_device.name);
-        document.getElementById('canvas').innerHTML = window.frames[current_device.type];
+        $("#panel-title").text("spa");
+        document.getElementById('canvas').innerHTML = window.frames["spa"];
         panel.link_buttons();
         panel.init_leds();
-        panel.set_sliders(current_device.type);
+        panel.set_sliders("spa");
     }
 }
