@@ -36,7 +36,7 @@ window.panel = {
             $("#button-" + panel.buttons[b] + "-frame").data("off", off_style);
             $("#button-" + panel.buttons[b] + "-frame").data("int", off_style + 'stroke-opacity:0;fill-opacity:0.2;fill:#ffffff');
             $("#button-" + panel.buttons[b] + "-frame").data("timer", '');
-            let button = panel.buttons_codes[panel.buttons[b]] + '\0';
+            let button = panel.buttons_codes[panel.buttons[b]];
 
             $("#button-" + panel.buttons[b] + "-frame").on("vclick", function () { // inside the function, 'this' is the html object that was clicked
                 var tout = 1000;

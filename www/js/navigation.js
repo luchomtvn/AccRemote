@@ -14,7 +14,7 @@ window.onload = function () {
 
     $("#submit-email").on('click', function() {
         if (!registration.re_mail.test(String($("#txt-email-address").val()).toLowerCase()))
-            alert("Wrong E-Mail format");
+            navigator.notification.alert("Wrong E-Mail format");
         else{
             // TODO: do a POST to server setting new user and getting final_token. after getting final_token, notify user to check e-mail
             let user = {
@@ -91,7 +91,7 @@ window.onload = function () {
                             $("#scan-result-list").append(`<li> <a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">${device.name}</a> </li>`);
                         }
                     }, function () {
-                        alert("Could not scan");
+                        navigator.notification.alert("Could not scan");
                         console.log("Could not scan");
                     });
                     setTimeout(() => {
@@ -99,7 +99,7 @@ window.onload = function () {
                     }, 5000);
                 },
                 function () {
-                    alert("Bluetooth is disabled");
+                    navigator.notification.alert("Bluetooth is disabled");
                 }
             )
         },
@@ -108,7 +108,7 @@ window.onload = function () {
                 function () {
                     ble.isConnected(bluetooth.connected_id,
                         function () {
-                            alert("BT Already Connected");
+                            navigator.notification.alert("BT Already Connected");
                         },
                         function () {
                             console.log("Connecting...");
@@ -120,20 +120,20 @@ window.onload = function () {
                                     bluetooth.send_usertoken(session.final_token);
                                     if (!window.devices.hasDevice(device_id))
                                         window.devices.add_device(bluetooth.device_to_connect, device_id);
-                                    alert("BT Connected!");
+                                    navigator.notification.alert("BT Connected!");
                                     window.panel.start_refresh();
                                 },
                                 function () {
                                     // disable local use
                                     console.log("Disconnected from " + bluetooth.connected_id);
-                                    alert("BT Disconnected!");
+                                    navigator.notification.alert("BT Disconnected!");
                                     window.panel.stop_refresh();
                                 });
                         }
                     );
                 },
                 function () {
-                    alert("Bluetooth Disabled!");
+                    navigator.notification.alert("Bluetooth Disabled!");
                 }
             )
         },
@@ -165,13 +165,13 @@ window.onload = function () {
             ble.disconnect(bluetooth.connected_id,
                 function () {
                     console.log("BT Disconnected!");
-                    alert("BT Disconnected!");
+                    navigator.notification.alert("BT Disconnected!");
                     window.panel.stop_refresh();
                 },
                 function () {
                     // disable local use
                     window.panel.stop_refresh();
-                    alert("Error Disconnecting");
+                    navigator.notification.alert("Error Disconnecting");
                     console.log("Error Disconnecting");
                 });
         },
@@ -309,7 +309,7 @@ window.onload = function () {
                                     return hex_num.length > 1 ? hex_num : hex_num + "0";
                                 }).join('');
                             if (scan_list === "") {
-                                alert("No networks found");
+                                navigator.notification.alert("No networks found");
                             }
                             else {
                                 scan_list.split(",").forEach(function (item) {
@@ -322,7 +322,7 @@ window.onload = function () {
                         });
                 },
                 function () {
-                    alert("Bluetooth not connected");
+                    navigator.notification.alert("Bluetooth not connected");
                 });
         },
         connect_device_to_wifi: function () {
@@ -341,7 +341,7 @@ window.onload = function () {
                     );
                 },
                 function () {
-                    alert("Not Connected to Bluetooth");
+                    navigator.notification.alert("Not Connected to Bluetooth");
                 });
         },
         check_wifi_connection: function () {
@@ -357,10 +357,10 @@ window.onload = function () {
                                             return hex_num.length > 1 ? hex_num : hex_num + "0";
                                         }).join('');
                             if (notification === "disconnected") {
-                                alert("disconnected");
+                                navigator.notification.alert("disconnected");
                             }
                             else {
-                                alert("Connected to network: " + notification);
+                                navigator.notification.alert("Connected to network: " + notification);
                             }
                         },
                         function () {
@@ -368,7 +368,7 @@ window.onload = function () {
                         });
                 },
                 function () {
-                    alert("Not Connected to Bluetooth");
+                    navigator.notification.alert("Not Connected to Bluetooth");
                 })
         }
     }
@@ -419,7 +419,7 @@ window.onload = function () {
     //     },
     //     use_remote_mode: function() {
     //         if (!window.navigator.onLine) { // checks internet connection on smartphone
-    //             alert("No internet connection");
+    //             navigator.notification.alert("No internet connection");
     //         }
     //         else{
     //             window.panel.mode = MODES.REMOTE;
@@ -484,7 +484,7 @@ window.onload = function () {
         },
         register_device: function(){
             if(devices.selected == "")
-                alert("Tap a device first");
+                navigator.notification.alert("Tap a device first");
             else
                 devices.dev_unit.forEach(element => {
                     if (element.name === devices.selected)

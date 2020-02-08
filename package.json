@@ -19,7 +19,8 @@
         "ANDROID_SCHEME": " ",
         "ANDROID_HOST": " ",
         "ANDROID_PATHPREFIX": "/"
-      }
+      },
+      "cordova-plugin-dialogs": {}
     }
   },
   "dependencies": {
@@ -33,7 +34,8 @@
     "cordova-plugin-device": "2.0.2",
     "mocha": "^6.1.4",
     "mocha-sinon": "^2.1.0",
-    "sinon": "^7.3.2"
+    "sinon": "^7.3.2",
+    "cordova-plugin-dialogs": "2.0.2"
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha www/tests"

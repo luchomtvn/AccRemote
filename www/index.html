@@ -116,10 +116,10 @@
             <h1> AccRemote </h1>
             <a href="#main-page" data-icon="home" class="ui-btn-left" data-transition="slide" data-direction="reverse">Home</a>
         </div><!-- header -->
-        <div id="configure-device-body" class="ui-content centered-container">
+        <div id="configure-device-body" class="ui-content">
             <h3 class="page-title">Configuration</h3>
             <div data-role="collapsibleset">
-                <div data-role="collapsible">
+                <div data-role="collapsible" data-collapsed="false">
                     <h1> Device Settings</h1>
                     <!-- div data-role="collapsible">
                         <h1>Add user to your device</h1>
@@ -130,20 +130,17 @@
                                 data-transition="slideup">Send</a>
                         </div>
                     </div -->
-                    <div data-role="collapsible">
-                        <h1> Select Device </h1>
-                        <div class="ui-field-contain">
-                            <label class="labels" for="select-native-1">Available devices:</label>
-                            <ul id="device-list"></ul>
-                        </div>
-                        <a href="#" id="button-connect-to-known-device" class="ui-shadow ui-btn ui-corner-all ui-btn-inline">Connect to device</a>
-                        <a href="#delete-device-dialog" data-rel="popup" data-position-to="window" data-transition="pop" class="ui-shadow ui-btn ui-corner-all ui-btn-inline">Delete</a>
-                        <div data-role="popup" id="delete-device-dialog">
-                            <div class="ui-content centered-container">
-                                <p>Are you sure you want to delete this device?</p>
-                                <a href="#" id="delete-device-button" class="ui-shadow ui-btn ui-corner-all ui-btn-inline" data-rel="back" data-transition="flow">Delete</a>
-                                <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline" data-rel="back" >No</a>
-                            </div>
+                    <div class="ui-field-contain">
+                        <label class="labels" for="select-native-1">Available devices:</label>
+                        <ul id="device-list"></ul>
+                    </div>
+                    <a href="#" id="button-connect-to-known-device" class="ui-shadow ui-btn ui-corner-all ui-btn-inline">Connect to device</a>
+                    <a href="#delete-device-dialog" data-rel="popup" data-position-to="window" data-transition="pop" class="ui-shadow ui-btn ui-corner-all ui-btn-inline">Delete</a>
+                    <div data-role="popup" id="delete-device-dialog">
+                        <div class="ui-content centered-container">
+                            <p>Are you sure you want to delete this device?</p>
+                            <a href="#" id="delete-device-button" class="ui-shadow ui-btn ui-corner-all ui-btn-inline" data-rel="back" data-transition="flow">Delete</a>
+                            <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline" data-rel="back" >No</a>
                         </div>
                     </div>
                     <div data-role="collapsible">
