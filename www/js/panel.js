@@ -205,36 +205,35 @@ window.panel = {
             }
         }
     },
-    start_refresh: function () {
-        if (refresh !== undefined) return;
-        var wait_refresh = 0;
-        refresh = setInterval(() => {
-            if (wait_refresh > 0) wait_refresh--;
-            if (wait_refresh != 0) return;
-            wait_refresh = 60000 / pool_interval;
-            ble.read(bluetooth.connected_id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY,
-                function (data) {
-                    let screen = Array.from(new Uint8Array(data),
-                        function (item) {
-                            hex_num = item.toString(16);
-                            return hex_num.length > 1 ? hex_num : hex_num + "0";
-                        }).join('');
-                    panel.display(screen);
-                    wait_refresh = 0;
-                },
+    counter: 0,
+    start_refresh: function() {
+        ble.startNotification(bluetooth.connected_id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY,
+            function (data) {
+                let screen = Array.from(new Uint8Array(data),
+                    function (item) {
+                        hex_num = item.toString(16);
+                        return hex_num.length > 1 ? hex_num : "0" + hex_num;
+                    }).join('');
+                panel.display(screen);
+                console.log(++panel.counter + ": recieved notification: " + screen);
+            },
                 function () {
-                    alert("Panel disconnected");
-                    wait_refresh = 10000 / pool_interval;
+                    alert("Cant Recieve notification");
+                    // wait_refresh = 10000 / pool_interval;
                     // panel.stop_refresh();
                     // $("#json_recv").text("errores conectado: " + ++counter);
-                });
-        }, pool_interval);
+                }
+        );
     },
-    stop_refresh: function () {
-        if (refresh !== undefined) {
-            clearInterval(refresh);
-            refresh = undefined;
-        }
+    stop_refresh: function(){
+        ble.stopNotification(bluetooth.connected_id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY,
+            function (data) {
+                console.log("stopped notifications");
+            },
+            function () {
+                alert("Cant stop notifications");
+            }
+        );
     },
     load_device: function () {
         $("#panel-title").text("spa");

@@ -80,4 +80,5 @@
         <variable name="ANDROID_PATHPREFIX" value="/" />
     </plugin>
     <plugin name="cordova-plugin-dialogs" spec="2.0.2" />
+    <plugin name="cordova-plugin-spinner" spec="1.1.0" />
 </widget>

@@ -126,8 +126,8 @@ window.onload = function () {
                                 function () {
                                     // disable local use
                                     console.log("Disconnected from " + bluetooth.connected_id);
-                                    navigator.notification.alert("BT Disconnected!");
-                                    window.panel.stop_refresh();
+                                    navigator.notification.alert("Unable to connect");
+                                    // window.panel.stop_refresh();
                                 });
                         }
                     );
@@ -166,11 +166,11 @@ window.onload = function () {
                 function () {
                     console.log("BT Disconnected!");
                     navigator.notification.alert("BT Disconnected!");
-                    window.panel.stop_refresh();
+                    // window.panel.stop_refresh();
                 },
                 function () {
                     // disable local use
-                    window.panel.stop_refresh();
+                    // window.panel.stop_refresh();
                     navigator.notification.alert("Error Disconnecting");
                     console.log("Error Disconnecting");
                 });
