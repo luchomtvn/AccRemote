@@ -41,7 +41,7 @@ window.panel = {
             $("#button-" + panel.buttons[b] + "-frame").on("vclick", function () { // inside the function, 'this' is the html object that was clicked
                 var tout = 1000;
                 $(this).attr("style", $(this).data("int"));
-                transmitter.send_to_module("key", {key:button});
+                transmitter.send_to_module("key", { key: button });
                 let self = this;
                 var mytimer = setTimeout(function () {
                     $(self).attr("style", off_style);
@@ -119,7 +119,7 @@ window.panel = {
 
         $("#submit-temp").on('click', function () {
             // alert("submitted temp " + $("#slider-temp").val());
-            transmitter.send_to_module("temperature", {val: $("#slider-temp").val() , unit: ($("#flip-scale").val() == 1 ? "C" : "F")})
+            transmitter.send_to_module("temperature", { val: $("#slider-temp").val(), unit: ($("#flip-scale").val() == 1 ? "C" : "F") })
         });
 
         // var slider_session = new Slider("session", 10, MAX_SESSION, MIN_SESSION, bt_module);
@@ -206,7 +206,21 @@ window.panel = {
         }
     },
     counter: 0,
-    start_refresh: function() {
+    start_refresh: function () {
+        ble.read(bluetooth.connected_id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY,
+            function (data) {
+                let screen = Array.from(new Uint8Array(data),
+                    function (item) {
+                        hex_num = item.toString(16);
+                        return hex_num.length > 1 ? hex_num : "0" + hex_num;
+                    }).join('');
+                panel.display(screen);
+                console.log(++panel.counter + ": read first screen: " + screen);
+            },
+            function () {
+                alert("can't read first screen");
+            }
+        );
         ble.startNotification(bluetooth.connected_id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY,
             function (data) {
                 let screen = Array.from(new Uint8Array(data),
@@ -217,15 +231,12 @@ window.panel = {
                 panel.display(screen);
                 console.log(++panel.counter + ": recieved notification: " + screen);
             },
-                function () {
-                    alert("Cant Recieve notification");
-                    // wait_refresh = 10000 / pool_interval;
-                    // panel.stop_refresh();
-                    // $("#json_recv").text("errores conectado: " + ++counter);
-                }
+            function () {
+                alert("Cant Recieve notification");
+            }
         );
     },
-    stop_refresh: function(){
+    stop_refresh: function () {
         ble.stopNotification(bluetooth.connected_id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY,
             function (data) {
                 console.log("stopped notifications");
