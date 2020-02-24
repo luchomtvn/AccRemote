@@ -115,9 +115,9 @@ window.onload = function () {
                             ble.connect(device_id,
                                 function () {
                                     bluetooth.connected_id = device_id;
-                                    console.log("Connected to device id " + bluetooth.connected_id);
+                                      console.log("Connected to device id " + bluetooth.connected_id);
                                     let session = window.session.getInstance().get();
-                                    bluetooth.send_usertoken(session.final_token);
+                                    // bluetooth.send_usertoken(session.final_token);
                                     if (!window.devices.hasDevice(device_id))
                                         window.devices.add_device(bluetooth.device_to_connect, device_id);
                                     navigator.notification.alert("BT Connected!");
@@ -194,29 +194,23 @@ window.onload = function () {
             ble.write(bluetooth.connected_id,
                 SERVICE_UUID_OPERATION,
                 CHARACTERISTIC_UUID_WIFICREDS,
-                bluetooth.stringToBytes("S" + wificreds.ssid),
+                bluetooth.stringToBytes(wificreds),
                 function () {
-                    console.log("sent wificreds: " + wificreds.ssid)
-                    ble.write(bluetooth.connected_id,
-                        SERVICE_UUID_OPERATION,
-                        CHARACTERISTIC_UUID_WIFICREDS,
-                        bluetooth.stringToBytes("P" + wificreds.ssid_pw),
-                        function () {
-                            console.log("sent wificreds: " + wificreds.ssid_pw)
-                        },
-                        bluetooth.writeFailure
-                    );
+                    console.log("sent wificreds: " + wificreds);
                 },
                 bluetooth.writeFailure
             );
         },
-        send_usertoken: function (usertoken) {
+        send_email: function (email) {
+            if(email > 80){
+                navigator.notification.alert("e-mail too large");
+            }
             ble.write(bluetooth.connected_id,
                 SERVICE_UUID_OPERATION,
-                CHARACTERISTIC_UUID_USERTOKEN,
-                bluetooth.stringToBytes(usertoken),
+                CHARACTERISTIC_UUID_EMAIL,
+                bluetooth.stringToBytes(email),
                 function () {
-                    console.log("sent usertoken: " + usertoken)
+                    console.log("sent email: " + email)
                 },
                 bluetooth.writeFailure
             );
@@ -399,40 +393,6 @@ window.onload = function () {
     $("#submit-register-data").on('click', registration.submit_registration_info);
     $("#submit-20-digit-code").on('click', registration.submit_20_digit_code);
 
-    //configuration
-    // registered_devices.forEach( (dev) => {
-    //     opt = document.createElement("option");
-    //     opt.text = dev.name;
-    //     $("#device-list").append(opt);
-    // });
-
-    // window.configuration = {
-    //     use_local_mode: function() {
-    //         bluetooth.connect_to_device();
-    //         ble.isConnected(bluetooth.connected_id, 
-    //         function() {
-    //             window.panel.mode = MODES.LOCAL;
-    //             $("#enable-local-mode").button('disable');
-    //             $("#enable-remote-mode").button('enable');
-    //         },
-    //         function(){});
-    //     },
-    //     use_remote_mode: function() {
-    //         if (!window.navigator.onLine) { // checks internet connection on smartphone
-    //             navigator.notification.alert("No internet connection");
-    //         }
-    //         else{
-    //             window.panel.mode = MODES.REMOTE;
-    //             $("#enable-local-mode").button('enable');
-    //             $("#enable-remote-mode").button('disable');
-    //         }
-             
-    //     }
-    // }
-
-
-
-
     window.devices = {
         dev_unit: [],
         selected: "",
@@ -489,10 +449,7 @@ window.onload = function () {
                 devices.dev_unit.forEach(element => {
                     if (element.name === devices.selected)
                         if(reg = registration.registration_info())
-                            transmitter.send_to_module("wificreds", {
-                                ssid: reg.ssid,
-                                ssid_pw: reg.ssid_pw
-                            })
+                            transmitter.send_by_bt("email", $("#e-mail-address").val());
                             // bluetooth.send_wificreds(reg.ssid + "," + reg.ssid_pw)
                 });
         },
@@ -517,8 +474,17 @@ window.onload = function () {
     $("#button-connect-to-known-device").on('click', devices.connect_to_selected_device);
     $("#device-list").on('click', 'li', devices.select_known_device);
     $("#delete-device-button").on('click', devices.remove_device_from_list);
-    $("#button-register-device").on('click', devices.register_device);
+    // $("#button-register-device").on('click', devices.register_device);
     $("#submit-time-zone").on('click', devices.set_time_on_device)
+    $("#button-send-wificreds").on('click', function() {
+        transmitter.send_to_module("wificreds", {
+            ssid: $("#ssid").val(),
+            passwd: $("#ssid-pw").val()
+        });
+    });
+    $("#button-send-email").on('click', function(){
+        transmitter.send_to_module("email", $("#e-mail-address").val());
+    });
 
 
 

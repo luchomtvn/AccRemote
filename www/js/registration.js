@@ -12,6 +12,8 @@ registration = {
             errors.push("invalid password");
         if (!registration.re_name.test(String($("#device-name").val())))
             errors.push("invalid module name");
+        if (!registration.re_mail.test(String($("#e-mail-address").val())))
+            errors.push("invalid email");
 
         if (errors.length != 0) {
             alert(errors.join('\n'));
@@ -23,6 +25,7 @@ registration = {
                 ssid: $("#ssid").val(),
                 ssid_pw: $("#ssid-pw").val(),
                 device_name: $("#device-name").val(),
+                email: $("#e-mail-address").val()
             }
         }
     },

@@ -1,11 +1,15 @@
+const EMAIL_MAX_LENGTH = 80;
+const WIFI_SSID_MAX_LENGTH = 32;
+const WIFI_PASSWD_MAX_LENGTH = 32;
+
 transmitter = {
-    types: ["temperature", "session", "key", "time", "usertoken", "wificreds"],
+    types: ["temperature", "session", "key", "time", "wificreds", "email"],
     send_to_module: function (type, data) {
         let message = "";
         if (!transmitter.types.includes(type)) {
             console.log("error invoking transmitter. invalid type: " + type)
         }
-        else {
+        else { // esto es sumamente optimizable
             if (type == "temperature") {
                 message = transmitter.parse_temp(data);
                 type = "keyboard";
@@ -18,8 +22,18 @@ transmitter = {
                 message = transmitter.parse_key(data);
                 type = "keyboard";
             }
+            else if (type == "email"){
+                message = transmitter.parse_email(data);
+                type = "email";
+            }
+            else if (type == "wificreds"){
+                message = transmitter.parse_wificreds(data);
+                type = "wificreds";
+            }
 
-            transmitter.send_by_bt(type, message);
+            if(message !== "error"){
+                transmitter.send_by_bt(type, message);
+            }
         }
     },
     send_by_bt: function (characteristic, message) {
@@ -58,5 +72,27 @@ transmitter = {
             case "a0": sbutton = 4; break;
         }
         return [sbutton,0,0];
+    },
+    parse_email: function(data){
+        let re_mail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,}$/i;
+        if(!re_mail.test(data) || data.length > EMAIL_MAX_LENGTH){
+            navigator.notification.alert("Invalid e-mail");
+            return "error";
+        }
+        else{
+            return data;
+        }
+
+    },
+    parse_wificreds: function(data){
+        if(data.ssid.length > WIFI_SSID_MAX_LENGTH){
+            navigator.notification.alert("Invalid Wifi SSID");
+            return "error";
+        }
+        else if(data.passwd.length > WIFI_PASSWD_MAX_LENGTH){
+            navigator.notification.alert("Invalid WiFi password");
+            return "error";
+        }
+        else return data.ssid + '+' + data.passwd;
     }
 }
