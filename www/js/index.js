@@ -22,42 +22,13 @@
             console.log("deviceReady fired");
             // console.log($("#device-list").val());
             user = window.session.getInstance().get();
-            if (user.devices == undefined) {
-                $.mobile.changePage("#login-page", { transition: "slidedown", changeHash: false });
-            }
-            else {
+            if (user.devices != undefined) {
                 window.devices.dev_unit = user.devices
                 window.devices.refresh_device_list();
-                $.mobile.changePage("#main-page", { transition: "slidedown", changeHash: false });
+                // $.mobile.changePage("#main-page", { transition: "slidedown", changeHash: false });
             }
 
         },
         // Update DOM on a Received Event
    
     };
-
-///////////////////////////////////////////////////////////////
-///////////////// Helper to allow classes and inheritance /////
-(function () {
-    var isFn = function (fn) { return typeof fn == "function"; };
-    PClass = function () { };
-    PClass.create = function (proto) {
-        var k = function (magic) { // call init only if there's no magic cookie
-            if (magic != isFn && isFn(this.init)) this.init.apply(this, arguments);
-        };
-        k.prototype = new this(isFn); // use our private method as magic cookie
-        for (key in proto) (function (fn, sfn) { // create a closure
-            k.prototype[key] = !isFn(fn) || !isFn(sfn) ? fn : // add _super method
-                function () { this._super = sfn; return fn.apply(this, arguments); };
-        })(proto[key], k.prototype[key]);
-        k.prototype.constructor = k;
-        k.extend = this.extend || this.create;
-        return k;
-    };
-})();
-///////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////
-
-// module.exports = {
-//     PClass
-// };

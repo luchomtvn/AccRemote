@@ -1,33 +1,4 @@
-
-
-var refresh;
-var pool_interval = 500; // ms for pool BT screen
-
-const MODES = {
-    LOCAL: 'local',
-    REMOTE: 'remote'
-};
-
 window.onload = function () {
-
-    // page events
-
-    $("#submit-email").on('click', function() {
-        if (!registration.re_mail.test(String($("#txt-email-address").val()).toLowerCase()))
-            navigator.notification.alert("Wrong E-Mail format");
-        else{
-            // TODO: do a POST to server setting new user and getting final_token. after getting final_token, notify user to check e-mail
-            let user = {
-                email: $("#txt-email-address").val(),
-                final_token: "12345678901234567890",
-                creation_date: Date.now(),
-                devices: window.devices.dev_unit
-            };
-            window.session.getInstance().set(user);
-            $.mobile.changePage("#main-page", { transition: "slidedown", changeHash: false });
-
-        }
-    });
 
     window.handleOpenURL = function(url) {
         $.mobile.changePage("#register-new-device", { transition: "slidedown", changeHash: false });
@@ -68,10 +39,6 @@ window.onload = function () {
     }
 
     window.bluetooth = {
-        write_cb: {
-            success: function(){console.log("bluetooth success write ")},
-            failure: function(){console.log("bluetooth failure write ")}
-        },
         scanned_devices: [],
         device_to_connect: "",
         select_scanned_device: function () {
@@ -126,7 +93,7 @@ window.onload = function () {
                                 function () {
                                     // disable local use
                                     console.log("Disconnected from " + bluetooth.connected_id);
-                                    navigator.notification.alert("Unable to connect");
+                                    navigator.notification.alert("");
                                     // window.panel.stop_refresh();
                                 });
                         }
@@ -183,6 +150,42 @@ window.onload = function () {
             ble.write(bluetooth.connected_id, 
                 SERVICE_UUID_OPERATION,
                 CHARACTERISTIC_UUID_KEYBOARD,
+                bluetooth.arrayToBytes(keys_info),
+                function() {
+                    console.log("sent keyboard: " + keys_info)
+                },
+                bluetooth.writeFailure
+            );
+        },
+        send_temperature: function(keys_info){
+
+            ble.write(bluetooth.connected_id, 
+                SERVICE_UUID_OPERATION,
+                CHARACTERISTIC_UUID_TEMPERATURE,
+                bluetooth.arrayToBytes(keys_info),
+                function() {
+                    console.log("sent temperature: " + keys_info)
+                },
+                bluetooth.writeFailure
+            );
+        },
+        send_time: function(keys_info){
+
+            ble.write(bluetooth.connected_id, 
+                SERVICE_UUID_OPERATION,
+                CHARACTERISTIC_UUID_TIME,
+                bluetooth.arrayToBytes(keys_info),
+                function() {
+                    console.log("sent keyboard: " + keys_info)
+                },
+                bluetooth.writeFailure
+            );
+        },
+        send_session: function(keys_info){
+
+            ble.write(bluetooth.connected_id, 
+                SERVICE_UUID_OPERATION,
+                CHARACTERISTIC_UUID_SESSION,
                 bluetooth.arrayToBytes(keys_info),
                 function() {
                     console.log("sent keyboard: " + keys_info)
@@ -268,106 +271,10 @@ window.onload = function () {
         }
     }
 
-
-
     stop_screen = function () {
         if (!window.refresh_screen_loop)
             clearInterval(window.refresh_screen_loop);
     }
-
-    window.wifi = {
-        module_connected: false,
-        select_scanned_network: function () {
-            $("#ssid").val($(this).find("a").text());
-        },
-        scan_networks_on_device: function () {
-            ble.isConnected(bluetooth.connected_id,
-                function () {
-                    ble.write(bluetooth.connected_id,
-                        SERVICE_UUID_WIFI,
-                        CHARACTERISTIC_UUID_WIFI_SCAN,
-                        stringToBytes("SCAN"),
-                        function () { console.log("Scanning on module..."); },
-                        function () { console.log("Couldn't send scan command"); }
-                    );
-                    setTimeout(() => {
-                    }, 1000);
-                    ble.read(bluetooth.connected_id,
-                        SERVICE_UUID_WIFI,
-                        CHARACTERISTIC_UUID_WIFI_SCAN,
-                        function (data) {
-                            $("#wifi-scan-result-list").empty();
-                            let scan_list = Array.from(new Uint8Array(data),
-                                function (item) {
-                                    hex_num = item.toString(16);
-                                    return hex_num.length > 1 ? hex_num : hex_num + "0";
-                                }).join('');
-                            if (scan_list === "") {
-                                navigator.notification.alert("No networks found");
-                            }
-                            else {
-                                scan_list.split(",").forEach(function (item) {
-                                    $("#wifi-scan-result-list").append(`<li> <a class="found-network ui-btn ui-btn-icon-right ui-icon-carat-r">${item}</a> </li>`);
-                                });
-                            }
-                        },
-                        function () {
-                            console.log("couldn't read value");
-                        });
-                },
-                function () {
-                    navigator.notification.alert("Bluetooth not connected");
-                });
-        },
-        connect_device_to_wifi: function () {
-            wifi_data = {
-                "wifi_ssid": $("#ssid").val(),
-                "wifi_passwd": $("#ssid-pw").val()
-            }
-            ble.isConnected(bluetooth.connected_id,
-                function () {
-                    ble.write(bluetooth.connected_id,
-                        SERVICE_UUID_WIFI,
-                        CHARACTERISTIC_UUID_WIFI_SET,
-                        stringToBytes(JSON.stringify(wifi_data)),
-                        function () { console.log("Sent wifi data"); },
-                        function () { console.log("Couldn't send wifi data"); }
-                    );
-                },
-                function () {
-                    navigator.notification.alert("Not Connected to Bluetooth");
-                });
-        },
-        check_wifi_connection: function () {
-            ble.isConnected(bluetooth.connected_id,
-                function () {
-                    ble.read(bluetooth.connected_id,
-                        SERVICE_UUID_WIFI,
-                        CHARACTERISTIC_UUID_WIFI_ISCONNECTED,
-                        function (data) {
-                            let notification = Array.from(new Uint8Array(data), 
-                                        function(item) { 
-                                            hex_num = item.toString(16);
-                                            return hex_num.length > 1 ? hex_num : hex_num + "0";
-                                        }).join('');
-                            if (notification === "disconnected") {
-                                navigator.notification.alert("disconnected");
-                            }
-                            else {
-                                navigator.notification.alert("Connected to network: " + notification);
-                            }
-                        },
-                        function () {
-                            console.log("couldn't read from device");
-                        });
-                },
-                function () {
-                    navigator.notification.alert("Not Connected to Bluetooth");
-                })
-        }
-    }
-
-
 
 
     // add new device
@@ -378,18 +285,6 @@ window.onload = function () {
     $('#button-connect-to-device').on('click', function(){return bluetooth.connect_to_device(bluetooth.get_id(bluetooth.device_to_connect))} ); 
     $("#disconnect-from-device").on('click', bluetooth.disconnect_from_device);
     $("#scan-result-list").on('click', 'li', bluetooth.select_scanned_device);
-
-    // $("#start-refresh").on("click", window.panel.start_refresh);
-    // $("#stop-refresh").on("click", window.panel.stop_refresh);
-
-    //Step 2: Wi-Fi
-    //wifi
-    $("#scan-wifi-networks-in-device").on('click', wifi.scan_networks_on_device);
-    $("#wifi-scan-result-list").on('click', 'li', wifi.select_scanned_network);
-    $("#button-connect-device-to-wifi").on('click', wifi.connect_device_to_wifi);
-    $("#button-check-wifi-connection").on('click', wifi.check_wifi_connection);
-
-
     $("#submit-register-data").on('click', registration.submit_registration_info);
     $("#submit-20-digit-code").on('click', registration.submit_20_digit_code);
 
@@ -459,18 +354,20 @@ window.onload = function () {
             hours = now.getHours();
             if (now.getHours() > 12) {
                 hours = now.getHours() - 12;
-                ampm = "pm";
+                ampm = "P";
             }
             else {
-                ampm = "am";
+                ampm = "A";
             }
-            window.transmitter.send_to_module("time", { hour: hours, minute: now.getMinutes(), ampm: ampm });
+            hours = hours.toString();
+            minutes = now.getMinutes().toString();
+            hours = hours == "00" ? "12" : hours;
+            if (String(hours).length < 2) hours = "0" + hours;
+            if (String(minutes).length < 2) minutes = "0" + minutes;
+
+            window.transmitter.send_to_module("time", hours + now.getMinutes() + ampm );
         }
     }
-    // $("#enable-remote-mode").button('disable');
-    // $("#enable-remote-mode").on('click', configuration.use_remote_mode);
-    // $("#enable-local-mode").on('click', configuration.use_local_mode);
-    // $("#device-list").on('change', configuration.choose_device_list)
     $("#button-connect-to-known-device").on('click', devices.connect_to_selected_device);
     $("#device-list").on('click', 'li', devices.select_known_device);
     $("#delete-device-button").on('click', devices.remove_device_from_list);
@@ -486,29 +383,5 @@ window.onload = function () {
         transmitter.send_to_module("email", $("#e-mail-address").val());
     });
 
-
-
-
-    var bt_callbacks = {
-        success: function () {
-            console.log("sent message");
-        },
-        failure: function () {
-            console.log("failed to send message");
-        }
-    };
-
-    // document.getElementById('canvas-bt').innerHTML = window.frames["spa_bluetooth"];
-    // $.mobile.changePage("#control-page", { transition: "slidedown", changeHash: false });
     
-}
-
-
-
-stringToBytes = function (string) {
-    var array = new Uint8Array(string.length);
-    for (var i = 0, l = string.length; i < l; i++) {
-        array[i] = string.charCodeAt(i);
-    }
-    return array.buffer;
 }
