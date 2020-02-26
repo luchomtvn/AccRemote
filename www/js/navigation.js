@@ -150,7 +150,7 @@ window.onload = function () {
             ble.write(bluetooth.connected_id, 
                 SERVICE_UUID_OPERATION,
                 CHARACTERISTIC_UUID_KEYBOARD,
-                bluetooth.arrayToBytes(keys_info),
+                bluetooth.stringToBytes(keys_info),
                 function() {
                     console.log("sent keyboard: " + keys_info)
                 },
@@ -162,7 +162,7 @@ window.onload = function () {
             ble.write(bluetooth.connected_id, 
                 SERVICE_UUID_OPERATION,
                 CHARACTERISTIC_UUID_TEMPERATURE,
-                bluetooth.arrayToBytes(keys_info),
+                bluetooth.stringToBytes(keys_info),
                 function() {
                     console.log("sent temperature: " + keys_info)
                 },
@@ -174,7 +174,7 @@ window.onload = function () {
             ble.write(bluetooth.connected_id, 
                 SERVICE_UUID_OPERATION,
                 CHARACTERISTIC_UUID_TIME,
-                bluetooth.arrayToBytes(keys_info),
+                bluetooth.stringToBytes(keys_info),
                 function() {
                     console.log("sent keyboard: " + keys_info)
                 },
@@ -186,7 +186,7 @@ window.onload = function () {
             ble.write(bluetooth.connected_id, 
                 SERVICE_UUID_OPERATION,
                 CHARACTERISTIC_UUID_SESSION,
-                bluetooth.arrayToBytes(keys_info),
+                bluetooth.stringToBytes(keys_info),
                 function() {
                     console.log("sent keyboard: " + keys_info)
                 },
