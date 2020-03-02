@@ -51,9 +51,10 @@ window.onload = function () {
                 function () {
                     $("#scan-result-list").empty();
                     bluetooth.scanned_devices = [];
-                    ble.startScan([], function (device) {
-                        if (/Acc/.exec(device.name) !== null) {
-                            console.log("Device found: " + device.name);
+                    ble.startScan(["2000"], function (device) {
+                        // if (/Acc/.exec(device.name) !== null) {
+                        if (device.name) {
+                            console.log("Device found: ", device.name);
                             bluetooth.scanned_devices.push(device);
                             $("#scan-result-list").append(`<li> <a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">${device.name}</a> </li>`);
                         }
@@ -63,7 +64,7 @@ window.onload = function () {
                     });
                     setTimeout(() => {
                         ble.stopScan(function () { console.log("stopped scanning") }, function () { console.log("couldn't stop scanning") });
-                    }, 5000);
+                    }, 10000);
                 },
                 function () {
                     navigator.notification.alert("Bluetooth is disabled");
