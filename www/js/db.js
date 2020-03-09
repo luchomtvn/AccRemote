@@ -26,6 +26,9 @@ document.addEventListener('deviceready', function () {
                 mcode TEXT,
                 tstamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`);
+        tx.executeSql('SELECT mcode from mcodes', [], 
+        function (tx, rs) {}, 
+        function (tx, error) {});
     }, function (error) {
         console.log('Transaction ERROR: ' + error.message);
     }, function () {
