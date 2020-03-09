@@ -51,7 +51,7 @@ window.onload = function () {
                 function () {
                     $("#scan-result-list").empty();
                     bluetooth.scanned_devices = [];
-                    ble.startScan(["2000"], function (device) {
+                    ble.startScan([SERVICE_UUID_OPERATION], function (device) {
                         // if (/Acc/.exec(device.name) !== null) {
                         if (device.name) {
                             console.log("Device found: ", device.name);

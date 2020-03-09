@@ -21,23 +21,34 @@
         "ANDROID_PATHPREFIX": "/"
       },
       "cordova-plugin-dialogs": {},
-      "cordova-plugin-spinner": {}
+      "cordova-plugin-spinner": {},
+      "cordova-plugin-x-socialsharing": {
+        "ANDROID_SUPPORT_V4_VERSION": "24.1.1+",
+        "PHOTO_LIBRARY_ADD_USAGE_DESCRIPTION": "This app requires photo library access to function properly.",
+        "PHOTO_LIBRARY_USAGE_DESCRIPTION": "This app requires photo library access to function properly."
+      },
+      "cordova-sqlite-storage": {}
     }
   },
   "dependencies": {
-    "cordova-android": "^7.1.4",
+    "bufferutil": "^4.0.1",
+    "cordova-android": "^8.1.0",
     "cordova-browser": "^5.0.4",
     "cordova-custom-config": "5.1.0",
-    "cordova-ios": "^4.5.5",
+    "cordova-ios": "^5.1.1",
     "cordova-plugin-ble-central": "1.2.2",
     "cordova-plugin-compat": "1.2.0",
     "cordova-plugin-customurlscheme": "5.0.0",
     "cordova-plugin-device": "2.0.2",
     "cordova-plugin-dialogs": "2.0.2",
     "cordova-plugin-spinner": "1.1.0",
-    "mocha": "^6.1.4",
+    "cordova-plugin-x-socialsharing": "git+https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git",
+    "cordova-sqlite-storage": "4.0.0",
+    "es6-promise-plugin": "4.2.2",
+    "mocha": "^6.2.2",
     "mocha-sinon": "^2.1.0",
-    "sinon": "^7.3.2"
+    "sinon": "^7.5.0",
+    "utf-8-validate": "^5.0.2"
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha www/tests"

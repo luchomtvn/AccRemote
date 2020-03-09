@@ -1,0 +1,13 @@
+c5a092a5-2202-4ac6-8734-2e8ff796094d service
+12ead13c-4d06-48b7-a3f9-cdf725acdd87 keyboard
+0daecf8f-2352-4ae8-bdb8-4ae862f041e3 temperature
+8cea517c-2d76-4190-ae05-2e222a3caacb time
+c67c0b5f-0f50-44fc-a0f9-449ff1f476f1 session
+30105eb3-19dc-4621-a227-a917b43162a6 display
+5eb76cac-ada4-43c2-9ed0-b80547542e9f wificreds
+207da212-c2fd-43b5-9664-ac15166364d2 version
+aefc6b90-26f1-4842-b720-3d47f4a087cf wifimac
+984cdbfb-446b-43b2-a879-c857a9a0f638 mmode
+6436e996-e573-4ff7-83fd-d0ea0bd09458 mcode
+f8733ee9-6e45-485a-a8a1-9e4e8bdb0536 btname
+71d67ace-65d6-4d28-b08f-f54735e7d50c cras
