@@ -27,7 +27,7 @@
         "PHOTO_LIBRARY_ADD_USAGE_DESCRIPTION": "This app requires photo library access to function properly.",
         "PHOTO_LIBRARY_USAGE_DESCRIPTION": "This app requires photo library access to function properly."
       },
-      "cordova-sqlite-storage": {}
+      "cordova-plugin-nativestorage": {}
     }
   },
   "dependencies": {
@@ -41,9 +41,9 @@
     "cordova-plugin-customurlscheme": "5.0.0",
     "cordova-plugin-device": "2.0.2",
     "cordova-plugin-dialogs": "2.0.2",
+    "cordova-plugin-nativestorage": "2.3.2",
     "cordova-plugin-spinner": "1.1.0",
     "cordova-plugin-x-socialsharing": "git+https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git",
-    "cordova-sqlite-storage": "4.0.0",
     "es6-promise-plugin": "4.2.2",
     "mocha": "^6.2.2",
     "mocha-sinon": "^2.1.0",

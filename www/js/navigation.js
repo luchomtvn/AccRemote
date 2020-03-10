@@ -1,4 +1,5 @@
-window.onload = function () {
+document.addEventListener('deviceready', function () {
+// window.onload = function () {
 
     window.handleOpenURL = function(url) {
         $.mobile.changePage("#register-new-device", { transition: "slidedown", changeHash: false });

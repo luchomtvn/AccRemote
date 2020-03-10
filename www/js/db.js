@@ -1,11 +1,19 @@
 var db = null;
 
 document.addEventListener('deviceready', function () {
-    db = window.sqlitePlugin.openDatabase({
-        name: 'accremote.db',
-        location: 'default',
-        androidDatabaseProvider: 'system',
-    });
+    if (cordova.platformId === "ios") {
+        db = window.sqlitePlugin.openDatabase({
+            name: 'accremote.db',
+            // location: 'default',
+            iosDatabaseLocation: 'default',
+        });
+    } else {
+        db = window.sqlitePlugin.openDatabase({
+            name: 'accremote.db',
+            location: 'default',
+            androidDatabaseProvider: 'system',
+        });
+    }
     db.transaction(function (tx) {
         tx.executeSql(
             `CREATE TABLE IF NOT EXISTS devices (
@@ -26,11 +34,31 @@ document.addEventListener('deviceready', function () {
                 mcode TEXT,
                 tstamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`);
-        tx.executeSql('SELECT mcode from mcodes', [], 
-        function (tx, rs) {
-            
-        }, 
-        function (tx, error) {});
+    }, function (error) {
+        console.log('Transaction ERROR: ' + error.message);
+    }, function () {
+        console.log('Populated database OK');
+    });
+    db.transaction(function (tx) {
+        var existing_row = undefined;
+        tx.executeSql('SELECT mcode from mcodes', [],
+            function (tx, rs) {
+                existing_mcode = rs.rows.item[0];
+            },
+            function (tx, error) {
+                console.log('SELECT error: ' + error.message);
+            });
+        if (existing_row === undefined) {
+            tx.executeSql('INSERT INTO mcodes VALUES (?)', [mcode],
+                function (tx, rs) {
+                    console.log('valor mcode: ', mcode);
+                },
+                function (tx, error) {
+                    console.log('INSERT error: ' + error.message);
+                });
+        } else {
+            console.log('mcode row: ', existing_row);
+        }
     }, function (error) {
         console.log('Transaction ERROR: ' + error.message);
     }, function () {

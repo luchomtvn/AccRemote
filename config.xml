@@ -68,7 +68,7 @@
         <param name="URL_SCHEME" value="accsmartcontrol" />
     </gap:plugin>
     <gap:plugin name="cordova-plugin-x-socialsharing" source="npm" />
-    <gap:plugin name="cordova-sqlite-storage" source="npm" />
+    <gap:plugin name="cordova-plugin-nativestorage" source="npm" />
     <allow-intent href="accsmartcontrol:" />
     <engine name="browser" spec="^5.0.4" />
     <plugin name="cordova-plugin-device" spec="~2.0.2" />
@@ -87,5 +87,4 @@
     <plugin name="cordova-plugin-x-socialsharing" spec="~5.6.4">
         <variable name="ANDROID_SUPPORT_V4_VERSION" value="24.1.1+" />
     </plugin>
-    <plugin name="cordova-sqlite-storage" spec="~4.0.0" />
 </widget>
