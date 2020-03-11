@@ -386,4 +386,4 @@ document.addEventListener('deviceready', function () {
     });
 
     
-}
+});

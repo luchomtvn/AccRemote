@@ -1,39 +1,53 @@
-var db = null;
 
 document.addEventListener('deviceready', function () {
     // if (cordova.platformId === "ios") {
     // } else {
     // }
     window.mymcode = undefined;
-    NativeStorage.getItem("mymcode",
-        function (val) {
-            console.log("value for mycode: ", val);
-            if (val === undefined) {
-                window.mymcode = RandomBase64();
-                NativeStorage.setItem("mymcode", window.mymcode,
-                    function (val) {
-                        console.log("set new mycode ok: ", val);
+    NativeStorage.keys(
+        function (vals) {
+            if (vals.includes("mymcode")) {
+                NativeStorage.getItem("mymcode", function (res) {
+                    window.mymcode = res;
+                    console.log("Retrieved mymcode value: ", window.mymcode);
+                }, function (error) {
+                    console.log("error retrieving mymcode: ", error);
+                });
+            } else {
+                var aux = RandomBase64url();
+                NativeStorage.setItem("mymcode", aux,
+                    function () {
+                        window.mymcode = aux;
+                        console.log("set new mycode ok: ", aux);
                     },
                     function (error) {
                         console.log("Fatal error, cannot set mycode: ", error);
                     });
-            } else {
-                window.mymcode = val;
-                console.log("Retrieved mcode value: ", window.mymcode);
             }
         },
         function (error) {
-            console.log("get item error: ", error);
+            console.log("all keys error: ", error);
         });
 });
 
-function RandomBase64() {
+function getAllkeys() {
+    NativeStorage.keys(function (obj) {
+        console.log('all results: ', obj);
+    }, function (error) {
+        console.log('error found: ', error);
+    })
+}
+
+function RandomBase64url() {
     var len = 12; // 12 bytes will be 16 base64 chars
-    var binary = '';
+    var result = '';
     var bytes = new Uint8Array(len);
     window.crypto.getRandomValues(bytes);
     for (var i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i]);
+        result += String.fromCharCode(bytes[i]);
     }
-    return window.btoa(binary);
+    var res = window.btoa(result);
+    res = res.replace(/\+/g, '-');
+    res = res.replace(/\//g, '_');
+    return res;
 }
