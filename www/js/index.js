@@ -22,7 +22,7 @@
             console.log("deviceReady fired");
             // console.log($("#device-list").val());
             user = window.session.getInstance().get();
-            if (user.devices != undefined) {
+            if (user && user.devices != undefined) {
                 window.devices.dev_unit = user.devices
                 window.devices.refresh_device_list();
                 // $.mobile.changePage("#main-page", { transition: "slidedown", changeHash: false });

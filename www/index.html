@@ -16,16 +16,18 @@
         content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
 
     <title>AccRemote 2</title>
-    <!-- <meta http-equiv="Content-Security-Policy" content="default-src *;
-    style-src 'self' 'unsafe-inline' 'unsafe-eval';
-    script-src 'self' 'unsafe-inline' 'unsafe-eval';"> -->
-    <!-- accsmartcontrol: 'unsafe-inline' 'unsafe-eval' 'self' gap: data:; -->
-    <meta http-equiv="Content-Security-Policy" content="
-     default-src 'self' gap: file: *;
-     script-src 'self' 'unsafe-inline' 'unsafe-eval' 192.168.0.154:3000;
-     connect-src 'self' ws: wss: http: https:; 
-     img-src 'self' data:; 
-     style-src 'self' 'unsafe-inline';" />
+    <!-- This is a wide open CSP declaration. To lock this down for production, see below. -->
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src * 'unsafe-inline' gap: data:; style-src 'self' 'unsafe-inline'; media-src *" />
+    <!-- Good default declaration:
+    * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+    * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+    * Disables use of eval() and inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+        * Enable inline JS: add 'unsafe-inline' to default-src
+        * Enable eval(): add 'unsafe-eval' to default-src
+    * Create your own at http://cspisawesome.com
+    -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" /> -->
     <link rel="stylesheet" type="text/css" href="style.css" />
 </head>
 
@@ -210,11 +212,13 @@
     </div>
 
     <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="js/plugins/LaunchMyApp.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
-    <!-- <script type="text/javascript" src="js/plugins/cordova-plugin-nativestorage/www/mainHandle.js"></script> -->
+    <script type="text/javascript" charset="utf-8">
+        app.initialize();
+    </script>
+    <!-- <script type="text/javascript" src="js/plugins/LaunchMyApp.js"></script> -->
+    <script type="text/javascript" src="js/accp.js"></script>
     <script type="text/javascript" src="js/connection.js"></script>
-    <script type="text/javascript" src="js/cocoa.js"></script>
     <script type="text/javascript" src="js/registration.js"></script>
     <script type="text/javascript" src="js/panel.js"></script>
     <script type="text/javascript" src="js/transmitter.js"></script>
@@ -222,9 +226,6 @@
     <script type="text/javascript" src="js/session.js"></script>
     <script type="text/javascript" src="js/wsreconnect.js"></script>
     <script type="text/javascript" src="js/constants/load_frames.js"></script>
-    <script type="text/javascript" charset="utf-8">
-        app.initialize();
-    </script>
 </body>
 
 </html>
