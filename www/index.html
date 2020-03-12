@@ -40,11 +40,33 @@
     <div data-role="page" id="main-page" data-theme="b">
         <div data-role="header" data-position="fixed">
             <h1> AccRemote </h1>
-            <a href="#configure-device-page" data-icon="gear" class="ui-btn-right" data-transition="slide">Config</a>
+            <a id="select-spas-button" href="#popupMenu" data-rel="popup" data-transition="slideup"
+                class="ui-btn ui-btn-right ui-corner-all ui-shadow ui-btn-inline ui-icon-gear ui-btn-icon-left ui-btn-a">Select</a>
+                <div data-role="popup" id="popupMenu" data-theme="b">
+                    <ul id="devs-list" data-role="listview" data-inset="true" style="min-width:210px;">
+                        <li data-role="list-divider">Choose device</li>
+                        <li><a href="#">Acc-0001</a></li>
+                        <li><a href="#">Acc-0002</a></li>
+                        <li><a href="#">Acc-0003</a></li>
+                    </ul>
+                </div>
+                <a href="#configure-device-page" data-icon="gear" class="ui-btn" data-transition="slide">Config</a>
+
             <!-- <a href="#register-new-device" data-icon="plus" class="ui-btn-left" data-transition="slide" data-direction="reverse">New</a> -->
         </div><!-- header -->
         <div id="control-page-body" class="ui-content">
             <h3 class="page-title" id="panel-title"></h3>
+            <form>
+                <div class="ui-field-contain">
+                        <label for="select-native-2">Mini sized:</label>
+                        <select name="select-native-2" id="select-native-2" data-mini="true">
+                                <option value="1">The 1st Option</option>
+                                <option value="2">The 2nd Option</option>
+                                <option value="3">The 3rd Option</option>
+                                <option value="4">The 4th Option</option>
+                            </select>
+                </div>
+            </form>
 
             <button
                 onclick="window.plugins.socialsharing.share('Here is your link', null, null, 'https://accsmartlink.com')">Share
