@@ -413,3 +413,51 @@ function sortDeviceList() {
         }
     }
 }
+function subscribe_caracteristic_display() {
+    ble.startNotification(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY, function (data) {
+        panel.display(arr2hex(new Uint8Array(data)));
+    }, function (error) {
+        console.log('Error writing characteristic mmcode: ', error);
+    })
+
+}
+function write_caracteristic_mmcode() {
+    var password = ''; // default is no password
+    if (window.known_local_devices && window.known_local_devices[window.connected_device.id])
+        password = window.known_local_devices[window.connected_device.id].pass || '';
+    var to_send = str2arr(window.mmcode + password);
+    ble.write(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_MCODE, to_send, function () {
+        console.log("Envio con mmcode: ", to_send);
+    }, function (error) {
+        console.log('Error writing characteristic mmcode: ', error);
+    })
+}
+function bleconnected() {
+    console.log("Connected...");
+    subscribe_caracteristic_display();
+    write_caracteristic_mmcode();
+}
+function bledisconnected() {
+    console.log("Disconnected...");
+}
+
+function conn() {
+    ble.autoConnect(window.connected_device.id, bleconnected, bledisconnected);
+}
+
+
+function arr2str(arr) {
+    return String.fromCharCode.apply(null, arr);
+}
+function arr2hex(arr) { // buffer is an ArrayBuffer
+    return Array.prototype.map.call(arr, x => ('0' + x.toString(16)).slice(-2)).join('');
+}
+
+function str2arr(str) {
+    var strLen = str.length;
+    var arr = new Uint8Array(strLen);
+    for (var i = 0; i < strLen; i++) {
+        arr[i] = str.charCodeAt(i);
+    }
+    return arr;
+}

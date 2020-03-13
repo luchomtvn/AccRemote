@@ -74,11 +74,9 @@ document.addEventListener('deviceready', function () {
             function (fileEntry) {
               fileEntry.createWriter(function (fileWriter) {
                 fileWriter.onwriteend = function (e) {
-                  // for real-world usage, you might consider passing a success callback
                   console.log('Write of file "' + fileName + '"" completed.')
                 }
                 fileWriter.onerror = function (e) {
-                  // you could hook this up with our global error handler, or pass in an error callback
                   console.log('Write failed: ' + e.toString())
                 }
                 var blob = new Blob([data], { type: 'text/plain' })
@@ -93,6 +91,9 @@ document.addEventListener('deviceready', function () {
     },
   };
   window.mmcode = null;
+  window.known_local_devices = null;
+  window.known_remote_devices = null;
+  window.connected_device = null;
   accP.readFromFile('mmcode.json', function (data) {
     if (data) window.mmcode = data;
     else {
@@ -100,8 +101,16 @@ document.addEventListener('deviceready', function () {
       accP.writeToFile('mmcode.json', window.mmcode);
     }
   });
+  accP.readFromFile('known_local_devices.json', function (data) {
+    if (data) window.known_local_devices = data;
+  });
+  accP.readFromFile('known_remote_devices.json', function (data) {
+    if (data) window.known_remote_devices = data;
+  });
+  accP.readFromFile('connected_device.json', function (data) {
+    if (data) window.connected_device = data;
+  });
 }, false);
-
 
 function RandomBase64url() {
   var len = 12; // 12 bytes will be 16 base64 chars
@@ -115,4 +124,16 @@ function RandomBase64url() {
   res = res.replace(/\+/g, '-');
   res = res.replace(/\//g, '_');
   return res;
+}
+
+function save_known_local_devices() {
+  accP.writeToFile('known_local_devices.json', window.known_local_devices);
+}
+
+function save_known_remote_devices() {
+  accP.writeToFile('known_remote_devices.json', window.known_remote_devices);
+}
+
+function save_connected_device() {
+  accP.writeToFile('connected_device.json', window.connected_device);
 }
