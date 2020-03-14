@@ -413,29 +413,164 @@ function sortDeviceList() {
         }
     }
 }
-function subscribe_caracteristic_display() {
+// var aux_cnt = 0;
+
+function isConnected_p() {
+    return new Promise(function (resolve, reject) {
+        ble.isConnected(window.connected_device.id, function () {
+            resolve();
+        }, function (error) {
+            reject(error);
+        })
+    });
+}
+
+function disconnect_p() {
+    return new Promise(function (resolve, reject) {
+        ble.disconnect(window.connected_device.id, function () {
+            resolve();
+        }, function (error) {
+            reject(error);
+        })
+    });
+}
+
+function subscribe_characteristic_display() {
     ble.startNotification(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY, function (data) {
         panel.display(arr2hex(new Uint8Array(data)));
+        // console.log("Display notification nro ", ++aux_cnt);
     }, function (error) {
-        console.log('Error writing characteristic mmcode: ', error);
+        console.log('Error writing (subscribing) characteristic descriptor for display: ', error);
     })
-
 }
-function write_caracteristic_mmcode() {
+
+
+function subscribe_characteristic_mmode() {
+    ble.startNotification(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_MMODE, function (data) {
+        var rec = arr2str(new Uint8Array(data));
+        window.acc_mmode = rec;
+        console.log("MMODE received: " + rec);
+    }, function (error) {
+        console.log('Error writing (subscribing) characteristic descriptor for mmode: ', error);
+    })
+}
+
+function subscribe_characteristic_cras() {
+    ble.startNotification(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_CRAS, function (data) {
+        var rec = arr2str(new Uint8Array(data));
+        window.acc_cras = rec;
+        console.log("CRAS received: " + rec);
+    }, function (error) {
+        console.log('Error writing (subscribing) characteristic descriptor for cras: ', error);
+    })
+}
+
+function unsubscribe_characteristic_display_p() {
+    return new Promise(function (resolve, reject) {
+        ble.stopNotification(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY, function () {
+            resolve();
+        }, function (error) {
+            reject(error);
+        })
+    });
+}
+function unsubscribe_characteristic_mmode_p() {
+    return new Promise(function (resolve, reject) {
+        ble.stopNotification(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_MMODE, function () {
+            resolve();
+        }, function (error) {
+            reject(error);
+        })
+    });
+}
+function unsubscribe_characteristic_cras_p() {
+    return new Promise(function (resolve, reject) {
+        ble.stopNotification(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_CRAS, function () {
+            resolve();
+        }, function (error) {
+            reject(error);
+        })
+    });
+}
+
+function write_characteristic_mcode() {
     var password = ''; // default is no password
     if (window.known_local_devices && window.known_local_devices[window.connected_device.id])
         password = window.known_local_devices[window.connected_device.id].pass || '';
-    var to_send = str2arr(window.mmcode + password);
+    var to_send = str2arr(window.acc_mcode + password).buffer;
     ble.write(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_MCODE, to_send, function () {
-        console.log("Envio con mmcode: ", to_send);
+        console.log("Envio con mcode: ", to_send);
     }, function (error) {
-        console.log('Error writing characteristic mmcode: ', error);
+        console.log('Error writing characteristic mcode: ', error);
     })
 }
+
+function write_characteristic_btname(name) {
+    if (!name) return "Error, name not set";
+    var to_send = str2arr(name).buffer;
+    ble.write(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_BTNAME, to_send, function () {
+        console.log("Envio con btname: ", to_send);
+    }, function (error) {
+        console.log('Error writing characteristic btname: ', error);
+    })
+}
+
+function write_characteristic_mmode(cmd) {
+    if (!cmd) return "Error, cmd not set";
+    var data = new Uint8Array(1);
+    data[0] = cmd.charCodeAt(0);
+    ble.write(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_MMODE, data.buffer, function () {
+        console.log("Envio con mmode: ", data[0]);
+    }, function (error) {
+        console.log('Error writing characteristic mmode: ', error);
+    })
+}
+
+function read_characteristic_display() {
+    ble.read(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY, function (data) {
+        var rec = arr2hex(new Uint8Array(data));
+        console.log("Recibio display: ", rec);
+        panel.display(rec);
+    }, function (error) {
+        console.log('Error reading characteristic display: ', error);
+    })
+}
+
+function read_characteristic_wifimac() {
+    ble.read(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_WIFIMAC, function (data) {
+        var rec = arr2str(new Uint8Array(data));
+        console.log("Recibio wifimac: ", rec);
+    }, function (error) {
+        console.log('Error reading characteristic wifimac: ', error);
+    })
+}
+
+function read_characteristic_version() {
+    ble.read(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_VERSION, function (data) {
+        var rec = arr2str(new Uint8Array(data));
+        console.log("Recibio version: ", rec);
+    }, function (error) {
+        console.log('Error reading characteristic version: ', error);
+    })
+}
+
+function read_characteristic_mmode() {
+    ble.read(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_MMODE, function (data) {
+        var rec = arr2str(new Uint8Array(data));
+        console.log("Recibio mmode: ", rec);
+    }, function (error) {
+        console.log('Error reading characteristic mmode: ', error);
+    })
+}
+
 function bleconnected() {
     console.log("Connected...");
-    subscribe_caracteristic_display();
-    write_caracteristic_mmcode();
+    subscribe_characteristic_mmode();
+    subscribe_characteristic_display();
+    subscribe_characteristic_cras();
+    write_characteristic_mcode();
+    read_characteristic_wifimac();
+    read_characteristic_display();
 }
 function bledisconnected() {
     console.log("Disconnected...");
@@ -445,6 +580,15 @@ function conn() {
     ble.autoConnect(window.connected_device.id, bleconnected, bledisconnected);
 }
 
+function disconn() {
+    isConnected_p()
+        .then(unsubscribe_characteristic_cras_p)
+        .then(unsubscribe_characteristic_display_p)
+        .then(unsubscribe_characteristic_mmode_p)
+        .then(disconnect_p)
+        .then(console.log.bind(console, "Disconnected ok..."))
+        .catch(console.log.bind(console, "Error on disconnect"))
+}
 
 function arr2str(arr) {
     return String.fromCharCode.apply(null, arr);

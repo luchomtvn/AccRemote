@@ -90,15 +90,15 @@ document.addEventListener('deviceready', function () {
       )
     },
   };
-  window.mmcode = null;
+  window.acc_mcode = null;
   window.known_local_devices = null;
   window.known_remote_devices = null;
   window.connected_device = null;
   accP.readFromFile('mmcode.json', function (data) {
-    if (data) window.mmcode = data;
+    if (data) window.acc_mcode = data;
     else {
-      window.mmcode = RandomBase64url();
-      accP.writeToFile('mmcode.json', window.mmcode);
+      window.acc_mcode = RandomBase64url();
+      accP.writeToFile('mmcode.json', window.acc_mcode);
     }
   });
   accP.readFromFile('known_local_devices.json', function (data) {
