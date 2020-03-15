@@ -51,9 +51,10 @@ document.addEventListener('deviceready', function () {
             ble.isEnabled(
                 function () {
                     $("#devs-list li:not(:first-child)").remove();
-                    $("#devs-list").append('<li data-sort-text="WAcc-4321"><a class="found-devices ui-btn ui-btn-icon-right ui-icon-cloud">Acc-4321</a></li>');
-                    $("#devs-list").append('<li data-sort-text="WAcc-1111"><a class="found-devices ui-btn ui-btn-icon-right ui-icon-cloud">Acc-1111</a></li>');
-                    $("#devs-list").append('<li data-sort-text="WAcc-1234"><a class="found-devices ui-btn ui-btn-icon-right ui-icon-cloud">Acc-1234</a></li>');
+                    $("#devs-list").append('<li data-sort-text="WAcc-4321"><a class="found-devices ui-btn ui-btn-icon-left ui-icon-cloud">Acc-4321</a></li>');
+                    $("#devs-list").append('<li data-sort-text="WAcc-1111"><a class="found-devices ui-btn ui-btn-icon-left ui-icon-cloud">Acc-1111</a></li>');
+                    $("#devs-list").append('<li data-sort-text="WAcc-1234"><a class="found-devices ui-btn ui-btn-icon-left ui-icon-cloud">Acc-1234</a></li>');
+                    $("#devs-list").append('<li data-sort-text="ZAcc-5678"><a class="found-devices ui-btn ui-btn-icon-left ui-icon-gear" href="#device-list-page" data-transition="slide">Manage Devices</a></li>');
                     bluetooth.scanned_devices = [];
                     ble.startScan([SERVICE_UUID_OPERATION], function (device) {
                         // if (/Acc/.exec(device.name) !== null) {

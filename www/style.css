@@ -52,6 +52,12 @@ html {
     border-radius: .3125em;
 }
 
+.noshadow {
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+    }
+
 .device-button {
     
 }

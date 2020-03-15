@@ -247,8 +247,9 @@ window.panel = {
         );
     },
     load_device: function () {
-        $("#panel-title").text("spa");
+        // $("#panel-title").text("spa");
         document.getElementById('canvas').innerHTML = window.frames["spa"];
+        document.getElementById('canvas').setAttribute("align", "center");
         panel.link_buttons();
         panel.init_leds();
         panel.set_sliders("spa");
