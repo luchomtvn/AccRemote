@@ -271,117 +271,134 @@ document.addEventListener('deviceready', function () {
     }
 
 
-    // add new device
+    // // add new device
 
-    // Step 1: connection
-    //bluetooth
-    $("#button-start-stop-scan").on('click', bluetooth.scan_and_add);
-    $('#button-connect-to-device').on('click', function () { return bluetooth.connect_to_device(bluetooth.get_id(bluetooth.device_to_connect)) });
-    $("#disconnect-from-device").on('click', bluetooth.disconnect_from_device);
-    $("#scan-result-list").on('click', 'li', bluetooth.select_scanned_device);
-    $("#submit-register-data").on('click', registration.submit_registration_info);
-    $("#submit-20-digit-code").on('click', registration.submit_20_digit_code);
+    // // Step 1: connection
+    // //bluetooth
+    // $("#button-start-stop-scan").on('click', bluetooth.scan_and_add);
+    // $('#button-connect-to-device').on('click', function () { return bluetooth.connect_to_device(bluetooth.get_id(bluetooth.device_to_connect)) });
+    // $("#disconnect-from-device").on('click', bluetooth.disconnect_from_device);
+    // $("#scan-result-list").on('click', 'li', bluetooth.select_scanned_device);
+    // $("#submit-register-data").on('click', registration.submit_registration_info);
+    // $("#submit-20-digit-code").on('click', registration.submit_20_digit_code);
 
-    window.devices = {
-        dev_unit: [],
-        selected: "",
-        add_device: function (name, ble_id) {
-            devices.dev_unit.push({
-                name: name,
-                ble_id: ble_id,
+    // window.devices = {
+    //     dev_unit: [],
+    //     selected: "",
+    //     add_device: function (name, ble_id) {
+    //         devices.dev_unit.push({
+    //             name: name,
+    //             ble_id: ble_id,
 
-            });
-            item = '<li><a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">' + name + '</a></li>'
-            $("#device-list").append(item);
-            let user = window.session.getInstance().get();
-            user.devices = devices.dev_unit;
-            window.session.getInstance().set(user);
-        },
-        remove_device_from_list: function () {
-            for (var i = 0; i < devices.dev_unit.length; i++) {
-                if (devices.dev_unit[i].name === devices.selected) {
-                    devices.dev_unit.splice(i, 1);
-                }
-            }
-            let user = window.session.getInstance().get();
-            user.devices = devices.dev_unit;
-            window.session.getInstance().set(user);
-            devices.refresh_device_list();
-        },
-        refresh_device_list: function () {
-            $("#device-list").empty();
-            devices.dev_unit.forEach(element => {
-                item = '<li data-sort-text="B' + element.name + '"><a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">' + element.name + '</a></li>'
-                $("#device-list").append(item);
-                sortDeviceList();
-            });
-        },
-        connect_to_selected_device: function () {
-            devices.dev_unit.forEach(element => {
-                if (element.name === devices.selected)
-                    bluetooth.connect_to_device(element.ble_id);
-                return;
-            });
-        },
-        hasDevice: function (ble_id) {
-            for (var i = 0; i < devices.dev_unit.length; i++)
-                if (devices.dev_unit[i].ble_id === ble_id)
-                    return true;
-            return false;
-        },
-        select_known_device: function () {
-            devices.selected = $(this).find("a").text();
-        },
-        register_device: function () {
-            if (devices.selected == "")
-                navigator.notification.alert("Tap a device first");
-            else
-                devices.dev_unit.forEach(element => {
-                    if (element.name === devices.selected)
-                        if (reg = registration.registration_info())
-                            transmitter.send_by_bt("email", $("#e-mail-address").val());
-                    // bluetooth.send_wificreds(reg.ssid + "," + reg.ssid_pw)
-                });
-        },
-        set_time_on_device: function () {
-            now = new Date();
-            var hours, ampm;
-            hours = now.getHours();
-            if (now.getHours() > 12) {
-                hours = now.getHours() - 12;
-                ampm = "P";
-            }
-            else {
-                ampm = "A";
-            }
-            hours = hours.toString();
-            minutes = now.getMinutes().toString();
-            hours = hours == "00" ? "12" : hours;
-            if (String(hours).length < 2) hours = "0" + hours;
-            if (String(minutes).length < 2) minutes = "0" + minutes;
+    //         });
+    //         item = '<li><a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">' + name + '</a></li>'
+    //         $("#device-list").append(item);
+    //         let user = window.session.getInstance().get();
+    //         user.devices = devices.dev_unit;
+    //         window.session.getInstance().set(user);
+    //     },
+    //     remove_device_from_list: function () {
+    //         for (var i = 0; i < devices.dev_unit.length; i++) {
+    //             if (devices.dev_unit[i].name === devices.selected) {
+    //                 devices.dev_unit.splice(i, 1);
+    //             }
+    //         }
+    //         let user = window.session.getInstance().get();
+    //         user.devices = devices.dev_unit;
+    //         window.session.getInstance().set(user);
+    //         devices.refresh_device_list();
+    //     },
+    //     refresh_device_list: function () {
+    //         $("#device-list").empty();
+    //         devices.dev_unit.forEach(element => {
+    //             item = '<li data-sort-text="B' + element.name + '"><a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">' + element.name + '</a></li>'
+    //             $("#device-list").append(item);
+    //             sortDeviceList();
+    //         });
+    //     },
+    //     connect_to_selected_device: function () {
+    //         devices.dev_unit.forEach(element => {
+    //             if (element.name === devices.selected)
+    //                 bluetooth.connect_to_device(element.ble_id);
+    //             return;
+    //         });
+    //     },
+    //     hasDevice: function (ble_id) {
+    //         for (var i = 0; i < devices.dev_unit.length; i++)
+    //             if (devices.dev_unit[i].ble_id === ble_id)
+    //                 return true;
+    //         return false;
+    //     },
+    //     select_known_device: function () {
+    //         devices.selected = $(this).find("a").text();
+    //     },
+    //     register_device: function () {
+    //         if (devices.selected == "")
+    //             navigator.notification.alert("Tap a device first");
+    //         else
+    //             devices.dev_unit.forEach(element => {
+    //                 if (element.name === devices.selected)
+    //                     if (reg = registration.registration_info())
+    //                         transmitter.send_by_bt("email", $("#e-mail-address").val());
+    //                 // bluetooth.send_wificreds(reg.ssid + "," + reg.ssid_pw)
+    //             });
+    //     },
+    //     set_time_on_device: function () {
+    //         now = new Date();
+    //         var hours, ampm;
+    //         hours = now.getHours();
+    //         if (now.getHours() > 12) {
+    //             hours = now.getHours() - 12;
+    //             ampm = "P";
+    //         }
+    //         else {
+    //             ampm = "A";
+    //         }
+    //         hours = hours.toString();
+    //         minutes = now.getMinutes().toString();
+    //         hours = hours == "00" ? "12" : hours;
+    //         if (String(hours).length < 2) hours = "0" + hours;
+    //         if (String(minutes).length < 2) minutes = "0" + minutes;
 
-            window.transmitter.send_to_module("time", hours + now.getMinutes() + ampm);
-        }
-    }
-    $("#button-connect-to-known-device").on('click', devices.connect_to_selected_device);
-    $("#device-list").on('click', 'li', devices.select_known_device);
-    $("#delete-device-button").on('click', devices.remove_device_from_list);
-    // $("#button-register-device").on('click', devices.register_device);
-    $("#submit-time-zone").on('click', devices.set_time_on_device)
-    $("#button-send-wificreds").on('click', function () {
-        transmitter.send_to_module("wificreds", {
-            ssid: $("#ssid").val(),
-            passwd: $("#ssid-pw").val()
-        });
-    });
-    $("#button-send-email").on('click', function () {
-        transmitter.send_to_module("email", $("#e-mail-address").val());
-    });
+    //         window.transmitter.send_to_module("time", hours + now.getMinutes() + ampm);
+    //     }
+    // }
+    // $("#button-connect-to-known-device").on('click', devices.connect_to_selected_device);
+    // $("#device-list").on('click', 'li', devices.select_known_device);
+    // $("#delete-device-button").on('click', devices.remove_device_from_list);
+    // // $("#button-register-device").on('click', devices.register_device);
+    // $("#submit-time-zone").on('click', devices.set_time_on_device)
+    // $("#button-send-wificreds").on('click', function () {
+    //     transmitter.send_to_module("wificreds", {
+    //         ssid: $("#ssid").val(),
+    //         passwd: $("#ssid-pw").val()
+    //     });
+    // });
+    // $("#button-send-email").on('click', function () {
+    //     transmitter.send_to_module("email", $("#e-mail-address").val());
+    // });
 
-    document.getElementById('select-spas-button').addEventListener('click', function (e) {
-        window.bluetooth.scan_and_add();
-    });
+    // document.getElementById('select-spas-button').addEventListener('click', function (e) {
+    //     window.bluetooth.scan_and_add();
+    // });
+
+
+    // $('#home-page').live('pagebeforecreate', function (e) {
+    //     console.log("home-page beforecreate fired: ", e);
+    // });
+    // $('#device-list-page').live('pagebeforecreate', function (e) {
+    //     console.log("device-list-page beforecreate fired: ", e);
+    // });
 });
+
+$(window).on('navigate', function (e) {
+    console.log("navigate fired: ", e);
+    // $.mobile.navigate('#device-list-page');
+});
+// $('#device-list-page').on('pagecontainerbeforetransition', function (e) {
+//     console.log("device-list-page beforecreate fired: ", e);
+// });
+// });
 
 function sortDeviceList() {
     var list, i, switching, b, shouldSwitch;
@@ -418,7 +435,7 @@ function sortDeviceList() {
 
 function isConnected_p() {
     return new Promise(function (resolve, reject) {
-        ble.isConnected(window.connected_device.id, function () {
+        ble.isConnected(window.selected_device.id, function () {
             resolve();
         }, function (error) {
             reject(error);
@@ -428,7 +445,7 @@ function isConnected_p() {
 
 function disconnect_p() {
     return new Promise(function (resolve, reject) {
-        ble.disconnect(window.connected_device.id, function () {
+        ble.disconnect(window.selected_device.id, function () {
             resolve();
         }, function (error) {
             reject(error);
@@ -437,7 +454,7 @@ function disconnect_p() {
 }
 
 function subscribe_characteristic_display() {
-    ble.startNotification(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY, function (data) {
+    ble.startNotification(window.selected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY, function (data) {
         panel.display(arr2hex(new Uint8Array(data)));
         // console.log("Display notification nro ", ++aux_cnt);
     }, function (error) {
@@ -447,7 +464,7 @@ function subscribe_characteristic_display() {
 
 
 function subscribe_characteristic_mmode() {
-    ble.startNotification(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_MMODE, function (data) {
+    ble.startNotification(window.selected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_MMODE, function (data) {
         var rec = arr2str(new Uint8Array(data));
         window.acc_mmode = rec;
         console.log("MMODE received: " + rec);
@@ -457,7 +474,7 @@ function subscribe_characteristic_mmode() {
 }
 
 function subscribe_characteristic_cras() {
-    ble.startNotification(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_CRAS, function (data) {
+    ble.startNotification(window.selected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_CRAS, function (data) {
         var rec = arr2str(new Uint8Array(data));
         window.acc_cras = rec;
         console.log("CRAS received: " + rec);
@@ -468,7 +485,7 @@ function subscribe_characteristic_cras() {
 
 function unsubscribe_characteristic_display_p() {
     return new Promise(function (resolve, reject) {
-        ble.stopNotification(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY, function () {
+        ble.stopNotification(window.selected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY, function () {
             resolve();
         }, function (error) {
             reject(error);
@@ -477,7 +494,7 @@ function unsubscribe_characteristic_display_p() {
 }
 function unsubscribe_characteristic_mmode_p() {
     return new Promise(function (resolve, reject) {
-        ble.stopNotification(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_MMODE, function () {
+        ble.stopNotification(window.selected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_MMODE, function () {
             resolve();
         }, function (error) {
             reject(error);
@@ -486,7 +503,7 @@ function unsubscribe_characteristic_mmode_p() {
 }
 function unsubscribe_characteristic_cras_p() {
     return new Promise(function (resolve, reject) {
-        ble.stopNotification(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_CRAS, function () {
+        ble.stopNotification(window.selected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_CRAS, function () {
             resolve();
         }, function (error) {
             reject(error);
@@ -496,10 +513,10 @@ function unsubscribe_characteristic_cras_p() {
 
 function write_characteristic_mcode() {
     var password = ''; // default is no password
-    if (window.known_local_devices && window.known_local_devices[window.connected_device.id])
-        password = window.known_local_devices[window.connected_device.id].pass || '';
+    if (window.known_local_devices && window.known_local_devices[window.selected_device.id])
+        password = window.known_local_devices[window.selected_device.id].pass || '';
     var to_send = str2arr(window.acc_mcode + password).buffer;
-    ble.write(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_MCODE, to_send, function () {
+    ble.write(window.selected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_MCODE, to_send, function () {
         console.log("Envio con mcode: ", to_send);
     }, function (error) {
         console.log('Error writing characteristic mcode: ', error);
@@ -509,7 +526,7 @@ function write_characteristic_mcode() {
 function write_characteristic_btname(name) {
     if (!name) return "Error, name not set";
     var to_send = str2arr(name).buffer;
-    ble.write(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_BTNAME, to_send, function () {
+    ble.write(window.selected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_BTNAME, to_send, function () {
         console.log("Envio con btname: ", to_send);
     }, function (error) {
         console.log('Error writing characteristic btname: ', error);
@@ -520,7 +537,7 @@ function write_characteristic_mmode(cmd) {
     if (!cmd) return "Error, cmd not set";
     var data = new Uint8Array(1);
     data[0] = cmd.charCodeAt(0);
-    ble.write(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_MMODE, data.buffer, function () {
+    ble.write(window.selected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_MMODE, data.buffer, function () {
         console.log("Envio con mmode: ", data[0]);
     }, function (error) {
         console.log('Error writing characteristic mmode: ', error);
@@ -528,7 +545,7 @@ function write_characteristic_mmode(cmd) {
 }
 
 function read_characteristic_display() {
-    ble.read(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY, function (data) {
+    ble.read(window.selected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY, function (data) {
         var rec = arr2hex(new Uint8Array(data));
         console.log("Recibio display: ", rec);
         panel.display(rec);
@@ -538,7 +555,7 @@ function read_characteristic_display() {
 }
 
 function read_characteristic_wifimac() {
-    ble.read(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_WIFIMAC, function (data) {
+    ble.read(window.selected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_WIFIMAC, function (data) {
         var rec = arr2str(new Uint8Array(data));
         console.log("Recibio wifimac: ", rec);
     }, function (error) {
@@ -547,7 +564,7 @@ function read_characteristic_wifimac() {
 }
 
 function read_characteristic_version() {
-    ble.read(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_VERSION, function (data) {
+    ble.read(window.selected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_VERSION, function (data) {
         var rec = arr2str(new Uint8Array(data));
         console.log("Recibio version: ", rec);
     }, function (error) {
@@ -556,7 +573,7 @@ function read_characteristic_version() {
 }
 
 function read_characteristic_mmode() {
-    ble.read(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_MMODE, function (data) {
+    ble.read(window.selected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_MMODE, function (data) {
         var rec = arr2str(new Uint8Array(data));
         console.log("Recibio mmode: ", rec);
     }, function (error) {
@@ -578,7 +595,7 @@ function bledisconnected() {
 }
 
 function conn() {
-    ble.autoConnect(window.connected_device.id, bleconnected, bledisconnected);
+    ble.autoConnect(window.selected_device.id, bleconnected, bledisconnected);
 }
 
 function disconn() {
@@ -611,13 +628,11 @@ function pincheck() {
     var passw = /[0-9]{4}/;
     var pin = document.getElementById('device-pw').value;
     $("#pin-check-popup").popup();
-    if(pin.match(passw)) 
-    { 
+    if (pin.match(passw)) {
         // Enviar password al device
         return true;
     }
-    else
-    { 
+    else {
         $("#pin-check-popup").popup("open");
         return false;
     }

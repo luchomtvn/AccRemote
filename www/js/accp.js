@@ -93,7 +93,7 @@ document.addEventListener('deviceready', function () {
   window.acc_mcode = null;
   window.known_local_devices = null;
   window.known_remote_devices = null;
-  window.connected_device = null;
+  window.selected_device = null;
   accP.readFromFile('mmcode.json', function (data) {
     if (data) window.acc_mcode = data;
     else {
@@ -107,8 +107,8 @@ document.addEventListener('deviceready', function () {
   accP.readFromFile('known_remote_devices.json', function (data) {
     if (data) window.known_remote_devices = data;
   });
-  accP.readFromFile('connected_device.json', function (data) {
-    if (data) window.connected_device = data;
+  accP.readFromFile('selected_device.json', function (data) {
+    if (data) window.selected_device = data;
   });
 }, false);
 
@@ -134,8 +134,8 @@ function save_known_remote_devices() {
   accP.writeToFile('known_remote_devices.json', window.known_remote_devices);
 }
 
-function save_connected_device() {
-  accP.writeToFile('connected_device.json', window.connected_device);
+function save_selected_device() {
+  accP.writeToFile('selected_device.json', window.selected_device);
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
