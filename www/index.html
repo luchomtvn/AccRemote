@@ -39,30 +39,18 @@
     <!------------------------------------------------------------------------------------------------>
     <div data-role="page" id="main-page" data-theme="b">
         <div data-role="header" data-position="fixed">
-            <h1> AccRemote </h1>
-            <a id="select-spas-button" href="#popupMenu" data-rel="popup" data-transition="slideup"
-                class="ui-btn ui-btn-right ui-corner-all ui-shadow ui-btn-inline ui-icon-bars ui-btn-icon-right ui-btn-b">Devices</a>
-                <div data-role="popup" id="popupMenu" data-theme="b">
-                    <ul id="devs-list" data-role="listview" data-inset="true" style="min-width:210px;">
-                        <li data-role="list-divider">Choose device</li>
-                        <li><a href="#">Acc-0001</a></li>
-                        <li><a href="#">Acc-0002</a></li>
-                        <li><a href="#">Acc-0003</a></li>
-                    </ul>
-                </div>
+            <h1 id="device-name"> DEVICE_NAME </h1>
+            <a id="select-spas-button"
+                class="ui-btn ui-btn-right ui-corner-all ui-shadow ui-btn-inline ui-icon-action ui-btn-icon-right ui-btn-b"
+                href="#device-list-page" data-transition="slide">Devices</a>
         </div><!-- header -->
 
         <div id="control-page-body" class="ui-content">
             <h3 class="page-title" id="panel-title"></h3>
-            <!-- <button
-                onclick="window.plugins.socialsharing.share('Here is your link', null, null, 'https://accsmartlink.com')">Share
-                JPG</button> -->
             <div data-role="collapsibleset">
-                <!-- <div data-role="collapsible" data-collapsed="false"> -->
                 <div>
-                    <!-- <h1 id="maindisplay"> Display</h1> -->
                     <div id="canvas" class="centered-container"></div>
-                </div> <!-- Collapsible Display -->
+                </div> <!-- Display -->
                 <div data-role="collapsible">
                     <h1>Temperature</h1>
                     <div class="ui-field-contain" style="text-align: left;">
@@ -107,7 +95,7 @@
                         </form>
                     </div>
                     <div data-role="collapsible" class="collapsibles noshadow">
-                        <h1>Configure Time Zone</h1>
+                        <h1>Set Device Time</h1>
                         <div class="ui-field-contain">
                             <label class="labels"   for="time-zone-selector">Select Time Zone</label>
                             <select name="time-zone-selector" id="time-zone-selector" class="form-timezones"></select>
@@ -118,14 +106,15 @@
                         </div>
                     </div> <!-- Collapsible Program Sauna Timezone    -->
                     <div data-role="collapsible" class="collapsibles noshadow">
-                        <h4> Configure Wi-fi</h4>
-                        <label class="labels" for="ssid" class="labels">SSID (Network Name):</label>
+                        <h4> Configure Wi-Fi</h4>
                         <div class="ui-field-contain">
+                            <label class="labels" for="ssid" class="labels">SSID (Network Name):</label>
                             <fieldset data-role="controlgroup" data-type="horizontal" class="wifi-scan-dropdown">  
                                 <select name="wifi-selector" id="wifi-selector" class="form-wifis"></select>
                                 <button id="wifi-scan-button" class="">Scan</button>
                             </fieldset>
                         </div>
+                        <input type="text" name="ssid" id="ssid" value="MLM" placeholder="" >
                         <label class="labels" for="ssid-pw">Password:</label>
                         <input type="password" name="ssid-pw" id="ssid-pw" value="12365390aa" placeholder="">
                         <div data-role="controlgroup" data-type="horizontal" class="centered-container">
@@ -133,12 +122,27 @@
                                 data-transition="slideup">Set Wifi on Device</a>
                         </div>
                     </div> <!-- Collapsible Wifi Configuration    -->
+                    <div data-role="collapsible" class="collapsibles noshadow">
+                        <h4> Share</h4>
+                            <button onclick="window.plugins.socialsharing.share('Here is your link', null, null, 'https://accsmartlink.com')">
+                                Share JPG</button>
+                    </div> <!-- Collapsible Share option    -->
+                    <div data-role="collapsible" class="collapsibles noshadow">
+                        <h4> Password</h4>
+                        <input type="password" name="device-pw" id="device-pw" maxlength="4">
+                        <input type="button" id="send-pw" name="send-pw" value="Configure" onclick="pincheck()">
+                    </div> <!-- Collapsible Password option    -->
                 </div> <!-- Collapsible Advanced Configuration    -->
             </div> <!-- Collapsibleset    -->
         </div> <!-- control-page-body -->
         <div id="footer" data-role="footer" data-position="fixed">
             <h1>MLTech</h1>
         </div>
+    </div>
+
+    <div data-role="popup" id="pin-check-popup" data-transition="fade" data-theme="b" data-overlay-theme="b" class="ui-content">
+        <h3 data-role="title">ALERT</h3>
+        <h4 id="pin-check-txt">Please, enter 4 numbers as a password PIN code</h4>
     </div>
 
     <!------------------------------------------------------------------------------------------------>

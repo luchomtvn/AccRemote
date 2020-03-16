@@ -52,18 +52,16 @@ html {
     border-radius: .3125em;
 }
 
-.noshadow {
-	-webkit-box-shadow: none;
-	-moz-box-shadow: none;
-	box-shadow: none;
-    }
-
 .device-button {
     
 }
 
 .custom-panel {
     width: 13em;
+}
+
+.input-pwd #device-pw {
+    -webkit-text-security:disc !important;    
 }
 
 .loader {
