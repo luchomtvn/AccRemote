@@ -606,3 +606,19 @@ function str2arr(str) {
     }
     return arr;
 }
+
+function pincheck() {
+    var passw = /[0-9]{4}/;
+    var pin = document.getElementById('device-pw').value;
+    $("#pin-check-popup").popup();
+    if(pin.match(passw)) 
+    { 
+        // Enviar password al device
+        return true;
+    }
+    else
+    { 
+        $("#pin-check-popup").popup("open");
+        return false;
+    }
+}
