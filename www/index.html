@@ -7,7 +7,7 @@
     <!-- <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script> -->
     <link rel="stylesheet" href="jquery.mobile-1.4.5/jquery.mobile-1.4.5.css">
     </link>
-    <script src="jquery-1.11.1.js"></script>
+    <script src="js/jquery-1.11.1.js"></script>
     <script src="jquery.mobile-1.4.5/jquery.mobile-1.4.5.js"></script>
     <!-- <script src="Easy-Timezone-Picker-with-jQuery-Moment-js-Timezones/dist/timezones.full.js"></script> -->
 
@@ -19,16 +19,23 @@
     <!-- This is a wide open CSP declaration. To lock this down for production, see below. -->
     <meta http-equiv="Content-Security-Policy"
         content="default-src * 'unsafe-inline' gap: data:; style-src 'self' 'unsafe-inline'; media-src *" />
-    <!-- Good default declaration:
+    <!--
+    Good default declaration:
     * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
     * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
     * Disables use of eval() and inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
         * Enable inline JS: add 'unsafe-inline' to default-src
         * Enable eval(): add 'unsafe-eval' to default-src
-    * Create your own at http://cspisawesome.com
-    -->
-    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" /> -->
-    <link rel="stylesheet" type="text/css" href="style.css" />
+    * Create your own at http://cspisawesome.com 
+-->
+
+    <!--
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" /> 
+-->
+
+
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/all.css" />
 </head>
 
 <body>
@@ -81,23 +88,22 @@
                         <input type="submit" data-inline="true" value="Submit" id="submit-session">
                         <a href="#" id="cancelsestime" data-role="button">Cancel</a>
                     </div>
-                </div> <!-- Collapsible Program Sauna Set Time    -->                
-                <div data-role="collapsible"> 
+                </div> <!-- Collapsible Program Sauna Set Time    -->
+                <div data-role="collapsible">
                     <h1>Advanced Configuration</h1>
                     <div class="ui-field-contain">
                         <!-- <label class="labels" for="advanced-config-selector"></label> -->
                         <form>
                                 <label for="advanced-switch-option">Advanced User Mode:</label>
-                                <input type="checkbox" data-role="flipswitch" name="advanced-switch-option" id="advanced-switch-option" 
-                                        data-on-text="ON" 
-                                        data-off-text="OFF" 
+                                <input type="checkbox" data-role="flipswitch" name="advanced-switch-option"
+                                id="advanced-switch-option" data-on-text="ON" data-off-text="OFF"
                                 class="advanced-switch noshadow">
                         </form>
                     </div>
                     <div data-role="collapsible" class="collapsibles noshadow">
                         <h1>Set Device Time</h1>
                         <div class="ui-field-contain">
-                            <label class="labels"   for="time-zone-selector">Select Time Zone</label>
+                            <label class="labels" for="time-zone-selector">Select Time Zone</label>
                             <select name="time-zone-selector" id="time-zone-selector" class="form-timezones"></select>
                         </div>
                         <div data-role="controlgroup" data-type="horizontal">
@@ -109,12 +115,12 @@
                         <h4> Configure Wi-Fi</h4>
                         <div class="ui-field-contain">
                             <label class="labels" for="ssid" class="labels">SSID (Network Name):</label>
-                            <fieldset data-role="controlgroup" data-type="horizontal" class="wifi-scan-dropdown">  
+                                <fieldset data-role="controlgroup" data-type="horizontal" class="wifi-scan-dropdown">
                                 <select name="wifi-selector" id="wifi-selector" class="form-wifis"></select>
                                 <button id="wifi-scan-button" class="">Scan</button>
                             </fieldset>
                         </div>
-                        <input type="text" name="ssid" id="ssid" value="MLM" placeholder="" >
+                        <input type="text" name="ssid" id="ssid" value="MLM" placeholder="">
                         <label class="labels" for="ssid-pw">Password:</label>
                         <input type="password" name="ssid-pw" id="ssid-pw" value="12365390aa" placeholder="">
                         <div data-role="controlgroup" data-type="horizontal" class="centered-container">
@@ -124,8 +130,9 @@
                     </div> <!-- Collapsible Wifi Configuration    -->
                     <div data-role="collapsible" class="collapsibles noshadow">
                         <h4> Share</h4>
-                            <button onclick="window.plugins.socialsharing.share('Here is your link', null, null, 'https://accsmartlink.com')">
-                                Share JPG</button>
+                        <button
+                            onclick="window.plugins.socialsharing.share('Here is your link', null, null, 'https://accsmartlink.com')">
+                            Share JPG</button>
                     </div> <!-- Collapsible Share option    -->
                     <div data-role="collapsible" class="collapsibles noshadow">
                         <h4> Password</h4>
@@ -140,7 +147,8 @@
         </div>
     </div>
 
-    <div data-role="popup" id="pin-check-popup" data-transition="fade" data-theme="b" data-overlay-theme="b" class="ui-content">
+    <div data-role="popup" id="pin-check-popup" data-transition="fade" data-theme="b" data-overlay-theme="b"
+        class="ui-content">
         <h3 data-role="title">ALERT</h3>
         <h4 id="pin-check-txt">Please, enter 4 numbers as a password PIN code</h4>
     </div>
@@ -160,42 +168,37 @@
         <div id="configure-device-body" class="ui-content">
             <div class="ui-field-contain">
                 <label class="labels" for="select-native-1">Available devices:</label>
-                <ul id="device-list"></ul>
+                <ul id="devs-list" data-role="listview"></ul>
             </div>
-            <a href="#" id="button-connect-to-known-device"
-                class="ui-shadow ui-btn ui-corner-all ui-btn-inline">Connect to device</a>
-            <a href="#delete-device-dialog" data-rel="popup" data-position-to="window" data-transition="pop"
-                class="ui-shadow ui-btn ui-corner-all ui-btn-inline">Delete</a>
             <div data-role="popup" id="delete-device-dialog">
                 <div class="ui-content centered-container">
-                    <p>Are you sure you want to delete this device?</p>
+                    <p>You are deleting device <span id="delete-device-name"></span>?</p>
                     <a href="#" id="delete-device-button" class="ui-shadow ui-btn ui-corner-all ui-btn-inline"
                         data-rel="back" data-transition="flow">Delete</a>
                     <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline" data-rel="back">No</a>
                 </div>
             </div>
+            <div id="footer" data-role="footer" data-position="fixed">
+                <h1>MLTech</h1>
+            </div>
 
-        <div id="footer" data-role="footer" data-position="fixed">
-            <h1>MLTech</h1>
         </div>
 
-    </div>
-
-    <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
-    <script type="text/javascript" charset="utf-8">
-        app.initialize();
-    </script>
-    <!-- <script type="text/javascript" src="js/plugins/LaunchMyApp.js"></script> -->
-    <script type="text/javascript" src="js/accp.js"></script>
-    <script type="text/javascript" src="js/connection.js"></script>
-    <script type="text/javascript" src="js/registration.js"></script>
-    <script type="text/javascript" src="js/panel.js"></script>
-    <script type="text/javascript" src="js/transmitter.js"></script>
-    <script type="text/javascript" src="js/navigation.js"></script>
-    <script type="text/javascript" src="js/session.js"></script>
-    <script type="text/javascript" src="js/wsreconnect.js"></script>
-    <script type="text/javascript" src="js/constants/load_frames.js"></script>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            app.initialize();
+        </script>
+        <!-- <script type="text/javascript" src="js/plugins/LaunchMyApp.js"></script> -->
+        <script type="text/javascript" src="js/accp.js"></script>
+        <script type="text/javascript" src="js/connection.js"></script>
+        <script type="text/javascript" src="js/registration.js"></script>
+        <script type="text/javascript" src="js/panel.js"></script>
+        <script type="text/javascript" src="js/transmitter.js"></script>
+        <script type="text/javascript" src="js/navigation.js"></script>
+        <script type="text/javascript" src="js/session.js"></script>
+        <script type="text/javascript" src="js/wsreconnect.js"></script>
+        <script type="text/javascript" src="js/constants/load_frames.js"></script>
 </body>
 
 </html>

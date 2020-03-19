@@ -52,10 +52,6 @@ html {
     border-radius: .3125em;
 }
 
-.device-button {
-    
-}
-
 .custom-panel {
     width: 13em;
 }
@@ -77,10 +73,40 @@ html {
     margin:0 auto;
     margin-left:auto;
     margin-right:auto;
-    align:center;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* font awesome classes */
+
+.faicon{
+    margin-top: .125em;    
+}
+
+.faiconl{
+    float: left;
+    margin-top: .125em;    
+}
+
+.faiconr{
+    float: right;
+    margin-top: .125em;    
+}
+
+.ui-icon-fas-delete:after {
+    color:white;
+    /* background-color:blue; */
+    content: '\f2ed';
+    font-family: "Font Awesome 5 Free";
+    font-style: normal;
+    font-weight: 900;
+    text-indent:.25em;
+    text-decoration: inherit;
+} 
+
+/* .ui-icon-cdelete:after {
+    background-image: url("../img/trash-alt.svg");
+} */
