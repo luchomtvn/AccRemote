@@ -42,6 +42,7 @@ document.addEventListener('deviceready', function () {
     accP_errorHandler
   );
   accP = {
+    files_read: 0,
     readFromFile: function (fileName, cb) {
       var pathToFile = cordova.file.dataDirectory + fileName
       window.resolveLocalFileSystemURL(
@@ -89,6 +90,13 @@ document.addEventListener('deviceready', function () {
         accP_errorHandler.bind(null, fileName)
       )
     },
+    fire_all_files_read_event: function (file_bit, all) {
+      this.files_read |= file_bit;
+      if (this.files_read == all) {
+        document.dispatchEvent(new CustomEvent("all_files_read", {}));
+        console.log("all_files_read event fired");
+      }
+    }
   };
   window.acc_mcode = null;
   window.known_local_devices = null;
@@ -99,16 +107,20 @@ document.addEventListener('deviceready', function () {
     else {
       window.acc_mcode = RandomBase64url();
       accP.writeToFile('mmcode.json', window.acc_mcode);
-    }
+    };
+    accP.fire_all_files_read_event(1, 15);
   });
   accP.readFromFile('known_local_devices.json', function (data) {
     if (data) window.known_local_devices = data;
+    accP.fire_all_files_read_event(2, 15);
   });
   accP.readFromFile('known_remote_devices.json', function (data) {
     if (data) window.known_remote_devices = data;
+    accP.fire_all_files_read_event(4, 15);
   });
   accP.readFromFile('selected_device.json', function (data) {
     if (data) window.selected_device = data;
+    accP.fire_all_files_read_event(8, 15);
   });
 }, false);
 
@@ -145,4 +157,8 @@ async function digestMessage(message) {
   const hashArray = Array.from(new Uint8Array(hashBuffer));                     // convert buffer to byte array
   const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join(''); // convert bytes to hex string
   return hashHex;
+}
+
+const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
 }

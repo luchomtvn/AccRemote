@@ -47,7 +47,7 @@
     <div data-role="page" id="main-page" data-theme="b">
         <div data-role="header" data-position="fixed">
             <h1 id="device-name"> DEVICE_NAME </h1>
-            <a id="select-spas-button"
+            <a id="select-devices-button"
                 class="ui-btn ui-btn-right ui-corner-all ui-shadow ui-btn-inline ui-icon-action ui-btn-icon-right ui-btn-b"
                 href="#device-list-page" data-transition="slide">Devices</a>
         </div><!-- header -->
@@ -170,13 +170,13 @@
                 <label class="labels" for="select-native-1">Available devices:</label>
                 <ul id="devs-list" data-role="listview"></ul>
             </div>
-            <div data-role="popup" id="delete-device-dialog">
-                <div class="ui-content centered-container">
-                    <p>You are deleting device <span id="delete-device-name"></span>?</p>
-                    <a href="#" id="delete-device-button" class="ui-shadow ui-btn ui-corner-all ui-btn-inline"
-                        data-rel="back" data-transition="flow">Delete</a>
-                    <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline" data-rel="back">No</a>
-                </div>
+            <div data-role="popup" id="delete-device-dialog" data-dismissible="false"
+                class="ui-content centered-container">
+                <h1>Confirm Deletion</h1>
+                <h3>Delete device <span id="delete-device-name"></span>?</h3>
+                <a href="#" id="delete-device-button" class="ui-shadow ui-btn ui-corner-all ui-btn-inline"
+                    data-rel="back" data-transition="flow">Delete</a>
+                <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline" data-rel="back">Cancel</a>
             </div>
             <div id="footer" data-role="footer" data-position="fixed">
                 <h1>MLTech</h1>

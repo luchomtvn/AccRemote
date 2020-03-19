@@ -390,10 +390,11 @@ document.addEventListener('deviceready', function () {
     //     console.log("device-list-page beforecreate fired: ", e);
     // });
     window.acc_on = true;
+    window.acc_wsbase = 'wss://accsmartlink.com/wsa/';
     document.addEventListener('pause', async function () {
         window.acc_on = false;
         // await base_navigation();
-        write_characteristic_mmode_p('D');
+        if (window.connected_device && window.connected_device.id) write_characteristic_mmode_p('D');
         console.log('event pause fired');
     });
 
@@ -406,34 +407,65 @@ document.addEventListener('deviceready', function () {
     document.getElementById('devs-list').addEventListener('click', function (event) {
         window.known_local_devices = window.known_local_devices || {};
         if (event.target && event.target.nodeName == 'A') {
-            var li_element = event.target.parentNode;
-            var btname = li_element.getAttribute('data-btname');
-            var btid = li_element.getAttribute('data-btid');
-            var wifimac = li_element.getAttribute('data-wifimac');
-            var pass;
+            const li_element = event.target.parentNode;
+            const btname = li_element.getAttribute('data-btname');
+            const btid = li_element.getAttribute('data-btid');
+            const wifimac = li_element.getAttribute('data-wifimac');
+            let pass = '';
+            let ws = '';
             if (btid) {
                 pass = btid in window.known_local_devices ? window.known_local_devices[btid].pass : '';
                 console.log("selected local device: " + btname + ' (btid: ' + btid + ')');
             } else if (wifimac) {
                 pass = window.known_remote_devices && wifimac in window.known_remote_devices ? window.known_remote_devices[wifimac].pass : '';
+                ws = window.known_remote_devices && wifimac in window.known_remote_devices ? window.known_remote_devices[wifimac].ws : '';
                 console.log("selected remote device: " + btname + ' (wifimac: ' + wifimac + ')');
             } else { console.log('Error: clicked on element without btid or wifimac'); return }
             var href = event.target.getAttribute('href') || '#';
             if (wifimac && href.match(/delete/)) { // delete route
-                document.getElementById('delete-device-name').innerHTML = btname + ' (mac ' + wifimac + ')';
+                document.getElementById('delete-device-name').innerHTML = btname + ' (mac\u00A0' + wifimac + ')';
+                window.wifimac_to_delete = wifimac;
                 $('#delete-device-dialog').popup('open');
             } else {
                 window.selected_device = {
                     id: btid,
-                    wifimac: wifimac,
                     name: btname,
-                    pass: pass
+                    pass: pass,
+                    wifimac: wifimac,
+                    ws: ws
                 };
                 base_navigation();
             }
         }
     });
+    document.getElementById('delete-device-button').addEventListener('click', function () {
+        delete window.known_remote_devices[window.wifimac_to_delete];
+        window.wifimac_to_delete = null;
+        save_known_remote_devices();
+        base_navigation();
+    });
+});
+document.getElementById('select-devices-button').addEventListener('click', function (e) {
+    e.preventDefault();
+    console.log('select-devices-button clicked with selected device: ', selected_device);
+    selected_device = null;
+    base_navigation();
+    return false;
+});
 
+document.addEventListener("all_files_read", function () {
+    console.log('all_files_read event received');
+    window.known_remote_devices = window.known_remote_devices || {}; // avoid null case
+    console.log('existing remotes: ', window.known_remote_devices);
+    let remotes_to_add = {
+        112233444321: { name: "Acc-4321", ws: "wss://accsmartlink.com/wsa/112233444321/ea4e8a29edd1dd1a7eac8fdaaf5316be19ca5522f285558f9a1d1fc863a19f35" },
+        112233441111: { name: "Acc-1111", ws: "wss://accsmartlink.com/wsa/112233441111/ea4e8a29edd1dd1a7eac8fdaaf5316be19ca5522f285558f9a1d1fc863a19f35" },
+        112233441234: { name: "Acc-1234", ws: "wss://accsmartlink.com/wsa/112233441234/ea4e8a29edd1dd1a7eac8fdaaf5316be19ca5522f285558f9a1d1fc863a19f35" }
+    };
+    Object.assign(window.known_remote_devices, remotes_to_add);
+    console.log('new remotes: ', window.known_remote_devices);
+    save_known_remote_devices();
+    console.log('after save: ', window.known_remote_devices);
     base_navigation();
 });
 
@@ -482,7 +514,7 @@ function isConnected_p() {
     });
 }
 
-function disconnect_p() {
+async function disconnect_p() {
     return new Promise(function (resolve, reject) {
         ble.disconnect(window.connected_device.id, function () {
             console.log('Disconnect from ' + window.connected_device.id + ' Ok');
@@ -649,15 +681,15 @@ function read_characteristic_version_p() {
 //     })
 // }
 
-function get_connected_p() {
+async function get_connected_p() {
     return new Promise(function (resolve, reject) {
-        if (dp.match(/iOS/)) {
+        if (device.platform.match(/iOS/)) {
             ble.connectedPeripheralsWithServices(
                 [SERVICE_UUID_OPERATION],
                 function (res) { resolve(res); },
                 function (err) { reject(err); });
         }
-        else if (dp.match(/Android/)) {
+        else if (device.platform.match(/Android/)) {
             ble.bondedDevices(
                 function (res) { resolve(res); },
                 function (err) { reject(err); });
@@ -667,23 +699,14 @@ function get_connected_p() {
 }
 
 async function disconnect_all_p() {
-    return new Promise(function (resolve, reject) {
-        var connected = [];
-        var keep_disconnecting = true;
-        var max_disconn = 3;
-        while (keep_disconnecting && max_disconn) {
-            get_connected_p().then(connected = async () => {
-                if (connected && connected[0] && connected[0].id) {
-                    connected_device = { id: connected[0].id };
-                    console.log('Disconnecting holded connection to ' + connected_device.id);
-                    await disconnect_p();
-                    max_disconn--;
-                } else keep_disconnecting = false;
-            });
-        };
-        if (keep_disconnecting) reject('Error: not disconnected after 3 retrys')
-        else resolve();
-    });
+    let connected = await get_connected_p();
+    if (typeof connected !== 'object') return (connected);
+    if (connected.length === 0) return ('Done');
+    for (let i = 0; i < connected.length; i++) {
+        window.connected_device = { id: connected[i].id };
+        console.log('Disconnecting holded connection to ' + window.connected_device.id);
+        await disconnect_p();
+    }
 }
 
 function bleconnected() {
@@ -768,12 +791,59 @@ function pincheck() {
 
 
 function scan_and_display_list() {
-    ble.isEnabled(function () {
+    ble.isEnabled(async function () {
         // $("#devs-list li:not(:first-child)").remove();
         $("#devs-list li").remove();
-        $("#devs-list").append('<li data-sort-text="WAcc-4321" data-icon="fas-delete" data-btname="Acc-4321" data-wifimac="112233444321"><a href="#" class="fa fa-wifi">\u00A0\u00A0Acc-4321</a><a href="#delete-device-dialog" data-rel="popup">delete</a></li>');
-        $("#devs-list").append('<li data-sort-text="WAcc-1111" data-icon="fas-delete" data-btname="Acc-1111" data-wifimac="112233441111"><a href="#" class="fa fa-wifi">\u00A0\u00A0Acc-1111</a><a href="#delete-device-dialog" data-rel="popup">delete</a></li>');
-        $("#devs-list").append('<li data-sort-text="WAcc-1234" data-icon="fas-delete" data-btname="Acc-1234" data-wifimac="112233441234"><a href="#" class="fa fa-wifi">\u00A0\u00A0Acc-1234</a><a href="#delete-device-dialog" data-rel="popup">delete</a></li>');
+        if (window.known_local_devices) {
+            for (const btid in window.known_local_devices) {
+                const dev = window.known_local_devices[btid];
+                console.log("Checking Own: " + dev.name);
+                if (dev.mmode != 'M') continue;
+                console.log("Adding local: " + dev.name);
+                let node = document.createElement('LI');
+                node.setAttribute('data-sort-text', 'W' + dev.name);
+                node.setAttribute('data-btname', dev.name);
+                node.setAttribute('data-wifimac', dev.wifimac);
+                node.setAttribute('data-icon', 'false');
+                const token = await digestMessage(dev.wifimac + window.acc_mcode + dev.pass);
+                node.setAttribute('data-ws', window.acc_wsbase + dev.wifimac + '/' + token);
+                let anchor = document.createElement('A');
+                anchor.className = "fa fa-wifi";
+                anchor.setAttribute('href', '#');
+                let textnode = document.createTextNode('\u00A0\u00A0' + dev.name);
+                anchor.appendChild(textnode);
+                node.appendChild(anchor);
+                document.getElementById('devs-list').appendChild(node);
+                console.log("Remote own generated: " + dev.name);
+            }
+        } else { console.log("No known_local_devices") }
+        if (window.known_remote_devices) {
+            for (const wifimac in window.known_remote_devices) {
+                const dev = window.known_remote_devices[wifimac];
+                console.log("Adding shared: " + dev.name);
+                let node = document.createElement('LI');
+                node.setAttribute('data-sort-text', 'W' + dev.name);
+                node.setAttribute('data-btname', dev.name);
+                node.setAttribute('data-wifimac', wifimac);
+                node.setAttribute('data-icon', 'fas-delete');
+                node.setAttribute('data-ws', dev.ws);
+                let anchor = document.createElement('A');
+                anchor.className = "fa fa-wifi";
+                anchor.setAttribute('href', '#');
+                anchor.appendChild(document.createTextNode('\u00A0\u00A0' + dev.name));
+                node.appendChild(anchor);
+                let anchor2 = document.createElement('A');
+                anchor2.setAttribute('href', '#delete-device-dialog');
+                anchor2.setAttribute('data-rel', 'popup');
+                anchor2.appendChild(document.createTextNode('delete'));
+                node.appendChild(anchor2);
+                document.getElementById('devs-list').appendChild(node);
+                console.log("Remote generated: " + dev.name);
+            }
+        } else { console.log("No known_remote_devices") }
+        // $("#devs-list").append('<li data-sort-text="WAcc-4321" data-icon="fas-delete" data-btname="Acc-4321" data-wifimac="112233444321"><a href="#" class="fa fa-wifi">\u00A0\u00A0Acc-4321</a><a href="#delete-device-dialog" data-rel="popup">delete</a></li>');
+        // $("#devs-list").append('<li data-sort-text="WAcc-1111" data-icon="fas-delete" data-btname="Acc-1111" data-wifimac="112233441111"><a href="#" class="fa fa-wifi">\u00A0\u00A0Acc-1111</a><a href="#delete-device-dialog" data-rel="popup">delete</a></li>');
+        // $("#devs-list").append('<li data-sort-text="WAcc-1234" data-icon="fas-delete" data-btname="Acc-1234" data-wifimac="112233441234"><a href="#" class="fa fa-wifi">\u00A0\u00A0Acc-1234</a><a href="#delete-device-dialog" data-rel="popup">delete</a></li>');
         // $("#devs-list").append('<li data-sort-text="ZAcc-5678"><a class="found-devices ui-btn ui-btn-icon-left ui-icon-gear" href="#device-list-page" data-transition="slide">Manage Devices</a></li>');
         // jquery mobile specific reformat of list
         $('#devs-list').listview("refresh");
@@ -822,14 +892,14 @@ async function base_navigation() {
         } else { // bluetooth case
             // sometimes we need to start scan before the autoconnect
             // we don't actually need the results, see the dummy success & error callbacks
-            var node = document.createElement('P');
-            var anchor = document.createElement('A');
-            anchor.className = "ui-btn ui-btn-icon-left ui-icon-home";
-            anchor.setAttribute('href', '#');
-            var textnode = document.createTextNode(window.selected_device.name);
-            anchor.appendChild(textnode);
-            node.appendChild(anchor);
-            document.getElementById('device-name').appendChild(node);
+            // var node = document.createElement('P');
+            // var anchor = document.createElement('A');
+            // anchor.className = "ui-btn ui-btn-icon-left ui-icon-home";
+            // anchor.setAttribute('href', '#');
+            let textnode = document.createTextNode(window.selected_device.name);
+            // anchor.appendChild(textnode);
+            // node.appendChild(anchor);
+            document.getElementById('device-name').appendChild(textnode);
             ble.startScan([SERVICE_UUID_OPERATION], function () { }, function () { });
             conn();
             $.mobile.navigate('#main-page');
