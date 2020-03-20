@@ -1,21 +1,21 @@
 document.addEventListener('deviceready', function () {
     // window.onload = function () {
 
-    window.handleOpenURL = function (url) {
-        $.mobile.changePage("#register-new-device", { transition: "slidedown", changeHash: false });
-        autofill_registered(url);
-    }
+    // window.handleOpenURL = function (url) {
+    //     $.mobile.changePage("#register-new-device", { transition: "slidedown", changeHash: false });
+    //     autofill_registered(url);
+    // }
 
-    window.autofill_registered = function (url) {
-        params = new URLSearchParams(url.split("?", 2)[1]);
-        code = params.get("code");
-        $("#code-20-digits").val(code);
-        $([document.documentElement, document.body]).animate({
-            scrollTop: $("#submit-20-digit-code").offset().top
-        }, 700);
-    }
+    // window.autofill_registered = function (url) {
+    //     params = new URLSearchParams(url.split("?", 2)[1]);
+    //     code = params.get("code");
+    //     $("#code-20-digits").val(code);
+    //     $([document.documentElement, document.body]).animate({
+    //         scrollTop: $("#submit-20-digit-code").offset().top
+    //     }, 700);
+    // }
 
-    let type = "spa";
+    // let type = "spa";
 
     $.mobile.defaultPageTransition = 'none';
     $.mobile.defaultDialogTransition = 'none';
@@ -39,361 +39,10 @@ document.addEventListener('deviceready', function () {
         }
     }
 
-    // window.bluetooth = {
-    //     scanned_devices: [],
-    //     device_to_connect: "",
-    //     select_scanned_device: function () {
-    //         $("#button-connect-to-device").removeClass("ui-state-disabled");
-    //         bluetooth.device_to_connect = $(this).find("a").text();
-    //     },
-    //     scan_and_add: function () {
-    //         // $("#scan-result-list").empty();
-    //         ble.isEnabled(
-    //             function () {
-    //                 $("#devs-list li:not(:first-child)").remove();
-    //                 $("#devs-list").append('<li data-sort-text="WAcc-4321"><a class="found-devices ui-btn ui-btn-icon-left ui-icon-cloud">Acc-4321</a></li>');
-    //                 $("#devs-list").append('<li data-sort-text="WAcc-1111"><a class="found-devices ui-btn ui-btn-icon-left ui-icon-cloud">Acc-1111</a></li>');
-    //                 $("#devs-list").append('<li data-sort-text="WAcc-1234"><a class="found-devices ui-btn ui-btn-icon-left ui-icon-cloud">Acc-1234</a></li>');
-    //                 // $("#devs-list").append('<li data-sort-text="ZAcc-5678"><a class="found-devices ui-btn ui-btn-icon-left ui-icon-gear" href="#device-list-page" data-transition="slide">Manage Devices</a></li>');
-    //                 bluetooth.scanned_devices = [];
-    //                 ble.startScan([SERVICE_UUID_OPERATION], function (device) {
-    //                     // if (/Acc/.exec(device.name) !== null) {
-    //                     if (device.name) {
-    //                         console.log("Device found: ", device.name);
-    //                         bluetooth.scanned_devices.push(device);
-    //                         var item = '<li data-sort-text="B' + device.name + '"><a class="found-devices ui-btn ui-btn-icon-left ui-icon-home">' + device.name + '</a></li>'
-    //                         $("#devs-list").append(item);
-    //                         sortDeviceList();
-    //                     }
-    //                 }, function () {
-    //                     navigator.notification.alert("Could not scan");
-    //                     console.log("Could not scan");
-    //                 });
-    //                 setTimeout(() => {
-    //                     ble.stopScan(function () { console.log("stopped scanning") }, function () { console.log("couldn't stop scanning") });
-    //                 }, 10000);
-    //             },
-    //             function () {
-    //                 navigator.notification.alert("Bluetooth is disabled");
-    //             }
-    //         )
-    //     },
-    //     connect_to_device: function (device_id) {
-    //         ble.isEnabled(
-    //             function () {
-    //                 ble.isConnected(bluetooth.connected_id,
-    //                     function () {
-    //                         navigator.notification.alert("BT Already Connected");
-    //                     },
-    //                     function () {
-    //                         console.log("Connecting...");
-    //                         ble.connect(device_id,
-    //                             function () {
-    //                                 bluetooth.connected_id = device_id;
-    //                                 console.log("Connected to device id " + bluetooth.connected_id);
-    //                                 let session = window.session.getInstance().get();
-    //                                 // bluetooth.send_usertoken(session.final_token);
-    //                                 if (!window.devices.hasDevice(device_id))
-    //                                     window.devices.add_device(bluetooth.device_to_connect, device_id);
-    //                                 navigator.notification.alert("BT Connected!");
-    //                                 window.panel.start_refresh();
-    //                             },
-    //                             function () {
-    //                                 // disable local use
-    //                                 console.log("Disconnected from " + bluetooth.connected_id);
-    //                                 navigator.notification.alert("");
-    //                                 // window.panel.stop_refresh();
-    //                             });
-    //                     }
-    //                 );
-    //             },
-    //             function () {
-    //                 navigator.notification.alert("Bluetooth Disabled!");
-    //             }
-    //         )
-    //     },
-    //     get_id: function (name) {
-    //         for (var i = 0; i < bluetooth.scanned_devices.length; i++) {
-    //             if (bluetooth.scanned_devices[i].name == name) {
-    //                 console.log(`returning id for ${name}`);
-    //                 return bluetooth.scanned_devices[i].id;
-    //             }
-    //         }
-    //         console.error(`Did not return id. ${name} was not found in scanner result list`)
-    //         return undefined;
-    //     },
-    //     stringToBytes: function (string) {
-    //         var array = new Uint8Array(string.length);
-    //         for (var i = 0, l = string.length; i < l; i++) {
-    //             array[i] = string.charCodeAt(i);
-    //         }
-    //         return array.buffer;
-    //     },
-    //     arrayToBytes: function (arr) {
-    //         var bytearray = new Uint8Array(arr.length);
-    //         for (var i = 0; i < arr.length; i++) {
-    //             bytearray[i] = arr[i];
-    //         }
-    //         return bytearray.buffer;
-    //     },
-    //     disconnect_from_device: function () {
-    //         ble.disconnect(bluetooth.connected_id,
-    //             function () {
-    //                 console.log("BT Disconnected!");
-    //                 navigator.notification.alert("BT Disconnected!");
-    //                 // window.panel.stop_refresh();
-    //             },
-    //             function () {
-    //                 // disable local use
-    //                 // window.panel.stop_refresh();
-    //                 navigator.notification.alert("Error Disconnecting");
-    //                 console.log("Error Disconnecting");
-    //             });
-    //     },
-    //     writeFailure: function () {
-    //         console.log("Couldn't write to module by bluetooth");
-    //     },
-    //     send_keyboard: function (keys_info) {
-
-    //         ble.write(bluetooth.connected_id,
-    //             SERVICE_UUID_OPERATION,
-    //             CHARACTERISTIC_UUID_KEYBOARD,
-    //             bluetooth.stringToBytes(keys_info),
-    //             function () {
-    //                 console.log("sent keyboard: " + keys_info)
-    //             },
-    //             bluetooth.writeFailure
-    //         );
-    //     },
-    //     send_temperature: function (keys_info) {
-
-    //         ble.write(bluetooth.connected_id,
-    //             SERVICE_UUID_OPERATION,
-    //             CHARACTERISTIC_UUID_TEMPERATURE,
-    //             bluetooth.stringToBytes(keys_info),
-    //             function () {
-    //                 console.log("sent temperature: " + keys_info)
-    //             },
-    //             bluetooth.writeFailure
-    //         );
-    //     },
-    //     send_time: function (keys_info) {
-
-    //         ble.write(bluetooth.connected_id,
-    //             SERVICE_UUID_OPERATION,
-    //             CHARACTERISTIC_UUID_TIME,
-    //             bluetooth.stringToBytes(keys_info),
-    //             function () {
-    //                 console.log("sent keyboard: " + keys_info)
-    //             },
-    //             bluetooth.writeFailure
-    //         );
-    //     },
-    //     send_session: function (keys_info) {
-
-    //         ble.write(bluetooth.connected_id,
-    //             SERVICE_UUID_OPERATION,
-    //             CHARACTERISTIC_UUID_SESSION,
-    //             bluetooth.stringToBytes(keys_info),
-    //             function () {
-    //                 console.log("sent keyboard: " + keys_info)
-    //             },
-    //             bluetooth.writeFailure
-    //         );
-    //     },
-    //     send_wificreds: function (wificreds) {
-    //         ble.write(bluetooth.connected_id,
-    //             SERVICE_UUID_OPERATION,
-    //             CHARACTERISTIC_UUID_WIFICREDS,
-    //             bluetooth.stringToBytes(wificreds),
-    //             function () {
-    //                 console.log("sent wificreds: " + wificreds);
-    //             },
-    //             bluetooth.writeFailure
-    //         );
-    //     },
-    //     send: function (characteristic, message) {
-    //         ble.isConnected(bluetooth.connected_id,
-    //             function () {
-    //                 window["bluetooth"]["send_" + characteristic](message);
-    //             },
-    //             function () {
-    //                 console.log("Bluetooth disconnected");
-    //             })
-    //     },
-    //     read_characteristic: function (characteristic) {
-    //         ble.isConnected(bluetooth.connected_id,
-    //             function () {
-    //                 ble.read(bluetooth.connected_id, SERVICE_UUID_OPERATION, characteristic,
-    //                     function (data) {
-    //                         let data_read = Array.from(new Uint8Array(data),
-    //                             function (item) {
-    //                                 hex_num = item.toString(16);
-    //                                 return hex_num.length > 1 ? hex_num : hex_num + "0";
-    //                             }).join('');
-    //                         console.log("read data from characteristic: " + data_read);
-    //                     },
-    //                     function () {
-    //                         console.log("couldn't read from characteristic");
-    //                     }
-    //                 )
-    //             },
-    //             function () {
-    //                 console.log("bluetooth not connected");
-    //             });
-    //     },
-    //     subscribe_to_characteristic: function (characteristic) {
-    //         ble.isConnected(bluetooth.connected_id,
-    //             function () {
-    //                 ble.startNotification(bluetooth.connected_id, SERVICE_UUID_OPERATION, characteristic,
-    //                     function (data) {
-    //                         let data_read = Array.from(new Uint8Array(data),
-    //                             function (item) {
-    //                                 hex_num = item.toString(16);
-    //                                 return hex_num.length > 1 ? hex_num : hex_num + "0";
-    //                             }).join('');
-    //                         console.log("read data from characteristic: " + data_read);
-    //                     },
-    //                     function () {
-    //                         console.log("couldn't read from characteristic");
-    //                     }
-    //                 )
-    //             },
-    //             function () {
-    //                 console.log("bluetooth not connected");
-    //             });
-    //     }
-    // }
-
-    // stop_screen = function () {
-    //     if (!window.refresh_screen_loop)
-    //         clearInterval(window.refresh_screen_loop);
-    // }
-
-
-    // // add new device
-
-    // // Step 1: connection
-    // //bluetooth
-    // $("#button-start-stop-scan").on('click', bluetooth.scan_and_add);
-    // $('#button-connect-to-device').on('click', function () { return bluetooth.connect_to_device(bluetooth.get_id(bluetooth.device_to_connect)) });
-    // $("#disconnect-from-device").on('click', bluetooth.disconnect_from_device);
-    // $("#scan-result-list").on('click', 'li', bluetooth.select_scanned_device);
-    // $("#submit-register-data").on('click', registration.submit_registration_info);
-    // $("#submit-20-digit-code").on('click', registration.submit_20_digit_code);
-
-    // window.devices = {
-    //     dev_unit: [],
-    //     selected: "",
-    //     add_device: function (name, ble_id) {
-    //         devices.dev_unit.push({
-    //             name: name,
-    //             ble_id: ble_id,
-
-    //         });
-    //         item = '<li><a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">' + name + '</a></li>'
-    //         $("#device-list").append(item);
-    //         let user = window.session.getInstance().get();
-    //         user.devices = devices.dev_unit;
-    //         window.session.getInstance().set(user);
-    //     },
-    //     remove_device_from_list: function () {
-    //         for (var i = 0; i < devices.dev_unit.length; i++) {
-    //             if (devices.dev_unit[i].name === devices.selected) {
-    //                 devices.dev_unit.splice(i, 1);
-    //             }
-    //         }
-    //         let user = window.session.getInstance().get();
-    //         user.devices = devices.dev_unit;
-    //         window.session.getInstance().set(user);
-    //         devices.refresh_device_list();
-    //     },
-    //     refresh_device_list: function () {
-    //         $("#device-list").empty();
-    //         devices.dev_unit.forEach(element => {
-    //             item = '<li data-sort-text="B' + element.name + '"><a class="found-devices ui-btn ui-btn-icon-right ui-icon-carat-r">' + element.name + '</a></li>'
-    //             $("#device-list").append(item);
-    //             sortDeviceList();
-    //         });
-    //     },
-    //     connect_to_selected_device: function () {
-    //         devices.dev_unit.forEach(element => {
-    //             if (element.name === devices.selected)
-    //                 bluetooth.connect_to_device(element.ble_id);
-    //             return;
-    //         });
-    //     },
-    //     hasDevice: function (ble_id) {
-    //         for (var i = 0; i < devices.dev_unit.length; i++)
-    //             if (devices.dev_unit[i].ble_id === ble_id)
-    //                 return true;
-    //         return false;
-    //     },
-    //     select_known_device: function () {
-    //         devices.selected = $(this).find("a").text();
-    //     },
-    //     register_device: function () {
-    //         if (devices.selected == "")
-    //             navigator.notification.alert("Tap a device first");
-    //         else
-    //             devices.dev_unit.forEach(element => {
-    //                 if (element.name === devices.selected)
-    //                     if (reg = registration.registration_info())
-    //                         transmitter.send_by_bt("email", $("#e-mail-address").val());
-    //                 // bluetooth.send_wificreds(reg.ssid + "," + reg.ssid_pw)
-    //             });
-    //     },
-    //     set_time_on_device: function () {
-    //         now = new Date();
-    //         var hours, ampm;
-    //         hours = now.getHours();
-    //         if (now.getHours() > 12) {
-    //             hours = now.getHours() - 12;
-    //             ampm = "P";
-    //         }
-    //         else {
-    //             ampm = "A";
-    //         }
-    //         hours = hours.toString();
-    //         minutes = now.getMinutes().toString();
-    //         hours = hours == "00" ? "12" : hours;
-    //         if (String(hours).length < 2) hours = "0" + hours;
-    //         if (String(minutes).length < 2) minutes = "0" + minutes;
-
-    //         window.transmitter.send_to_module("time", hours + now.getMinutes() + ampm);
-    //     }
-    // }
-    // $("#button-connect-to-known-device").on('click', devices.connect_to_selected_device);
-    // $("#device-list").on('click', 'li', devices.select_known_device);
-    // $("#delete-device-button").on('click', devices.remove_device_from_list);
-    // // $("#button-register-device").on('click', devices.register_device);
-    // $("#submit-time-zone").on('click', devices.set_time_on_device)
-    // $("#button-send-wificreds").on('click', function () {
-    //     transmitter.send_to_module("wificreds", {
-    //         ssid: $("#ssid").val(),
-    //         passwd: $("#ssid-pw").val()
-    //     });
-    // });
-    // $("#button-send-email").on('click', function () {
-    //     transmitter.send_to_module("email", $("#e-mail-address").val());
-    // });
-
-    // document.getElementById('select-spas-button').addEventListener('click', function (e) {
-    //     window.bluetooth.scan_and_add();
-    // });
-
-
-    // $('#home-page').live('pagebeforecreate', function (e) {
-    //     console.log("home-page beforecreate fired: ", e);
-    // });
-    // $('#device-list-page').live('pagebeforecreate', function (e) {
-    //     console.log("device-list-page beforecreate fired: ", e);
-    // });
     window.acc_on = true;
     window.acc_wsbase = 'wss://accsmartlink.com/wsa/';
-    document.addEventListener('pause', async function () {
+    document.addEventListener('pause', function () {
         window.acc_on = false;
-        // await base_navigation();
         if (window.connected_device && window.connected_device.id) write_characteristic_mmode_p('D');
         console.log('event pause fired');
     });
@@ -514,21 +163,30 @@ function isConnected_p() {
     });
 }
 
-async function disconnect_p() {
+function disconnect_p() {
     return new Promise(function (resolve, reject) {
+        if (!window.connected_device || ! 'id' in window.connected_device || !window.connected_device.id)
+            reject("Error: trying to disconnect but connected_device not set");
         ble.disconnect(window.connected_device.id, function () {
-            console.log('Disconnect from ' + window.connected_device.id + ' Ok');
-            resolve();
+            resolve('Disconnect from ' + window.connected_device.id + ' Ok');
         }, function (error) {
-            console.log('Error disconnecting from ' + window.connected_device.id, error);
-            reject(error);
+            reject('Error disconnecting from ' + window.connected_device.id, error);
         })
     });
 }
 
 function subscribe_characteristic_display() {
     ble.startNotification(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_DISPLAY, function (data) {
-        panel.display(arr2hex(new Uint8Array(data)));
+        const val = arr2hex(new Uint8Array(data));
+        panel.display(val);
+        console.log('display received ', val);
+        if (window.connected_device_logo_status !== 3 && val !== '000000000000') {
+            let icon = document.getElementById('connected-device-icon');
+            const bluetooth_color = 'color:rgb(49,131,244';
+            icon.setAttribute('style', bluetooth_color);
+            icon.className = 'fab fa-bluetooth';
+            window.connected_device_logo_status = 3;
+        }
         // console.log("Display notification nro ", ++aux_cnt);
     }, function (error) {
         console.log('Error writing (subscribing) characteristic descriptor for display: ', error);
@@ -547,6 +205,14 @@ function subscribe_characteristic_mmode() {
             delete window.known_local_devices[window.connected_device.id].id;
             save_known_local_devices();
         }
+        if (window.connected_device_logo_status <= 1) {
+            let icon = document.getElementById('connected-device-icon');
+            const white_color = 'color:rgb(255,255,255);';
+            icon.setAttribute('style', white_color);
+            icon.className = 'fab fa-bluetooth';
+            window.connected_device_logo_status = 2;
+        }
+
         console.log("MMODE received: " + rec);
     }, function (error) {
         console.log('Error writing (subscribing) characteristic descriptor for mmode: ', error);
@@ -681,7 +347,7 @@ function read_characteristic_version_p() {
 //     })
 // }
 
-async function get_connected_p() {
+function get_connected_p() {
     return new Promise(function (resolve, reject) {
         if (device.platform.match(/iOS/)) {
             ble.connectedPeripheralsWithServices(
@@ -735,29 +401,11 @@ function conn() {
 }
 
 async function acc_bt_disconnect_p() {
-    let timeout = new Promise((resolve, reject) => {
-        let id = setTimeout(() => {
-            clearTimeout(id);
-            reject('Timed out in 2 secs.')
-        }, 2000)
-    })
-
-    return Promise.race([
-        isConnected_p()
-            .then(unsubscribe_characteristic_cras_p)
-            .then(unsubscribe_characteristic_display_p)
-            .then(unsubscribe_characteristic_mmode_p)
-            .then(disconnect_p),
-        timeout
-    ])
+    console.log(await unsubscribe_characteristic_cras_p());
+    console.log(await unsubscribe_characteristic_display_p());
+    console.log(await unsubscribe_characteristic_mmode_p());
+    console.log(await disconnect_p());
 };
-// const acc_bt_disconnect_p = async () => {
-//     await unsubscribe_isConnected_p();
-//     await unsubscribe_characteristic_cras_p();
-//     await unsubscribe_characteristic_display_p();
-//     await unsubscribe_characteristic_mmode_p();
-//     await disconnect_p();
-// }
 
 function arr2str(arr) {
     return String.fromCharCode.apply(null, arr);
@@ -801,7 +449,7 @@ function scan_and_display_list() {
                 if (dev.mmode != 'M') continue;
                 console.log("Adding local: " + dev.name);
                 let node = document.createElement('LI');
-                node.setAttribute('data-sort-text', 'W' + dev.name);
+                node.setAttribute('data-sort-text', 'A' + dev.name);
                 node.setAttribute('data-btname', dev.name);
                 node.setAttribute('data-wifimac', dev.wifimac);
                 node.setAttribute('data-icon', 'false');
@@ -822,7 +470,7 @@ function scan_and_display_list() {
                 const dev = window.known_remote_devices[wifimac];
                 console.log("Adding shared: " + dev.name);
                 let node = document.createElement('LI');
-                node.setAttribute('data-sort-text', 'W' + dev.name);
+                node.setAttribute('data-sort-text', 'B' + dev.name);
                 node.setAttribute('data-btname', dev.name);
                 node.setAttribute('data-wifimac', wifimac);
                 node.setAttribute('data-icon', 'fas-delete');
@@ -841,11 +489,6 @@ function scan_and_display_list() {
                 console.log("Remote generated: " + dev.name);
             }
         } else { console.log("No known_remote_devices") }
-        // $("#devs-list").append('<li data-sort-text="WAcc-4321" data-icon="fas-delete" data-btname="Acc-4321" data-wifimac="112233444321"><a href="#" class="fa fa-wifi">\u00A0\u00A0Acc-4321</a><a href="#delete-device-dialog" data-rel="popup">delete</a></li>');
-        // $("#devs-list").append('<li data-sort-text="WAcc-1111" data-icon="fas-delete" data-btname="Acc-1111" data-wifimac="112233441111"><a href="#" class="fa fa-wifi">\u00A0\u00A0Acc-1111</a><a href="#delete-device-dialog" data-rel="popup">delete</a></li>');
-        // $("#devs-list").append('<li data-sort-text="WAcc-1234" data-icon="fas-delete" data-btname="Acc-1234" data-wifimac="112233441234"><a href="#" class="fa fa-wifi">\u00A0\u00A0Acc-1234</a><a href="#delete-device-dialog" data-rel="popup">delete</a></li>');
-        // $("#devs-list").append('<li data-sort-text="ZAcc-5678"><a class="found-devices ui-btn ui-btn-icon-left ui-icon-gear" href="#device-list-page" data-transition="slide">Manage Devices</a></li>');
-        // jquery mobile specific reformat of list
         $('#devs-list').listview("refresh");
         ble.startScan([SERVICE_UUID_OPERATION], function (device) {
             // if (/Acc/.exec(device.name) !== null) {
@@ -853,7 +496,7 @@ function scan_and_display_list() {
                 var name = 'advertising' in device ? device.advertising.kCBAdvDataLocalName || device.name : device.name;
                 console.log("Device found: ", name);
                 var node = document.createElement('LI');
-                node.setAttribute('data-sort-text', 'B' + name);
+                node.setAttribute('data-sort-text', 'C' + name);
                 node.setAttribute('data-btname', name);
                 node.setAttribute('data-btid', device.id);
                 node.setAttribute('data-icon', 'false');
@@ -887,19 +530,19 @@ async function base_navigation() {
             function () { console.log('Scan stopped') },
             function (err) { console.log("Couldn't stop scan: ", err) }
         ); // just in case
-        document.getElementById('device-name').innerHTML = '';
+        document.getElementById('connected-device-name').innerHTML = '';
         if (window.selected_device.remote) {
         } else { // bluetooth case
             // sometimes we need to start scan before the autoconnect
             // we don't actually need the results, see the dummy success & error callbacks
             // var node = document.createElement('P');
-            // var anchor = document.createElement('A');
-            // anchor.className = "ui-btn ui-btn-icon-left ui-icon-home";
-            // anchor.setAttribute('href', '#');
-            let textnode = document.createTextNode(window.selected_device.name);
-            // anchor.appendChild(textnode);
-            // node.appendChild(anchor);
-            document.getElementById('device-name').appendChild(textnode);
+            let icon = document.getElementById('connected-device-icon');
+            const white_color = 'color:rgb(255,255,255);';
+            icon.setAttribute('style', white_color);
+            icon.className = 'fas fa-spinner fa-spin';
+            window.connected_device_logo_status = 1;
+            let textnode = document.createTextNode('\u00A0\u00A0' + window.selected_device.name);
+            document.getElementById('connected-device-name').appendChild(textnode);
             ble.startScan([SERVICE_UUID_OPERATION], function () { }, function () { });
             conn();
             $.mobile.navigate('#main-page');
@@ -912,6 +555,10 @@ async function base_navigation() {
             // var res2 = await disconnect_all_p();
             // console.log('after disconnect_all_p()', res);
             window.connected_device = null;
+            let icon = document.getElementById('connected-device-icon');
+            icon.removeAttribute('style');
+            icon.removeAttribute('class');
+            window.connected_device_logo_status = 0;
         }
         $.mobile.navigate('#device-list-page');
         scan_and_display_list();
