@@ -22,7 +22,11 @@ document.addEventListener('deviceready', function () {
     $.mobile.buttonMarkup.hoverDelay = 0;
 
     window.panel.load_device();
-
+    disconnect_all_p().then(function (res) {
+        console.log('Result of disconnect_all_p()', res);
+    }).catch(function (e) {
+        console.log('Error on disconnect_all_p()', e);
+    });
 
     // $("#time-zone-selector").timezones();
 
@@ -436,7 +440,6 @@ function pincheck() {
         return false;
     }
 }
-
 
 function scan_and_display_list() {
     ble.isEnabled(async function () {
