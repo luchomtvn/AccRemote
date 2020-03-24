@@ -5,40 +5,32 @@ window.panel = {
         'aux': 'x0', 'jets': 'j0', 'system': 's0', 'light': 'l0', 'aux2': 'a0',
         'down': 'd0', 'up': 'u0', 'set-time': 'd1', 'set-temp': 'u1'
     },
-    openWebsocket: function () {
-        // get url from current spa
-
-
-        // appws = new WebSocket("ws://accsmartlink.com/wsa");
-        let appws = new WebSocket("ws://localhost:3001/wsa");
-
-    },
     reset_buttons: function () {
-        for (var b in panel.buttons) {
-            $("#button-" + buttons[b] + "-frame").attr("style", $("#button-" + buttons[b] + "-frame").data("off"));
-            var mytimer = $("#button-" + buttons[b] + "-frame").data("timer");
+        for (var b in this.buttons) {
+            $("#button-" + this.buttons[b] + "-frame").attr("style", $("#button-" + this.buttons[b] + "-frame").data("off"));
+            var mytimer = $("#button-" + this.buttons[b] + "-frame").data("timer");
             if (mytimer !== '') {
                 clearTimeout(mytimer);
-                $("#button-" + buttons[b] + "-frame").data("timer", '');
+                $("#button-" + this.buttons[b] + "-frame").data("timer", '');
             }
         }
     },
     link_buttons: function () {
 
-        for (var b in panel.buttons) {
-            let on_style = $("#button-" + panel.buttons[b] + "-frame").attr("style");
+        for (var b in this.buttons) {
+            let on_style = $("#button-" + this.buttons[b] + "-frame").attr("style");
             if (on_style == undefined) continue; // unused button
             let off_style = on_style.replace(/stroke-opacity[^;]*;?/, "");
             if (off_style.length > 0) { off_style += ';' };
             off_style += 'stroke-opacity:0;fill-opacity:0;fill:#00ffff';
-            $("#button-" + panel.buttons[b] + "-frame").attr("style", off_style);
-            // $("#button-" + panel.buttons[b] + "-frame").data("b", 0);
-            $("#button-" + panel.buttons[b] + "-frame").data("off", off_style);
-            $("#button-" + panel.buttons[b] + "-frame").data("int", off_style + 'stroke-opacity:0;fill-opacity:0.2;fill:#ffffff');
-            $("#button-" + panel.buttons[b] + "-frame").data("timer", '');
-            let button = panel.buttons_codes[panel.buttons[b]];
+            $("#button-" + this.buttons[b] + "-frame").attr("style", off_style);
+            // $("#button-" + this.buttons[b] + "-frame").data("b", 0);
+            $("#button-" + this.buttons[b] + "-frame").data("off", off_style);
+            $("#button-" + this.buttons[b] + "-frame").data("int", off_style + 'stroke-opacity:0;fill-opacity:0.2;fill:#ffffff');
+            $("#button-" + this.buttons[b] + "-frame").data("timer", '');
+            let button = this.buttons_codes[this.buttons[b]];
 
-            $("#button-" + panel.buttons[b] + "-frame").on("vclick", function () { // inside the function, 'this' is the html object that was clicked
+            $("#button-" + this.buttons[b] + "-frame").on("vclick", function () { // inside the function, 'this' is the html object that was clicked
                 var tout = 1000;
                 $(this).attr("style", $(this).data("int"));
                 transmitter.send_to_module("keyboard", button);
@@ -48,9 +40,7 @@ window.panel = {
                 }, tout);
                 $(this).data("timer", mytimer);
             });
-
         }
-
     },
     device_limits: {
         spa: {

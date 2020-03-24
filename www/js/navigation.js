@@ -613,7 +613,8 @@ function start_ws(url) {
     window.ws = new WebSocket(url);
     window.ws.onopen = function (e) { console.log("websocket open: ", e); }
     window.ws.onmessage = function (e) {
-        let screen = JSON.parse(e.data).dsp;
+        let rec = JSON.parse(e.data);
+        let screen = rec.dsp;
         if (screen) {
             window.panel.display(screen);
             console.log('display received ', screen);
@@ -624,9 +625,13 @@ function start_ws(url) {
                 icon.className = 'fas fa-wifi';
                 window.connected_device_logo_status = 3;
             }
-        } else {
-            console.log("websocket msg: ", e);
+        };
+         if(rec.stsR) panel.reset_buttons();
+         let cons_display = false;
+        for (let key in rec) {
+            cons_display |= key.match(!/^dsp|stsR$/);
         }
+        if (cons_display) console.log("websocket msg: ", e);
     }
     window.ws.onclose = function (e) {
         console.log("websocket close: ", e);
