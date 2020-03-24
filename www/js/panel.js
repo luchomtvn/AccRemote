@@ -191,17 +191,26 @@ window.panel = {
         }
 
     },
+    scale_selected: null,
     display: function (rx) {
-        $("#spascreen").text(rx);
         if (typeof (rx) == 'string' && rx.length == 12) {
             for (var ii = 0; ii < 6; ii++) {
                 var dd = parseInt(rx.substring(ii * 2, ii * 2 + 2), 16);
                 if (dd == 'NaN') dd = 0;
-                for (var jj = 0, mm = 1; jj < 8; jj++ , mm <<= 1) {
+                for (var jj = 0, mm = 1; jj < 8; jj++, mm <<= 1) {
                     if (ii == 5 && jj < 4) continue;
                     if (this.segments[ii][jj].attr("style") == undefined) continue; // unused led
                     this.segments[ii][jj].attr("style", (mm & dd) ? this.onstyles[ii][jj] : this.offstyles[ii][jj])
                 }
+            };
+            if (this.scale_selected) return; // just once, check for ºF or ºC and preselect scale
+            if (rx.match(/^b9/i)) {
+                this.scale_selected = 1;
+                $('#flip-scale').val(1).change();
+            }
+            else if (rx.match(/^f1/i)) {
+                this.scale_selected = 1;
+                $('#flip-scale').val(0).change();
             }
         }
     },

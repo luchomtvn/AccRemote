@@ -30,18 +30,18 @@ document.addEventListener('deviceready', function () {
 
     // $("#time-zone-selector").timezones();
 
-    window.websocket = {
-        ws: null,
-        url: "ws://localhost:3001/spa/HrU6CUAaSlsB9r0jxJTWr1Bzt7f032_0KVKfHy5IT9jGrtbs/wsa",
-        onMessageCallback: function (msg) {
-            console.log(msg);
-            let screen = JSON.parse(msg.data).dsp;
-            window.panel.display(screen);
-        },
-        openCallback: function () {
-            console.log("WebSocket open on server");
-        }
-    }
+    // window.websocket = {
+    //     ws: null,
+    //     url: "ws://localhost:3001/spa/HrU6CUAaSlsB9r0jxJTWr1Bzt7f032_0KVKfHy5IT9jGrtbs/wsa",
+    //     onMessageCallback: function (msg) {
+    //         console.log(msg);
+    //         let screen = JSON.parse(msg.data).dsp;
+    //         window.panel.display(screen);
+    //     },
+    //     openCallback: function () {
+    //         console.log("WebSocket open on server");
+    //     }
+    // }
 
     window.acc_on = true;
     window.acc_wsbase = 'wss://accsmartlink.com/wsa/';
@@ -64,14 +64,13 @@ document.addEventListener('deviceready', function () {
             const btname = li_element.getAttribute('data-btname');
             const btid = li_element.getAttribute('data-btid');
             const wifimac = li_element.getAttribute('data-wifimac');
+            const ws = li_element.getAttribute('data-ws');
             let pass = '';
-            let ws = '';
             if (btid) {
                 pass = btid in window.known_local_devices ? window.known_local_devices[btid].pass : '';
                 console.log("selected local device: " + btname + ' (btid: ' + btid + ')');
             } else if (wifimac) {
                 pass = window.known_remote_devices && wifimac in window.known_remote_devices ? window.known_remote_devices[wifimac].pass : '';
-                ws = window.known_remote_devices && wifimac in window.known_remote_devices ? window.known_remote_devices[wifimac].ws : '';
                 console.log("selected remote device: " + btname + ' (wifimac: ' + wifimac + ')');
             } else { console.log('Error: clicked on element without btid or wifimac'); return }
             var href = event.target.getAttribute('href') || '#';
@@ -292,6 +291,19 @@ function write_characteristic_btname_p(name) {
         }
     });
 }
+function write_characteristic_keyboard_p(keys) {
+    return new Promise(function (resolve, reject) {
+        if (!keys) reject("Error (wc_keyboard_p), keys not set");
+        else {
+            var to_send = str2arr(keys).buffer;
+            ble.write(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_KEYBOARD, to_send, function () {
+                resolve();
+            }, function (error) {
+                reject(error);
+            })
+        }
+    });
+}
 
 function write_characteristic_mmode_p(cmd) {
     return new Promise(function (resolve, reject) {
@@ -304,6 +316,64 @@ function write_characteristic_mmode_p(cmd) {
             reject(error);
         })
     });
+}
+
+function write_characteristic_time_p(ntime) {
+    return new Promise(function (resolve, reject) {
+        if (!ntime) reject("Error (wc_time_p), time not set");
+        else {
+            var to_send = str2arr(ntime).buffer;
+            ble.write(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_TIME, to_send, function () {
+                resolve();
+            }, function (error) {
+                reject(error);
+            })
+        }
+    });
+}
+
+function write_characteristic_temperature_p(temp) {
+    return new Promise(function (resolve, reject) {
+        if (!temp) reject("Error (wc_temperature_p), temperature not set");
+        else {
+            var to_send = str2arr(temp).buffer;
+            ble.write(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_TEMPERATURE, to_send, function () {
+                resolve();
+            }, function (error) {
+                reject(error);
+            })
+        }
+    });
+}
+
+function write_characteristic_session_p(session_time) {
+    return new Promise(function (resolve, reject) {
+        if (!session_time) reject("Error (wc_session_p), session_time not set");
+        else {
+            var to_send = str2arr(session_time).buffer;
+            ble.write(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_SESSION, to_send, function () {
+                resolve();
+            }, function (error) {
+                reject(error);
+            })
+        }
+    });
+}
+
+async function write_characteristic(caracteristic, param) {
+    if (caracteristic === 'keyboard') return await write_characteristic_keyboard_p(param);
+    else if (caracteristic === 'temperature') return await write_characteristic_temperature_p(param);
+    else if (caracteristic === 'time') return await write_characteristic_time_p(param);
+    else if (caracteristic === 'session') return await write_characteristic_session_p(param);
+    else if (caracteristic === 'btname') return await write_characteristic_btname_p(param);
+}
+
+function write_characteristic_wifi(caracteristic, param) {
+    if (!window.ws) return;
+    else if (caracteristic === 'keyboard') ws.send('{"keysec":"' + param + '"}');
+    else if (caracteristic === 'temperature') ws.send('{"temp":"' + param + '"}');
+    else if (caracteristic === 'time') ws.send('{"time":"' + param + '"}');
+    else if (caracteristic === 'session') ws.send('{"session":"' + param + '"}');
 }
 
 function read_characteristic_display_p() {
@@ -379,25 +449,39 @@ async function disconnect_all_p() {
     }
 }
 
-function bleconnected() {
-    console.log("Connected...");
-    window.connected_device = {
-        id: window.selected_device.id,
-        name: window.selected_device.name,
-        pass: window.selected_device.pass
-    };
-    subscribe_characteristic_mmode();
-    subscribe_characteristic_display();
-    subscribe_characteristic_cras();
-    read_characteristic_wifimac_p()
-        .then(read_characteristic_version_p)
-        .then(read_characteristic_display_p)
-        .then(write_characteristic_mcode_p)
-        .then(console.log.bind(console, "Connected ok..."))
-        .catch(console.log.bind(console, "Error on connect"))
+async function bleconnected() {
+    if (window.selected_device) {
+
+        console.log("Connected...");
+        window.connected_device = {
+            id: window.selected_device.id,
+            name: window.selected_device.name,
+            pass: window.selected_device.pass
+        };
+        subscribe_characteristic_mmode();
+        subscribe_characteristic_display();
+        subscribe_characteristic_cras();
+        read_characteristic_wifimac_p()
+            .then(read_characteristic_version_p)
+            .then(read_characteristic_display_p)
+            .then(write_characteristic_mcode_p)
+            .then(console.log.bind(console, "Connected ok..."))
+            .catch(console.log.bind(console, "Error on connect"))
+    } else {
+        // is a false reconnection
+        console.log("Error: pending reconnection from previous connection");
+        var res1 = await disconnect_all_p(); // ok even no device connected
+        console.log('after discon()', res1);
+    }
 }
 function bledisconnected() {
     console.log("Disconnected...");
+    window.connected_device = null;
+    let icon = document.getElementById('connected-device-icon');
+    const white_color = 'color:rgb(255,255,255);';
+    icon.setAttribute('style', white_color);
+    icon.className = 'fas fa-spinner fa-spin';
+    window.connected_device_logo_status = 1;
 }
 
 function conn() {
@@ -456,8 +540,8 @@ function scan_and_display_list() {
                 node.setAttribute('data-btname', dev.name);
                 node.setAttribute('data-wifimac', dev.wifimac);
                 node.setAttribute('data-icon', 'false');
-                const token = await digestMessage(dev.wifimac + window.acc_mcode + dev.pass);
-                node.setAttribute('data-ws', window.acc_wsbase + dev.wifimac + '/' + token);
+                const token = await digestMessage(dev.wifimac + 'M' + '5905551600' + window.acc_mcode + dev.pass);
+                node.setAttribute('data-ws', window.acc_wsbase + dev.wifimac + '/M/5905551600/' + token);
                 let anchor = document.createElement('A');
                 anchor.className = "fa fa-wifi";
                 anchor.setAttribute('href', '#');
@@ -525,6 +609,34 @@ function scan_and_display_list() {
     });
 }
 
+function start_ws(url) {
+    window.ws = new WebSocket(url);
+    window.ws.onopen = function (e) { console.log("websocket open: ", e); }
+    window.ws.onmessage = function (e) {
+        let screen = JSON.parse(e.data).dsp;
+        if (screen) {
+            window.panel.display(screen);
+            console.log('display received ', screen);
+            if (window.connected_device_logo_status !== 3 && screen !== '000000000000') {
+                let icon = document.getElementById('connected-device-icon');
+                const wifi_color = 'color:rgb(0,244,0';
+                icon.setAttribute('style', wifi_color);
+                icon.className = 'fas fa-wifi';
+                window.connected_device_logo_status = 3;
+            }
+        } else {
+            console.log("websocket msg: ", e);
+        }
+    }
+    window.ws.onclose = function (e) {
+        console.log("websocket close: ", e);
+        let icon = document.getElementById('connected-device-icon');
+        const white_color = 'color:rgb(255,255,255);';
+        icon.setAttribute('style', white_color);
+        icon.className = 'fas fa-spinner fa-spin';
+        window.connected_device_logo_status = 1;
+    }
+}
 
 async function base_navigation() {
     if (window.acc_on && window.selected_device) {
@@ -534,7 +646,16 @@ async function base_navigation() {
             function (err) { console.log("Couldn't stop scan: ", err) }
         ); // just in case
         document.getElementById('connected-device-name').innerHTML = '';
-        if (window.selected_device.remote) {
+        if (window.selected_device.ws) {
+            let icon = document.getElementById('connected-device-icon');
+            const white_color = 'color:rgb(255,255,255);';
+            icon.setAttribute('style', white_color);
+            icon.className = 'fas fa-spinner fa-spin';
+            window.connected_device_logo_status = 1;
+            let textnode = document.createTextNode('\u00A0\u00A0' + window.selected_device.name);
+            document.getElementById('connected-device-name').appendChild(textnode);
+            start_ws(window.selected_device.ws);
+            $.mobile.navigate('#main-page');
         } else { // bluetooth case
             // sometimes we need to start scan before the autoconnect
             // we don't actually need the results, see the dummy success & error callbacks
@@ -551,12 +672,22 @@ async function base_navigation() {
             $.mobile.navigate('#main-page');
         }
     } else {
-        if (window.connected_device && window.connected_device.id) {
+        if (window.connected_device && window.connected_device.id) { // bt disconnect
             console.log('before discon()');
             var res1 = await acc_bt_disconnect_p(); // ok even no device connected
             console.log('after discon()', res1);
             // var res2 = await disconnect_all_p();
             // console.log('after disconnect_all_p()', res);
+            window.connected_device = null;
+            let icon = document.getElementById('connected-device-icon');
+            icon.removeAttribute('style');
+            icon.removeAttribute('class');
+            window.connected_device_logo_status = 0;
+        }
+        else if (window.connected_device && window.connected_device.ws) { // ws disconnect
+            console.log('before discon()');
+            window.ws.close(1000);
+            window.ws = null;
             window.connected_device = null;
             let icon = document.getElementById('connected-device-icon');
             icon.removeAttribute('style');
