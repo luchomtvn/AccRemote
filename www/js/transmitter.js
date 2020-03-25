@@ -15,9 +15,9 @@ transmitter = {
                 type = "wificreds";
             }
 
-            if (message !== "error" && window.selected_device) {
-                if (selected_device.ws) transmitter.send_by_wifi(type, message);
-                else if (selected_device.id) transmitter.send_by_bt(type, message);
+            if (message !== "error" && window.connected_device) {
+                if (connected_device.ws) transmitter.send_by_wifi(type, message);
+                else if (connected_device.id) transmitter.send_by_bt(type, message);
             }
         }
     },
@@ -26,17 +26,6 @@ transmitter = {
     },
     send_by_wifi: function (characteristic, message) {
         write_characteristic_wifi(characteristic, message);
-    },
-    parse_email: function (data) {
-        let re_mail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,}$/i;
-        if (!re_mail.test(data) || data.length > EMAIL_MAX_LENGTH) {
-            navigator.notification.alert("Invalid e-mail");
-            return "error";
-        }
-        else {
-            return data;
-        }
-
     },
     parse_wificreds: function (data) {
         if (data.ssid.length > WIFI_SSID_MAX_LENGTH) {

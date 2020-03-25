@@ -362,20 +362,21 @@ function write_characteristic_session_p(session_time) {
     });
 }
 
-async function write_characteristic(caracteristic, param) {
-    if (caracteristic === 'keyboard') return await write_characteristic_keyboard_p(param);
-    else if (caracteristic === 'temperature') return await write_characteristic_temperature_p(param);
-    else if (caracteristic === 'time') return await write_characteristic_time_p(param);
-    else if (caracteristic === 'session') return await write_characteristic_session_p(param);
-    else if (caracteristic === 'btname') return await write_characteristic_btname_p(param);
+async function write_characteristic(characteristic, param) {
+    if (characteristic === 'keyboard') return await write_characteristic_keyboard_p(param);
+    else if (characteristic === 'temperature') return await write_characteristic_temperature_p(param);
+    else if (characteristic === 'time') return await write_characteristic_time_p(param);
+    else if (characteristic === 'session') return await write_characteristic_session_p(param);
+    else if (characteristic === 'btname') return await write_characteristic_btname_p(param);
 }
 
-function write_characteristic_wifi(caracteristic, param) {
+function write_characteristic_wifi(characteristic, param) {
+    console.log("enviara x wifi: ", characteristic, param);
     if (!window.ws) return;
-    else if (caracteristic === 'keyboard') ws.send('{"keysec":"' + param + '"}');
-    else if (caracteristic === 'temperature') ws.send('{"temp":"' + param + '"}');
-    else if (caracteristic === 'time') ws.send('{"time":"' + param + '"}');
-    else if (caracteristic === 'session') ws.send('{"session":"' + param + '"}');
+    else if (characteristic === 'keyboard') ws.send('{"keysec":"' + param + '"}');
+    else if (characteristic === 'temperature') ws.send('{"temp":"' + param + '"}');
+    else if (characteristic === 'time') ws.send('{"time":"' + param + '"}');
+    else if (characteristic === 'session') ws.send('{"session":"' + param + '"}');
 }
 
 function read_characteristic_display_p() {
@@ -664,6 +665,7 @@ async function base_navigation() {
             let textnode = document.createTextNode('\u00A0\u00A0' + window.selected_device.name);
             document.getElementById('connected-device-name').appendChild(textnode);
             start_ws(window.selected_device.ws);
+            window.connected_device = window.selected_device;
             $.mobile.navigate('#main-page');
         } else { // bluetooth case
             // sometimes we need to start scan before the autoconnect
