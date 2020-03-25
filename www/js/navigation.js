@@ -22,11 +22,13 @@ document.addEventListener('deviceready', function () {
     $.mobile.buttonMarkup.hoverDelay = 0;
 
     window.panel.load_device();
+
     disconnect_all_p().then(function (res) {
         console.log('Result of disconnect_all_p()', res);
     }).catch(function (e) {
         console.log('Error on disconnect_all_p()', e);
     });
+
 
     // $("#time-zone-selector").timezones();
 
@@ -626,8 +628,8 @@ function start_ws(url) {
                 window.connected_device_logo_status = 3;
             }
         };
-         if(rec.stsR) panel.reset_buttons();
-         let cons_display = false;
+        if (rec.stsR) panel.reset_buttons();
+        let cons_display = false;
         for (let key in rec) {
             cons_display |= key.match(!/^dsp|stsR$/);
         }
@@ -651,6 +653,8 @@ async function base_navigation() {
             function (err) { console.log("Couldn't stop scan: ", err) }
         ); // just in case
         document.getElementById('connected-device-name').innerHTML = '';
+        let type = window.selected_device.type || "spa";
+        panel.set_sliders(type);
         if (window.selected_device.ws) {
             let icon = document.getElementById('connected-device-icon');
             const white_color = 'color:rgb(255,255,255);';
