@@ -1,21 +1,4 @@
 document.addEventListener('deviceready', function () {
-    // window.onload = function () {
-
-    // window.handleOpenURL = function (url) {
-    //     $.mobile.changePage("#register-new-device", { transition: "slidedown", changeHash: false });
-    //     autofill_registered(url);
-    // }
-
-    // window.autofill_registered = function (url) {
-    //     params = new URLSearchParams(url.split("?", 2)[1]);
-    //     code = params.get("code");
-    //     $("#code-20-digits").val(code);
-    //     $([document.documentElement, document.body]).animate({
-    //         scrollTop: $("#submit-20-digit-code").offset().top
-    //     }, 700);
-    // }
-
-    // let type = "spa";
 
     $.mobile.defaultPageTransition = 'none';
     $.mobile.defaultDialogTransition = 'none';
@@ -103,7 +86,57 @@ document.getElementById('select-devices-button').addEventListener('click', funct
     e.preventDefault();
     console.log('select-devices-button clicked with selected device: ', selected_device);
     selected_device = null;
+    panel.collapse_all();
     base_navigation();
+    return false;
+});
+
+document.getElementById('send-bt-password').addEventListener('click', async function (e) {
+    e.preventDefault();
+    let pass = pincheck('bt-password');
+    document.getElementById('bt-password').value = '';
+    if (pass >= 0) {
+        pass = ('000' + pass).slice(-4);
+        if (connected_device && connected_device.id) {
+            console.log("Will send password: " + pass);
+            connected_device.pass = pass;
+            known_local_devices[connected_device.id].pass = pass;
+            save_known_local_devices();
+            if (selected_device) selected_device.pass = pass;
+            await write_characteristic_mcode_p();
+        }
+    }
+    else console.log("Error en formato, popup");
+    return false;
+});
+document.getElementById('send-master-bt-settings').addEventListener('click', async function (e) {
+    e.preventDefault();
+    let pass = pincheck('master-bt-password');
+    let btname = document.getElementById('btname').value;
+    if ((new TextEncoder("utf-8").encode(btname)).length > 8) { // sorry 8 bytes max
+        $('#long-btname-popup').popup();
+        $('#long-btname-popup').popup('open');
+        console.log("Error: Input btname > 8 bytes")
+    }
+    else if (pass >= 0) {
+        pass = ('000' + pass).slice(-4);
+        if (connected_device && connected_device.id) {
+            let rndm = RandomBase64url().slice(-8);
+            pass = pass + rndm;
+            console.log("Will set name and password as: ", btname, pass);
+            window.selected_device.name = window.connected_device.name = btname;
+            window.selected_device.pass = window.connected_device.pass = pass;
+            window.connected_device.program = true;  // will provoque set of btname and reset after receive 'M' MMODE
+            await write_characteristic_mcode_p();
+            await write_characteristic_mmode_p('S');
+            known_local_devices[connected_device.id].pass = pass;
+            known_local_devices[connected_device.id].name = btname;
+            save_known_local_devices();
+            $('#wait-reset-popup').popup();
+            $('#wait-reset-popup').popup('open');
+        }
+    }
+    else console.log("Error: malformed PIN");
     return false;
 });
 
@@ -203,12 +236,36 @@ function subscribe_characteristic_mmode() {
     ble.startNotification(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_MMODE, function (data) {
         var rec = arr2str(new Uint8Array(data));
         window.acc_mmode = rec;
-        if (rec.match(/M|N|B|F/)) {
+        let control_page = document.getElementById('control-page-body');
+        let blocked_page = document.getElementById('blocked-page-body');
+        let program_page = document.getElementById('program-page-body');
+        if (rec.match(/M/) && window.connected_device && window.connected_device.program) {
+            // special case, program btname and reset only
+            write_characteristic_btname_p(window.connected_device.name);
+            write_characteristic_mmode_p('R'); // force restart in 5 secs
+            delete connected_device.program;
+        }
+        else if (rec.match(/M|N/)) {
+            control_page.style.display = 'inline';
+            blocked_page.style.display = 'none';
+            program_page.style.display = 'none';
             window.connected_device.mmode = rec;
             window.known_local_devices = window.known_local_devices || {};
             window.known_local_devices[window.connected_device.id] = Object.assign({}, window.connected_device);
             delete window.known_local_devices[window.connected_device.id].id;
             save_known_local_devices();
+            document.getElementById('time-zone-container').style.display = "none";
+            document.getElementById('advanced-configuration-container').style.display = rec.match(/[MF]/) ? "inline" : "none";
+            document.getElementById('wifi-container').style.display = rec.match(/M/) ? "inline" : "none";
+            document.getElementById('share-container').style.display = rec.match(/M/) ? "inline" : "none";
+        } else if (rec.match(/B/)) {
+            control_page.style.display = 'none';
+            blocked_page.style.display = 'inline';
+            program_page.style.display = 'none';
+        } else if (rec.match(/F/)) {
+            control_page.style.display = 'none';
+            blocked_page.style.display = 'none';
+            program_page.style.display = 'inline';
         }
         if (window.connected_device_logo_status <= 1) {
             let icon = document.getElementById('connected-device-icon');
@@ -228,7 +285,75 @@ function subscribe_characteristic_cras() {
     ble.startNotification(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_CRAS, function (data) {
         var rec = arr2str(new Uint8Array(data));
         window.acc_cras = rec;
-        console.log("CRAS received: " + rec);
+        let m = rec.split('|');
+        let sal = {
+            status: m[0].substr(0, 1),
+            ssid: m[0].substr(1, 32),
+            channel: m[1],
+            rssi: m[2],
+            auth: m[3]
+        };
+        console.log("CRAS received: ", sal);
+        let net_id;
+        let list_id;
+        if (sal.status == 9) {
+            net_id = 'wifi-available-li-' + sal.ssid;
+            list_id = 'wifi-available';
+        } else {
+            net_id = 'wifi-connected-li';
+            list_id = 'wifi-connected';
+        }
+        let node = document.getElementById(net_id);
+        if (node) node.innerHTML = '';
+        else {
+            node = document.createElement('LI');
+            node.setAttribute('id', net_id);
+            document.getElementById(list_id).appendChild(node);
+        }
+        // now LI exists, has the right id and is empty
+        node.setAttribute('data-ssid', sal.ssid);
+        node.setAttribute('data-icon', 'false');
+        node.setAttribute('data-tstamp', new Date().getTime());
+        let anchor = document.createElement('A');
+        anchor.className = 'fas fa-wifi';
+        anchor.setAttribute('href', '#');
+        let textnode = document.createTextNode('\u00A0\u00A0' + sal.ssid);
+        let itag_connect = document.createElement('I');
+        itag_connect.style.float = 'right';
+        if (sal.status == 0) itag_connect.className = 'fas fa-link fa-w';
+        else if (sal.status < 9) itag_connect.className = 'fas fa-spinner fa-spin fa-w';
+        if (sal.status != 9) {
+            // scan result
+            // if (sal.status == 0) {
+            //     if (sal.rssi >= -70) node.style.color = 'lime';
+            //     else if (sal.rssi >= -80) node.style.color = 'greenyellow';
+            //     else if (sal.rssi >= -90) node.style.color = 'yellowgreen';
+            //     else node.style.color = 'darkseagreen';
+            // } else node.style.color = 'white';
+        }
+        anchor.appendChild(textnode);
+
+        // add lock icon for connected and scanned cases;
+        if (sal.status == 0 || sal.status == 9) {
+            let itag_lock = document.createElement('I');
+            itag_lock.style.float = 'right';
+            itag_lock.className =
+                sal.auth.match(/open/i)
+                    ? 'fas fa-lock-open fa-w'
+                    : 'fas fa-lock fa-w';
+            itag_lock.style.marginLeft = '10px';
+            anchor.appendChild(itag_lock);
+        }
+        anchor.appendChild(itag_connect);
+        node.appendChild(anchor);
+        let list = document.querySelectorAll("#wifi-available [data-tstamp]");
+        for (let i = list.length - 1; i >= 0; i--) {
+            if (new Date().getTime() - list[i].getAttribute('data-tstamp') > 25000) {
+                console.log(list[i]);
+                document.getElementById('wifi-available').removeChild(list[i]);
+            }
+        }
+        $('#' + list_id).listview("refresh");
     }, function (error) {
         console.log('Error writing (subscribing) characteristic descriptor for cras: ', error);
     })
@@ -284,7 +409,8 @@ function write_characteristic_btname_p(name) {
     return new Promise(function (resolve, reject) {
         if (!name) reject("Error (wc_btname_p), name not set");
         else {
-            var to_send = str2arr(name).buffer;
+            // let encoded = new TextEncoder("utf-8").encode(name)
+            let to_send = str2arr(name).buffer;
             ble.write(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_BTNAME, to_send, function () {
                 resolve();
             }, function (error) {
@@ -362,12 +488,26 @@ function write_characteristic_session_p(session_time) {
     });
 }
 
+function write_characteristic_wificreds_p(wificreds) {
+    return new Promise(function (resolve, reject) {
+        if (!wificreds) reject("Error (wc_wificreds_p), wificreds not set");
+        else {
+            var to_send = str2arr(wificreds).buffer;
+            ble.write(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_WIFICREDS, to_send, function () {
+                resolve();
+            }, function (error) {
+                reject(error);
+            })
+        }
+    });
+}
+
 async function write_characteristic(characteristic, param) {
     if (characteristic === 'keyboard') return await write_characteristic_keyboard_p(param);
     else if (characteristic === 'temperature') return await write_characteristic_temperature_p(param);
     else if (characteristic === 'time') return await write_characteristic_time_p(param);
     else if (characteristic === 'session') return await write_characteristic_session_p(param);
-    else if (characteristic === 'btname') return await write_characteristic_btname_p(param);
+    else if (characteristic === 'wificreds') return await write_characteristic_wificreds_p(param);
 }
 
 function write_characteristic_wifi(characteristic, param) {
@@ -461,6 +601,11 @@ async function bleconnected() {
             name: window.selected_device.name,
             pass: window.selected_device.pass
         };
+        $('#wait-reset-popup').popup();
+        $('#wait-reset-popup').popup('close');
+        document.getElementById('connected-device-name').innerHTML = '';
+        let textnode = document.createTextNode('\u00A0\u00A0' + window.selected_device.name);
+        document.getElementById('connected-device-name').appendChild(textnode);
         subscribe_characteristic_mmode();
         subscribe_characteristic_display();
         subscribe_characteristic_cras();
@@ -514,23 +659,21 @@ function str2arr(str) {
     return arr;
 }
 
-function pincheck() {
-    var passw = /[0-9]{4}/;
-    var pin = document.getElementById('device-pw').value;
+function pincheck(id) {
+    let passw = /[0-9]{4}/;
+    let pin = document.getElementById(id).value;
     $("#pin-check-popup").popup();
     if (pin.match(passw)) {
-        // Enviar password al device
-        return true;
+        return pin;
     }
     else {
         $("#pin-check-popup").popup("open");
-        return false;
+        return -1;
     }
 }
 
 function scan_and_display_list() {
     ble.isEnabled(async function () {
-        // $("#devs-list li:not(:first-child)").remove();
         $("#devs-list li").remove();
         if (window.known_local_devices) {
             for (const btid in window.known_local_devices) {
@@ -583,7 +726,9 @@ function scan_and_display_list() {
         ble.startScan([SERVICE_UUID_OPERATION], function (device) {
             // if (/Acc/.exec(device.name) !== null) {
             if (device.id) {
-                var name = 'advertising' in device ? device.advertising.kCBAdvDataLocalName || device.name : device.name;
+                // note name is utf-8 encoded
+                let name = 'advertising' in device ? device.advertising.kCBAdvDataLocalName || device.name : device.name;
+                // let name = new TextDecoder("utf-8").decode(encoded);
                 console.log("Device found: ", name);
                 var node = document.createElement('LI');
                 node.setAttribute('data-sort-text', 'C' + name);
@@ -643,19 +788,27 @@ function start_ws(url) {
         icon.setAttribute('style', white_color);
         icon.className = 'fas fa-spinner fa-spin';
         window.connected_device_logo_status = 1;
+        console.log("wifi disconnected, reconnect in 1 seg");
+        setTimeout(function () {
+            if (window.selected_device && window.selected_device.ws)
+                start_ws(window.selected_device.ws);
+        }, 1000);
     }
 }
 
 async function base_navigation() {
     if (window.acc_on && window.selected_device) {
         panel.display("000000000000");
+        document.getElementById('control-page-body').style.display = 'inline';
+        document.getElementById('blocked-page-body').style.display = 'none';
+        document.getElementById('program-page-body').style.display = 'none';
         ble.stopScan(
             function () { console.log('Scan stopped') },
             function (err) { console.log("Couldn't stop scan: ", err) }
         ); // just in case
         document.getElementById('connected-device-name').innerHTML = '';
         let type = window.selected_device.type || "spa";
-        panel.set_sliders(type);
+        panel.prepare(type);
         if (window.selected_device.ws) {
             let icon = document.getElementById('connected-device-icon');
             const white_color = 'color:rgb(255,255,255);';
@@ -712,4 +865,26 @@ async function base_navigation() {
 
 function myinspect(e) {
     console.log(e);
+}
+
+
+// this function is for testing only, configures a bt connected spa
+// as owned by somebody else
+
+async function define_other_owner_for_test_p(pass) {
+    if (window.acc_mmode !== 'F')
+        return ("error, device has to be in F (Free) state");
+    pass = pass || '0000';
+    if (!pass.match(/^\d{4}$/)) return ("error, pass has to be 4 digits");
+    let rndm = RandomBase64url().slice(-8);
+    pass = pass + rndm;
+    let mcode = RandomBase64url();
+    let to_send = str2arr(mcode + pass).buffer;
+    return await new Promise(function (resolve, reject) {
+        ble.write(window.connected_device.id, SERVICE_UUID_OPERATION, CHARACTERISTIC_UUID_MCODE, to_send, function () {
+            resolve();
+        }, function (error) {
+            reject(error);
+        })
+    });
 }

@@ -110,3 +110,5 @@ html {
 /* .ui-icon-cdelete:after {
     background-image: url("../img/trash-alt.svg");
 } */
+
+div.ui-input-text { width: 80% !important }

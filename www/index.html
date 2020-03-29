@@ -9,7 +9,6 @@
     </link>
     <script src="js/jquery-1.11.1.js"></script>
     <script src="jquery.mobile-1.4.5/jquery.mobile-1.4.5.js"></script>
-    <!-- <script src="Easy-Timezone-Picker-with-jQuery-Moment-js-Timezones/dist/timezones.full.js"></script> -->
 
     <meta charset="utf-8" />
     <meta name="viewport"
@@ -67,91 +66,164 @@
                             <option value="1">°C</option>
                         </select>
                     </div>
-                    <div class="ui-field-contain">
-                        <label class="labels" id="slider-label" for="slider-temp"></label>
-                        <input type="range" name="void" id="slider-temp" min="0" max="1" step="1" value="50">
-                        <input type="hidden" name="temp" id="slider-2-temp" value="50">
+                    <div class="ui-field-contain" id="slider-temp-F-spa-container">
+                        <label for="slider-temp-F-spa"></label>
+                        <input type="range" name="slider-temp-F-spa" id="slider-temp-F-spa" min="45" max="104" step="1"
+                            value="74">
+                    </div>
+                    <div class="ui-field-contain" id="slider-temp-C-spa-container">
+                        <label for="slider-temp-C-spa"></label>
+                        <input type="range" name="slider-temp-C-spa" id="slider-temp-C-spa" min="7.6" max="40" step=".1"
+                            value="23.5">
+                    </div>
+                    <div class="ui-field-contain" id="slider-temp-F-sauna-container">
+                        <label for="slider-temp-F-sauna"></label>
+                        <input type="range" name="slider-temp-F-sauna" id="slider-temp-F-sauna" min="50" max="160"
+                            step="1" value="105">
+                    </div>
+                    <div class="ui-field-contain" id="slider-temp-C-sauna-container">
+                        <label for="slider-temp-C-sauna"></label>
+                        <input type="range" name="slider-temp-C-sauna" id="slider-temp-C-sauna" min="10.3" max="70.8"
+                            step=".1" value="40.6">
                     </div>
                     <div data-role="controlgroup" data-type="horizontal">
                         <input type="submit" data-inline="true" value="Submit" id="submit-temp">
                         <a href="#" id="canceltemp" data-role="button">Cancel</a>
                     </div>
                 </div> <!-- Collapsible Program Sauna Temperature    -->
-                <div data-role="collapsible" id="session-time">
-                    <h1>Session Time</h1>
+                <div data-role="collapsible" id="session-container">
+                    <h1 id="session-header">Session Time</h1>
                     <div class="ui-field-contain">
-                        <label class="labels" id="slider-label" for="slider-session"></label>
-                        <input type="range" name="void" id="slider-session" min="10" max="90" step="1" value="30">
-                        <input type="hidden" name="tsession" id="slider-2-session" value="30">
+                        <label for="slider-session"></label>
+                        <input type="range" name="slider-session" id="slider-session" min="10" max="90" step="1"
+                            value="30">
                     </div>
                     <div data-role="controlgroup" data-type="horizontal">
                         <input type="submit" data-inline="true" value="Submit" id="submit-session">
-                        <a href="#" id="cancelsestime" data-role="button">Cancel</a>
+                        <a href="#" id="cancelsession" data-role="button">Cancel</a>
                     </div>
-                </div> <!-- Collapsible Program Sauna Set Time    -->
-                <div data-role="collapsible">
-                    <h1>Advanced Configuration</h1>
+                </div> <!-- Collapsible Program Sauna Session   -->
+                <div data-role="collapsible" class="collapsibles noshadow" id="time-zone-container">
+                    <h1 id="set-device-time-zone-header">Set Device Time Zone</h1>
                     <div class="ui-field-contain">
-                        <!-- <label class="labels" for="advanced-config-selector"></label> -->
-                        <form>
-                                <label for="advanced-switch-option">Advanced User Mode:</label>
-                                <input type="checkbox" data-role="flipswitch" name="advanced-switch-option"
-                                id="advanced-switch-option" data-on-text="ON" data-off-text="OFF"
-                                class="advanced-switch noshadow">
-                        </form>
+                        <label class="labels" for="time-zone-selector">Select Time Zone</label>
+                        <select name="time-zone-selector" id="time-zone-selector">
+                            <option>Choose TZ...</option>
+                        </select>
                     </div>
-                    <div data-role="collapsible" class="collapsibles noshadow">
-                        <h1>Set Device Time</h1>
-                        <div class="ui-field-contain">
-                            <label class="labels" for="time-zone-selector">Select Time Zone</label>
-                            <select name="time-zone-selector" id="time-zone-selector" class="form-timezones"></select>
-                        </div>
+                    <div data-role="controlgroup" data-type="horizontal">
+                        <input type="submit" data-inline="true" value="Submit" id="submit-time-zone">
+                        <a href="#" id="canceltz" data-role="button">Cancel</a>
+                    </div>
+                </div> <!-- Collapsible Program Sauna/Spa Time Zone  (for remote Master WiFis)  -->
+                <!-- Advanced Configuration group starts here -->
+                <div data-role="collapsible" id="advanced-configuration-container">
+                    <h1>Advanced Configuration</h1>
+                    <div data-role="collapsible" class="collapsibles noshadow" id="time-container">
+                        <h1 id="set-device-time-header">Set Device Time</h1>
                         <div data-role="controlgroup" data-type="horizontal">
-                            <input type="submit" data-inline="true" value="Submit" id="submit-time-zone">
-                            <a href="#" id="canceltz" data-role="button">Cancel</a>
+                            <!-- <input type="button" data-inline="true" value="Set Time (**:** **)" id="submit-time"> -->
+                            <a href="#" data-inline="true" data-role="button" id="submit-time">Set Time (<span
+                                    id='time-to-set'>**:** **</span>)</a>
+                            <a href="#" id="canceltime" data-role="button">Cancel</a>
                         </div>
-                    </div> <!-- Collapsible Program Sauna Timezone    -->
-                    <div data-role="collapsible" class="collapsibles noshadow">
-                        <h4> Configure Wi-Fi</h4>
+                    </div> <!-- Collapsible Program Sauna/Spa Time (for local BTs Master connections)    -->
+                    <div data-role="collapsible" class="collapsibles noshadow" id="wifi-container">
+                        <h4 id="configure-wifi-header"> Configure Wi-Fi</h4>
+
                         <div class="ui-field-contain">
-                            <label class="labels" for="ssid" class="labels">SSID (Network Name):</label>
-                                <fieldset data-role="controlgroup" data-type="horizontal" class="wifi-scan-dropdown">
-                                <select name="wifi-selector" id="wifi-selector" class="form-wifis"></select>
-                                <button id="wifi-scan-button" class="">Scan</button>
-                            </fieldset>
+                            <label class="labels" for="wifi-status">Connected WiFi:</label>
+                            <ul id="wifi-connected" data-role="listview">
+                            </ul>
                         </div>
-                        <input type="text" name="ssid" id="ssid" value="MLM" placeholder="">
+
+                        <div class="ui-field-contain">
+                            <label class="labels" for="wifi-available">Available WiFi Networks:</label>
+                            <ul id="wifi-available" data-role="listview">
+                            </ul>
+                        </div>
+
+                        <label class="labels" for="ssid">SSID:</label>
+                        <input type="text" name="ssid" id="ssid" placeholder="">
                         <label class="labels" for="ssid-pw">Password:</label>
-                        <input type="password" name="ssid-pw" id="ssid-pw" value="12365390aa" placeholder="">
+                        <input type="password" name="ssid-pw" id="ssid-pw" placeholder="">
                         <div data-role="controlgroup" data-type="horizontal" class="centered-container">
                             <a id="button-send-wificreds" class="ui-btn ui-corner-all ui-shadow ui-btn-b"
                                 data-transition="slideup">Set Wifi on Device</a>
                         </div>
                     </div> <!-- Collapsible Wifi Configuration    -->
-                    <div data-role="collapsible" class="collapsibles noshadow">
+                    <div data-role="collapsible" class="collapsibles noshadow" id="share-container">
                         <h4> Share</h4>
                         <button
                             onclick="window.plugins.socialsharing.share('Here is your link', null, null, 'https://accsmartlink.com')">
                             Share JPG</button>
                     </div> <!-- Collapsible Share option    -->
-                    <div data-role="collapsible" class="collapsibles noshadow">
-                        <h4> Password</h4>
-                        <input type="password" name="device-pw" id="device-pw" maxlength="4">
-                        <input type="button" id="send-pw" name="send-pw" value="Configure" onclick="pincheck()">
-                    </div> <!-- Collapsible Password option    -->
                 </div> <!-- Collapsible Advanced Configuration    -->
             </div> <!-- Collapsibleset    -->
         </div> <!-- control-page-body -->
+        <div id="blocked-page-body" class="ui-content">
+            <h3 class="page-title"> Unblock Device</h3>
+            <h4> Please enter 4 digits code to access</h4>
+            <div class="ui-field-contain">
+                <label for="bt-password">PIN:</label>
+                <input type="password" inputmode="numeric" name="bt-password" id="bt-password" value="" pattern="[0-9]*"
+                    maxlength="4">
+            </div>
+            <input type="button" id="send-bt-password" name="send-bt-password" value="Access">
+        </div> <!-- blocked-page-body -->
+        <div id="program-page-body" class="ui-content">
+            <h3 class="page-title">Setup New Device</h3>
+            <h4> Please enter a short name (1 to 8 characters) to identify the new Device:</h4>
+            <h5>(Standard Alphabet, no accents nor special characters allowed for the name)</h5>
+            <div class="ui-field-contain">
+                <label for="btname">Name:</label>
+                <input type="text" name="btname" id="btname" maxlength="8">
+            </div>
+            <h4> Please enter 4 digits PIN to restrict local users access:</h4>
+            <h5>(Or 4 zeroes (0000) if you don't want restricted local access)</h5>
+            <div class="ui-field-contain">
+                <label for="master-bt-password">PIN:</label>
+                <input type="password" inputmode="numeric" name="master-bt-password" id="master-bt-password" value=""
+                    pattern="[0-9]*" maxlength="4">
+            </div>
+            <input type="button" id="send-master-bt-settings" name="send-master-bt-settings" value="Set">
+        </div> <!-- blocked-page-body -->
+
+        <div data-role="popup" id="pin-check-popup" data-transition="fade" data-theme="b" data-overlay-theme="b"
+            class="ui-content">
+            <h3 data-role="title">ALERT</h3>
+            <h4>Please, enter 4 numbers as a password PIN code</h4>
+            <a href="#" class="ui-btn ui-icon-delete ui-btn-icon-right ui-corner-all" data-rel="back">Cancel</a>
+        </div>
+        <div data-role="popup" id="wificreds-check-popup" data-transition="fade" data-theme="b" data-overlay-theme="b"
+            class="ui-content">
+            <h3 data-role="title">ALERT</h3>
+            <h4>Please, check ssid and password and retry</h4>
+            <a href="#" class="ui-btn ui-icon-delete ui-btn-icon-right ui-corner-all" data-rel="back">Cancel</a>
+        </div>
+        <div data-role="popup" id="long-btname-popup" data-transition="fade" data-theme="b" data-overlay-theme="b"
+            class="ui-content">
+            <h3 data-role="title">ALERT - Name too long</h3>
+            <h4>Please try with a shorter name</h4>
+            <a href="#" class="ui-btn ui-icon-delete ui-btn-icon-right ui-corner-all" data-rel="back">Back</a>
+        </div>
+        <div data-role="popup" id="malformed-btname-popup" data-transition="fade" data-theme="b" data-overlay-theme="b"
+            class="ui-content">
+            <h3 data-role="title">ALERT - unsopported characteres</h3>
+            <h4>Please use only regular upper or lowercase characteres</h4>
+            <a href="#" class="ui-btn ui-icon-delete ui-btn-icon-right ui-corner-all" data-rel="back">Back</a>
+        </div>
+        <div data-role="popup" id="wait-reset-popup" data-transition="fade" data-theme="b" data-overlay-theme="b"
+            class="ui-content">
+            <h3 data-role="title">Setup complete</h3>
+            <h4>Device has been restarted. Please wait, it can take up to a minute to reconnect</h4>
+        </div>
+
         <div id="footer" data-role="footer" data-position="fixed">
             <h1>MLTech</h1>
         </div>
-    </div>
+    </div> <!-- Main Page -->
 
-    <div data-role="popup" id="pin-check-popup" data-transition="fade" data-theme="b" data-overlay-theme="b"
-        class="ui-content">
-        <h3 data-role="title">ALERT</h3>
-        <h4 id="pin-check-txt">Please, enter 4 numbers as a password PIN code</h4>
-    </div>
 
     <!------------------------------------------------------------------------------------------------>
     <!------------------------------------------------------------------------------------------------>
@@ -167,7 +239,7 @@
         </div><!-- header -->
         <div id="configure-device-body" class="ui-content">
             <div class="ui-field-contain">
-                <label class="labels" for="select-native-1">Available devices:</label>
+                <label class="labels">Available devices:</label>
                 <ul id="devs-list" data-role="listview"></ul>
             </div>
             <div data-role="popup" id="delete-device-dialog" data-dismissible="false"
@@ -178,12 +250,11 @@
                     data-rel="back" data-transition="flow">Delete</a>
                 <a href="#" class="ui-shadow ui-btn ui-corner-all ui-btn-inline" data-rel="back">Cancel</a>
             </div>
+
             <div id="footer" data-role="footer" data-position="fixed">
                 <h1>MLTech</h1>
             </div>
-
         </div>
-
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript" charset="utf-8">
@@ -199,6 +270,7 @@
         <script type="text/javascript" src="js/session.js"></script>
         <script type="text/javascript" src="js/wsreconnect.js"></script>
         <script type="text/javascript" src="js/constants/load_frames.js"></script>
+        <script type="text/javascript" src="js/loadtzs.js"></script>
 </body>
 
 </html>

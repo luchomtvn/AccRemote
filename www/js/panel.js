@@ -60,11 +60,21 @@ window.panel = {
             session_min: 10
         }
     },
-    set_sliders: function (type) {
-        if (type === "spa")
-            $("#session-time").hide();
-        else if (type === "sauna")
-            $("#session-time").show();
+    prepare: function (type) {
+        panel.product_type = type;
+        panel.temp_unit = 'F';
+        document.getElementById("session-container").style.display =
+            (panel.product_type === "sauna") ? 'inline' : 'none';
+        if (!selected_device) return; // this is really an error
+        let tz_cont = document.getElementById('time-zone-container');
+        let adv_cont = document.getElementById('advanced-configuration-container');
+        adv_cont.style.display = "none"; // will be restarted later for master accesses
+        if (selected_device.ws) {
+            let mode = selected_device.ws.match(/\/\w{12}\/M\/\d{10}\/\w{64}$/);
+            tz_cont.style.display = mode ? "inline" : "none";
+        } else tz_cont.style.display = "none";
+        // other containers will be displayed or not when mmode characteristic is notified on BT
+        return
         $("#flip-scale").on("change", function () {
             let far = document.getElementById('slider-2-temp').value;
             let div = document.querySelector('#slider-temp + div > a'); // jqm aux div
@@ -115,20 +125,8 @@ window.panel = {
                 }
             }
         }).change();
-        $("#submit-temp").on('click', function () {
-            // alert("submitted temp " + $("#slider-temp").val());
-            let res = '';
-            if (document.getElementById('flip-scale').value) {
-                // scale is ºC 
-                res = ('000' + (document.getElementById('slider-temp').value * 10).toFixed(0) + 'C').slice(-4);
-            } else {
-                // scale is ºF 
-                res = ('000' + document.getElementById('slider-temp').value + 'F').slice(-4);
-            }
-            transmitter.send_to_module("temperature", res);
-        });
-        $("#slider-session").attr("min", panel.device_limits[type].session_min);
-        $("#slider-session").attr("max", panel.device_limits[type].session_max);
+        $("#slider-session").attr("min", panel.device_limits[panel.product_type].session_min);
+        $("#slider-session").attr("max", panel.device_limits[panel.product_type].session_max);
         $("#slider-session").change(function () {
             $("#slider-session").val(this.value);
         }).change();
@@ -137,9 +135,146 @@ window.panel = {
             transmitter.send_to_module("session", $("#slider-session").val());
         });
     },
-    set_callbacks: function () {
+    collapse_all: function () {
+        let colls = $('div[data-role="collapsible"]');
+        for (let i = 0; i < colls.length; i++)
+            $(colls[i]).collapsible('collapse');
+    },
+    show_temp_slider: function () {
+        const sel = 'slider-temp-' + panel.temp_unit + '-' + panel.product_type + '-container';
+        const all = [
+            'slider-temp-F-spa-container',
+            'slider-temp-C-spa-container',
+            'slider-temp-F-sauna-container',
+            'slider-temp-C-sauna-container'
+        ];
+        all.forEach(function (item) {
+            if (item == sel)
+                document.getElementById(sel).style.display = "inline";
+            else document.getElementById(item).style.display = "none";
+        });
+    },
+    init_all: function () {
         document.getElementById('canceltemp').addEventListener('click', function (ev) {
             document.getElementById('temperature-header').click();
+        });
+        document.getElementById('cancelsession').addEventListener('click', function (ev) {
+            document.getElementById('temperature-header').click();
+        });
+        document.getElementById('canceltime').addEventListener('click', function (ev) {
+            document.getElementById('set-device-time-header').click();
+        });
+        document.getElementById('canceltz').addEventListener('click', function (ev) {
+            document.getElementById('set-device-time-zone-header').click();
+        });
+        panel.show_temp_slider();
+
+        $("#flip-scale").on("change", function () {
+            let new_id = '';
+            if (this.value == 1 && panel.temp_unit == 'F') { // ºC
+                panel.temp_unit = 'C';
+                new_id = 'slider-temp-C-' + panel.product_type;
+                let far = document.getElementById('slider-temp-F-' + panel.product_type).value;
+                document.getElementById(new_id).value = panel.f2c(far);
+            }
+            else if (this.value == 0 && panel.temp_unit == 'C') {  // ºF
+                panel.temp_unit = 'F';
+                new_id = 'slider-temp-F-' + panel.product_type;
+                let cel = document.getElementById('slider-temp-C-' + panel.product_type).value;
+                document.getElementById(new_id).value = panel.c2f(cel);
+            }
+            if (new_id) {
+                panel.show_temp_slider();
+                $('#' + new_id).slider('refresh');
+            }
+        }).change();
+        document.getElementById("submit-temp").addEventListener('click', function () {
+            // alert("submitted temp " + $("#slider-temp").val());
+            let res = '';
+            if (panel.temp_unit == 'C') {
+                // scale is ºC 
+                let id = 'slider-temp-C-' + panel.product_type;
+                let cel = document.getElementById(id).value;
+                let far = panel.c2f(cel);
+                cel = panel.f2c(far);
+                document.getElementById(id).value = cel;
+                $('#' + id).slider('refresh');
+                res = ('000' + (cel * 10).toFixed(0) + 'C').slice(-4);
+            } else {
+                // scale is ºF 
+                res = ('000' + document.getElementById('slider-temp-F-' + panel.product_type).value + 'F').slice(-4);
+            }
+            transmitter.send_to_module("temperature", res);
+        });
+        document.getElementById("submit-session").addEventListener('click', function () {
+            // alert("submitted temp " + $("#slider-temp").val());
+            let res = document.getElementById('slider-session').value;
+            res = ('00' + res).slice(-3);
+            transmitter.send_to_module("session", res);
+        });
+        // initializes TZones. Note this should be called just once, and after devicereay
+        let current_tz = Intl ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'Choose TZ ...';
+        document.getElementById('time-zone-selector').innerHTML =
+            '<option>' +
+            current_tz +
+            '</option>' +
+            getTZs();
+        document.getElementById("submit-time-zone").addEventListener('click', function () {
+            let tz = document.getElementById('time-zone-selector').value;
+            let d = new Date().toLocaleString("en-US", { timeZone: tz, hour: 'numeric', minute: 'numeric', hour12: true });
+            transmitter.send_to_module("time", d);
+        });
+        document.getElementById("submit-time").addEventListener('click', function () {
+            let d = new Date().toLocaleString("en-US", { hour: 'numeric', minute: 'numeric', hour12: true });
+            transmitter.send_to_module("time", d);
+            document.getElementById('set-device-time-header').click();
+        });
+        $("#wifi-container").on("collapsibleexpand", function () {
+            let t_counter = 0;
+            document.getElementById('ssid').innerHTML = '';
+            window.acc_1_second_timer = setInterval(function () {
+                if (window.connected_device &&
+                    window.connected_device.id
+                ) {
+                    if (!(t_counter % 10)) write_characteristic_mmode_p('Z');
+                    else if (
+                        !(t_counter % 2)) write_characteristic_mmode_p('W');
+                    t_counter++;
+                }
+            }, 1000);
+        });
+        $("#wifi-container").on("collapsiblecollapse", function () {
+            if (window.acc_1_second_timer) clearInterval(window.acc_1_second_timer);
+        });
+        $("#time-container").on("collapsibleexpand", function () {
+            window.acc_1_second_timer_2 = setInterval(function () {
+                let d = new Date().toLocaleString("en-US", { hour: 'numeric', minute: 'numeric', hour12: true });
+                document.getElementById('time-to-set').innerHTML = d;
+            }, 1000);
+        });
+        $("#time-container").on("collapsiblecollapse", function () {
+            if (window.acc_1_second_timer_2) clearInterval(window.acc_1_second_timer_2);
+        });
+        document.getElementById('wifi-available').addEventListener('click',
+            function (el) { panel.populate_wifi(el) });
+        document.getElementById('wifi-connected').addEventListener('click',
+            function (el) { panel.populate_wifi(el) });
+        document.getElementById("button-send-wificreds").addEventListener('click', async function (e) {
+            e.preventDefault();
+            let ssid = document.getElementById('ssid').value;
+            let passwd = document.getElementById('ssid-pw').value;
+            if (
+                ssid.length > WIFI_SSID_MAX_LENGTH ||
+                passwd.length > WIFI_PASSWD_MAX_LENGTH ||
+                ssid.length == 0) {
+                $('#wificreds-check-popup').popup().popup('open');
+            } else {
+                await write_characteristic_wificreds_p(ssid + '+' + passwd);
+                document.getElementById('ssid').value = '';
+                document.getElementById('ssid-pw').value = '';
+                $('#wait-reset-popup').popup().popup('open');
+                await write_characteristic_mmode_p('R');
+            }
         });
     },
     f2c: function (f) // fahrenheit to celsius
@@ -155,6 +290,13 @@ window.panel = {
         let delta = c % 11;
         let res = (c - delta) * 2 / 11 + 31;
         return ((delta > 4) ? res + 1 : res).toFixed(0);
+    },
+    populate_wifi: function (el) {
+        if (el.target && el.target.nodeName == 'A') {
+            const li_element = event.target.parentNode;
+            const ssid = li_element.getAttribute('data-ssid');
+            document.getElementById('ssid').value = ssid;
+        }
     },
 
     digits: [0, 1, 2, 3],
@@ -203,7 +345,6 @@ window.panel = {
                 this.offstyles[d][s] = auxoffstyle;
             }
         }
-
     },
     scale_selected: null,
     display: function (rx) {
@@ -228,13 +369,15 @@ window.panel = {
             }
         }
     },
+    product_type: null,
+    temp_unit: null,    // 0: ºF, 1: ºC
+
     load_device: function () {
         // $("#panel-title").text("spa");
         document.getElementById('canvas').innerHTML = window.frames["spa"];
         document.getElementById('canvas').setAttribute("align", "center");
         panel.link_buttons();
         panel.init_leds();
-        panel.set_sliders("spa");
-        panel.set_callbacks();
+        panel.init_all();
     }
 }
