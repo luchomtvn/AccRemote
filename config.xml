@@ -61,6 +61,7 @@
         </config-file>
     </platform>
     <preference name="AndroidLaunchMode" value="singleInstance" />
+    <gap:plugin name="cordova-plugin-x-socialsharing" source="npm" version="5.4.0" />
     <gap:plugin name="cordova-plugin-customurlscheme" source="npm">
         <param name="URL_SCHEME" value="accsmartcontrol" />
     </gap:plugin>
