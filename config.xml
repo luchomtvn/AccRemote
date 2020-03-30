@@ -98,4 +98,5 @@
     </plugin>
     <plugin name="cordova-plugin-file" spec="6.0.2" />
     <engine name="android" spec="~7.1.4" />
+    <engine name="cordova-android" spec="~8.1.0" />
 </widget>
