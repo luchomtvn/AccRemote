@@ -85,7 +85,7 @@
     <gap:plugin name="cordova-plugin-nativestorage" source="npm" />
     <engine name="browser" spec="^5.0.4" />
     <plugin name="cordova-plugin-device" spec="~2.0.2" />
-    <plugin name="cordova-plugin-ble-central" spec="~1.2.2">
+    <plugin name="cordova-plugin-ble-central" spec="1.2.2">
         <variable name="BLUETOOTH_USAGE_DESCRIPTION" value=" " />
     </plugin>
     <plugin name="cordova-plugin-dialogs" spec="~2.0.2" />
