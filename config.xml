@@ -73,7 +73,15 @@
         <param name="URL_SCHEME" value="accsmartcontrol" />
     </gap:plugin>
     <gap:plugin name="cordova-plugin-whitelist" source="npm" />
-    <allow-intent href="accsmartcontrol:" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <platform name="android">
+        <allow-intent href="market:*" />
+    </platform>
+    <platform name="ios">
+        <allow-intent href="itms:*" />
+        <allow-intent href="itms-apps:*" />
+    </platform>
     <engine name="browser" spec="^5.0.4" />
     <engine name="ios" spec="^4.5.5" />
     <engine name="android" spec="^7.1.4" />
