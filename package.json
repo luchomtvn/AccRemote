@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "bufferutil": "^4.0.1",
-    "cordova-android": "^7.1.4",
+    "cordova-android": "^6.1.2",
     "cordova-browser": "^5.0.4",
     "cordova-custom-config": "^5.1.0",
     "cordova-ios": "^5.1.1",
