@@ -86,7 +86,7 @@
     <engine name="ios" spec="^4.5.5" />
     <engine name="android" spec="^7.1.4" />
     <plugin name="cordova-plugin-device" spec="~2.0.2" />
-    <plugin name="cordova-plugin-ble-central" spec="1.2.4">
+    <plugin name="cordova-plugin-ble-central" spec="1.2.2">
         <variable name="BLUETOOTH_USAGE_DESCRIPTION" value=" " />
     </plugin>
     <plugin name="cordova-plugin-dialogs" spec="~2.0.2" />
