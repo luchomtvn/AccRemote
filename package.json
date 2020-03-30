@@ -21,7 +21,8 @@
         "ANDROID_PATHPREFIX": "/"
       },
       "cordova-plugin-dialogs": {},
-      "cordova-plugin-spinner": {}
+      "cordova-plugin-spinner": {},
+      "cordova-plugin-x-socialsharing": {}
     }
   },
   "dependencies": {
