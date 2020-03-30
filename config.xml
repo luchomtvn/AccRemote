@@ -96,6 +96,6 @@
     <plugin name="cordova-plugin-customurlscheme" spec="~5.0.1">
         <variable name="URL_SCHEME" value="accsmartlink" />
     </plugin>
-    <engine name="android" spec="~6.3.0" />
     <plugin name="cordova-plugin-file" spec="6.0.2" />
+    <engine name="android" spec="~7.1.4" />
 </widget>
