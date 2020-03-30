@@ -22,7 +22,8 @@
       },
       "cordova-plugin-dialogs": {},
       "cordova-plugin-spinner": {},
-      "cordova-plugin-x-socialsharing": {}
+      "cordova-plugin-x-socialsharing": {},
+      "cordova-plugin-nativestorage": {}
     }
   },
   "dependencies": {

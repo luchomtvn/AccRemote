@@ -62,6 +62,7 @@
     </platform>
     <preference name="AndroidLaunchMode" value="singleInstance" />
     <gap:plugin name="cordova-plugin-x-socialsharing" source="npm" version="5.4.0" />
+    <gap:plugin name="cordova-plugin-nativestorage" source="npm" />
     <gap:plugin name="cordova-plugin-customurlscheme" source="npm">
         <param name="URL_SCHEME" value="accsmartcontrol" />
     </gap:plugin>
@@ -85,4 +86,5 @@
     <plugin name="cordova-plugin-x-socialsharing" spec="~5.6.4">
         <variable name="ANDROID_SUPPORT_V4_VERSION" value="24.1.1+" />
     </plugin>
+    <plugin name="cordova-plugin-nativestorage" spec="~2.3.2" />
 </widget>
