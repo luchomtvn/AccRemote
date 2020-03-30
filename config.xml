@@ -65,6 +65,8 @@
         </config-file>
     </platform>
     <preference name="AndroidLaunchMode" value="singleInstance" />
+    <preference name="iosPersistentFileLocation" value="Library" />
+    <preference name="AndroidPersistentFileLocation" value="Internal" />
     <gap:plugin name="cordova-plugin-x-socialsharing" source="npm" version="5.4.0" />
     <gap:plugin name="cordova-plugin-nativestorage" source="npm" />
     <gap:plugin name="cordova-plugin-customurlscheme" source="npm">
