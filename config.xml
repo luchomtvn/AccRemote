@@ -16,6 +16,15 @@
     <content src="index.html" />
     <allow-navigation href="*" />
     <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <platform name="android">
+        <allow-intent href="market:*" />
+    </platform>
+    <platform name="ios">
+        <allow-intent href="itms:*" />
+        <allow-intent href="itms-apps:*" />
+    </platform>
     <icon height="180" platform="ios" src="images/icons/res/icon/ios/icon-60@3x.png" width="180" />
     <icon height="60" platform="ios" src="images/icons/res/icon/ios/icon-60.png" width="60" />
     <icon height="120" platform="ios" src="images/icons/res/icon/ios/icon-60@2x.png" />
@@ -67,40 +76,28 @@
     <preference name="AndroidLaunchMode" value="singleInstance" />
     <preference name="iosPersistentFileLocation" value="Library" />
     <preference name="AndroidPersistentFileLocation" value="Internal" />
+    <gap:plugin name="cordova-plugin-whitelist" source="npm" />
+    <plugin name="cordova-plugin-customurlscheme" spec="5.0.0">
+        <variable name="URL_SCHEME" value="accsmartlink" />
+    </plugin>
     <gap:plugin name="cordova-plugin-x-socialsharing" source="npm" version="5.4.0" />
     <gap:plugin name="cordova-plugin-nativestorage" source="npm" />
-    <gap:plugin name="cordova-plugin-customurlscheme" source="npm">
-        <param name="URL_SCHEME" value="accsmartcontrol" />
-    </gap:plugin>
-    <gap:plugin name="cordova-plugin-whitelist" source="npm" />
-    <allow-intent href="http://*/*" />
-    <allow-intent href="https://*/*" />
-    <platform name="android">
-        <allow-intent href="market:*" />
-    </platform>
-    <platform name="ios">
-        <allow-intent href="itms:*" />
-        <allow-intent href="itms-apps:*" />
-    </platform>
     <engine name="browser" spec="^5.0.4" />
     <engine name="ios" spec="^4.5.5" />
     <engine name="android" spec="^7.1.4" />
     <plugin name="cordova-plugin-device" spec="2.0.2" />
-    <plugin name="cordova-custom-config" spec="5.1.0" />
     <plugin name="cordova-plugin-ble-central" spec="1.2.2">
         <variable name="BLUETOOTH_USAGE_DESCRIPTION" value=" " />
-    </plugin>
-    <plugin name="cordova-plugin-customurlscheme" spec="5.0.0">
-        <variable name="URL_SCHEME" value="accsmartcontrol" />
-        <variable name="ANDROID_SCHEME" value=" " />
-        <variable name="ANDROID_HOST" value=" " />
-        <variable name="ANDROID_PATHPREFIX" value="/" />
     </plugin>
     <plugin name="cordova-plugin-dialogs" spec="2.0.2" />
     <plugin name="cordova-plugin-spinner" spec="1.1.0" />
     <plugin name="cordova-plugin-x-socialsharing" spec="~5.6.4">
         <variable name="ANDROID_SUPPORT_V4_VERSION" value="24.1.1+" />
     </plugin>
-    <plugin name="cordova-plugin-nativestorage" spec="~2.3.2" />
     <plugin name="cordova-plugin-whitelist" spec="~1.3.4" />
+    <plugin name="cordova-custom-config" spec="5.1.0" />
+    <plugin name="cordova-plugin-nativestorage" spec="~2.3.2" />
+    <gap:plugin name="cordova-plugin-customurlscheme" source="npm">
+        <param name="URL_SCHEME" value="accsmartlink" />
+    </gap:plugin>
 </widget>
