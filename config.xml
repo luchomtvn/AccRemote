@@ -66,6 +66,7 @@
     <gap:plugin name="cordova-plugin-customurlscheme" source="npm">
         <param name="URL_SCHEME" value="accsmartcontrol" />
     </gap:plugin>
+    <gap:plugin name="cordova-plugin-whitelist" source="npm" />
     <allow-intent href="accsmartcontrol:" />
     <engine name="browser" spec="^5.0.4" />
     <engine name="ios" spec="^4.5.5" />
@@ -87,4 +88,5 @@
         <variable name="ANDROID_SUPPORT_V4_VERSION" value="24.1.1+" />
     </plugin>
     <plugin name="cordova-plugin-nativestorage" spec="~2.3.2" />
+    <plugin name="cordova-plugin-whitelist" spec="~1.3.4" />
 </widget>
