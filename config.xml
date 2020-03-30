@@ -1,8 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.mantotech.accsmartcontrol" version="0.0.4" 
-    xmlns="http://www.w3.org/ns/widgets" 
-    xmlns:android="http://schemas.android.com/apk/res/android" 
-    xmlns:gap="http://phonegap.com/ns/1.0">
+<widget id="com.mantotech.accsmartcontrol" version="0.0.4" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:gap="http://phonegap.com/ns/1.0">
     <gap:config-file parent="/manifest" platform="android">
         <application android:debuggable="true" />
     </gap:config-file>
@@ -76,7 +73,6 @@
     <preference name="AndroidLaunchMode" value="singleInstance" />
     <preference name="iosPersistentFileLocation" value="Library" />
     <preference name="AndroidPersistentFileLocation" value="Internal" />
-    <!-- <preference name="KeepRunning" value="true" /> -->
     <gap:plugin name="cordova-plugin-file" source="npm" />
     <gap:plugin name="cordova-plugin-whitelist" source="npm" />
     <gap:plugin name="cordova-plugin-customurlscheme" source="npm">
@@ -101,4 +97,5 @@
     <plugin name="cordova-plugin-customurlscheme" spec="~5.0.1">
         <variable name="URL_SCHEME" value="accsmartlink" />
     </plugin>
+    <engine name="android" spec="~7.1.4" />
 </widget>
